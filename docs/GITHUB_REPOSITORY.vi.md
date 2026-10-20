@@ -16,7 +16,7 @@ Không chép `.research_deps` từ Windows sang Linux; cài môi trường cho h
 
 **Làm việc nhóm**
 
-Thành viên sửa trên nhánh riêng, tạo pull request, kiểm tra rồi merge `main`. Server chỉ tự cập nhật khi đã cài workflow CI/CD. Mỗi bản clone cá nhân vẫn cần fetch/pull để nhận thay đổi. Server cần giữ một worker ghi ledger chính thức; dữ liệu thu mới không tự được commit về GitHub.
+Thành viên sửa trên nhánh riêng, tạo pull request, kiểm tra rồi merge `main`. Workflow GitHub Pages kiểm tra PR và deploy snapshot công khai khi push/merge `main`; xem [hướng dẫn Pages](GITHUB_PAGES.vi.md). Triển khai tự động lên VPS là cấu hình riêng. Mỗi bản clone cá nhân vẫn cần fetch/pull để nhận thay đổi. Worker ghi ledger chính thức vẫn là một nơi duy nhất; dữ liệu thu mới không tự được commit về GitHub.
 
 Hướng dẫn: [GitHub và server](DEPLOYMENT_GITHUB_SERVER.vi.md).
 

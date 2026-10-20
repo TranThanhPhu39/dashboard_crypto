@@ -29,6 +29,7 @@ credentials.json
 /data/
 /models/
 /public/
+/public-pages/
 /*.zip
 /outputs/**
 

@@ -1,14 +1,17 @@
 """Export an allowlisted web snapshot; never publish the repository root."""
+import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / 'public'
+PUBLIC_PAGES = ROOT / 'public-pages'
 FILES = (
     'dashboard/index.html',
     'outputs/research/release_20261025/report.html',
@@ -24,15 +27,23 @@ FILES = (
 )
 
 
-def write_public(relative, content):
-    destination = (PUBLIC / relative).resolve()
-    if not destination.is_relative_to(PUBLIC.resolve()):
+def dashboard_only_bytes(data):
+    """Keep analysis/scripts; omit links to unpublished research/health pages."""
+    text = data.decode('utf-8')
+    pattern = r'''<a\b[^>]*\bhref=(["'])(\.\./outputs/[^"']+)\1[^>]*>(.*?)</a\s*>'''
+    return re.sub(pattern, lambda match: match.group(3), text,
+                  flags=re.IGNORECASE | re.DOTALL).encode('utf-8')
+
+
+def write_public(relative, content, public=PUBLIC):
+    destination = (public / relative).resolve()
+    if not destination.is_relative_to(public.resolve()):
         raise ValueError('Export destination escapes public directory')
     destination.parent.mkdir(parents=True, exist_ok=True)
     parent = destination.parent
     while True:
         parent.chmod(0o755)
-        if parent == PUBLIC.resolve():
+        if parent == public.resolve():
             break
         parent = parent.parent
     with tempfile.NamedTemporaryFile(dir=destination.parent, delete=False) as stream:
@@ -58,37 +69,47 @@ def git_value(*arguments):
 
 
 def main():
-    if PUBLIC.is_symlink() or not PUBLIC.resolve().is_relative_to(ROOT):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--dashboard-only', action='store_true', help='Export only the dashboard to public-pages')
+    args = parser.parse_args()
+    public = PUBLIC_PAGES if args.dashboard_only else PUBLIC
+    files = ('dashboard/index.html',) if args.dashboard_only else FILES
+    if public.is_symlink() or not public.resolve().is_relative_to(ROOT):
         raise ValueError('Public directory must be a real directory within this repository')
-    allowed = set(FILES) | {'index.html', 'build_info.json'}
-    if PUBLIC.exists():
-        for path in PUBLIC.rglob('*'):
-            if path.is_symlink() or not path.resolve().is_relative_to(PUBLIC.resolve()):
+    allowed = set(files) | {'index.html', 'build_info.json'}
+    if public.exists():
+        for path in public.rglob('*'):
+            if path.is_symlink() or not path.resolve().is_relative_to(public.resolve()):
                 raise ValueError('Unexpected symlink in public directory')
-            if path.is_file() and path.relative_to(PUBLIC).as_posix() not in allowed:
+            if path.is_file() and path.relative_to(public).as_posix() not in allowed:
                 raise ValueError('Unknown file in public directory; inspect it before publishing')
     contents = {}
-    for relative in FILES:
+    source_hashes = {}
+    for relative in files:
         source = (ROOT / relative).resolve()
         if not source.is_relative_to(ROOT) or not source.is_file():
             raise ValueError('Missing or invalid public snapshot: ' + relative)
-        contents[relative] = source.read_bytes()
+        raw = source.read_bytes()
+        source_hashes[relative] = hashlib.sha256(raw).hexdigest()
+        contents[relative] = dashboard_only_bytes(raw) if args.dashboard_only else raw
     state = git_value('status', '--porcelain', '--untracked-files=no')
     metadata = {
         'exported_at_utc': datetime.now(timezone.utc).isoformat(),
         'source_commit': git_value('rev-parse', 'HEAD'),
         'tracked_worktree_changes': bool(state) if state is not None else None,
+        'publication_mode': 'dashboard_only' if args.dashboard_only else 'research_snapshot',
         'scope': 'Rendered snapshot; exporting does not collect data or run a forecast worker',
+        'source_files_sha256': source_hashes,
         'files_sha256': {name: hashlib.sha256(data).hexdigest() for name, data in contents.items()},
     }
     # Publish the self-contained dashboard last; other files are optional detail pages.
     for relative, data in contents.items():
         if relative != 'dashboard/index.html':
-            write_public(relative, data)
-    write_public('build_info.json', (json.dumps(metadata, ensure_ascii=False, indent=2) + '\n').encode())
-    write_public('index.html', b'<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=dashboard/"><a href="dashboard/">Dashboard</a>')
-    write_public('dashboard/index.html', contents['dashboard/index.html'])
-    print(json.dumps({'exported_files': len(FILES), 'directory': str(PUBLIC),
+            write_public(relative, data, public)
+    write_public('build_info.json', (json.dumps(metadata, ensure_ascii=False, indent=2) + '\n').encode(), public)
+    write_public('index.html', b'<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=dashboard/"><a href="dashboard/">Dashboard</a>', public)
+    write_public('dashboard/index.html', contents['dashboard/index.html'], public)
+    print(json.dumps({'exported_files': len(files), 'directory': str(public),
                       'source_commit': metadata['source_commit'], 'snapshot_only': True}))
 
 
