@@ -1,6 +1,6 @@
 # OOS: bằng chứng đã có và vận hành tiếp theo
 
-Cập nhật 2026-10-20T20:16:14.731340+07:00. [Báo cáo chính](report.html) · [Review tài liệu](../../../paper/untouched_oos_followup_20261020.md) · [Audit có provenance](oos_followup.json).
+Cập nhật 2026-10-20T21:45:17.889604+07:00. [Báo cáo chính](report.html) · [Review tài liệu](../../../paper/untouched_oos_followup_20261020.md) · [Audit có provenance](oos_followup.json).
 
 ## Hai mốc thời gian khác nhau
 

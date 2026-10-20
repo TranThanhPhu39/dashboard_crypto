@@ -6,6 +6,8 @@ Repository GitHub: [TranThanhPhu39/dashboard_crypto](https://github.com/TranThan
 
 [Dashboard GitHub Pages](https://tranthanhphu39.github.io/dashboard_crypto/dashboard/) · [Cách xuất bản miễn phí](docs/GITHUB_PAGES.vi.md). Workflow Pages kiểm tra PR và deploy snapshot sau khi push/merge vào `main`; dữ liệu mới trên máy nghiên cứu cần được đồng bộ thành commit để xuất hiện trên web.
 
+[Tạo server Oracle Always Free](docs/ORACLE_ALWAYS_FREE.vi.md): hướng dẫn chuẩn bị máy ARM64, SSH và các bước bàn giao worker. Windows tiếp tục vận hành đến khi server được kiểm chứng và tiếp quản.
+
 Bộ dữ liệu nghiên cứu tải ngày **16/10/2026**, mẫu theo ngày UTC **01/01/2014–15/10/2026**. Chỉ dùng ngày đã kết thúc. Không kéo dài dữ liệu đến cuối năm 2026 khi chưa có quan sát. Mô hình và báo cáo được triển khai theo thiết kế đã thống nhất dưới đây.
 
 ## Bản tổng hợp nộp 25/10/2026 — entry point hiện tại
