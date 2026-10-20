@@ -1,0 +1,33 @@
+{
+  "version": "latency_20261019",
+  "authorized": "User approved an additional calendar-day feature delay and separate retraining",
+  "historical_source": "data/processed/forecast_origins_vintage_macro.csv",
+  "original_feature_shift_calendar_days": 2,
+  "old_completion_shift_calendar_days": 1,
+  "origin": "Row t predicts full UTC day D=t+1; all original features and vintage metadata come from t-2=D-3",
+  "market_proxy": "Existing lag1 proxies therefore use an observed market return on D-4; never carry a market return across missing sessions",
+  "macro": "Last two known observations within the requested ALFRED vintage at information day D-3, not a change between two capture dates",
+  "crypto": "Same Coin Metrics date labeling as frozen baseline; own return and RMS at D-3 on a complete calendar grid",
+  "minimum_receipt_buffer_hours": 24,
+  "training_labels": "Keep close+24h purging before first validation/test origin",
+  "split": {"train": "target before 2023-01-01", "validation": "2023-01-01 through 2024-12-31", "test": "2025-01-01 onward, previously viewed, exploratory"},
+  "samples": "Identical dates for own vs macro without USD on long sample; identical dates for all three common variants with USD vintage>=2019-02-04",
+  "models": "Same Elastic Net and histogram gradient boosting grids, training-only preprocessing, validation MSE/QLIKE selection, train+validation refit; no test tuning",
+  "grids": {"elastic_net": {"alpha": [0.001,0.01,0.1], "l1_ratio": [0.1,0.9]}, "gradient_boosting": {"max_leaf_nodes": [7,15], "l2_regularization": [1.0,10.0]}},
+  "fixed_boosting": {"max_iter": 200, "learning_rate": 0.05, "min_samples_leaf": 30, "early_stopping": false, "random_state": 9},
+  "variance": "Same positive-variance transformations and smearing as completion; no prediction floor",
+  "inference": "Paired eligible-origin loss differences, HAC5 finite correction; BH32 macro ablations, separately BH40 learned-versus-benchmark comparisons; approximate exploratory diagnostics",
+  "timing_comparison": "Old and new timing evaluated on intersections of origin dates; descriptive, no new significance search",
+  "prospective": {
+    "start_utc": "2026-10-20T00:00:00Z", "end_utc_exclusive": "2027-10-20T00:00:00Z",
+    "clock": "Only log strictly before origin, with origin within next24h; actual receipt of every dependency<=origin-24h",
+    "information_day": "D-3; capture after information day close and by cutoff; exact vintage requested for macro",
+    "models_frozen": "No overwrite/refit once artifact inventory is frozen; use another version",
+    "capture": "Immutable raw bytes, URL, UTC receipt, SHA256, requested-vintage metadata; local receipt is not independently provider-certified publication time",
+    "forecast_groups": "Matched samples per asset; do not emit own-only forecasts on dates when declared matched macro prerequisites fail",
+    "labels": "Capture outcomes after close+24h; retain their source hashes, never synthesize future labels",
+    "evaluation": "No performance claim before fixed end; preserve missing forecasts and attempts; no interim tuning",
+    "scheduler": false
+  },
+  "limitations": "Extra lag cannot remove historical revisions, establish causal identification or restore an already viewed test to untouched status"
+}

@@ -1,0 +1,147 @@
+// Offline operational report QA in headless Chrome; no forecast/data mutations.
+const fs = require('fs'), path = require('path'), {spawn} = require('child_process');
+const {pathToFileURL} = require('url');
+const root = path.resolve(__dirname, '..');
+const out = path.join(root, 'outputs/research/release_20261025');
+const preview = path.join(out, 'preview');
+const allowed = path.resolve(root, '.preview');
+const profile = path.join(allowed, `release-${process.pid}-${Date.now()}`);
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+let child, socket, serial = 0;
+const pending = new Map(), errors = [];
+function call(method, params = {}) {
+  return new Promise((resolve, reject) => {
+    const id = ++serial;
+    const timer = setTimeout(() => {pending.delete(id); reject(Error('CDP timeout '+method));}, 45000);
+    pending.set(id, {resolve: value => {clearTimeout(timer); resolve(value);}, reject});
+    socket.send(JSON.stringify({id, method, params}));
+  });
+}
+async function evaluate(expression) {
+  const result = await call('Runtime.evaluate', {expression, returnByValue:true});
+  if (result.exceptionDetails) throw Error(JSON.stringify(result.exceptionDetails));
+  return result.result.value;
+}
+async function screenshot(name) {
+  const result = await call('Page.captureScreenshot', {format:'png', captureBeyondViewport:false});
+  fs.writeFileSync(path.join(preview, name), Buffer.from(result.data, 'base64'));
+}
+(async () => {
+  fs.mkdirSync(preview, {recursive:true});
+  fs.mkdirSync(profile, {recursive:true});
+  try {
+    child = spawn('C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', [
+      '--headless=new', '--disable-gpu', '--disable-background-networking', '--no-first-run',
+      '--no-default-browser-check', `--user-data-dir=${profile}`, '--remote-debugging-port=0', 'about:blank'
+    ], {windowsHide:true, stdio:'ignore'});
+    let port;
+    for (let i=0; i<120; i++) {
+      const filename = path.join(profile, 'DevToolsActivePort');
+      if (fs.existsSync(filename)) {port=fs.readFileSync(filename,'utf8').split(/\r?\n/)[0]; break;}
+      await delay(100);
+    }
+    if (!port) throw Error('Chrome did not start');
+    const tabs = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+    socket = new WebSocket(tabs.find(tab => tab.type==='page').webSocketDebuggerUrl);
+    await new Promise((resolve,reject) => {
+      socket.addEventListener('open',resolve,{once:true});
+      socket.addEventListener('error',reject,{once:true});
+    });
+    socket.addEventListener('message', event => {
+      const msg=JSON.parse(event.data);
+      if (msg.id && pending.has(msg.id)) {
+        const item=pending.get(msg.id); pending.delete(msg.id);
+        msg.error ? item.reject(Error(JSON.stringify(msg.error))) : item.resolve(msg.result);
+      }
+      if (msg.method==='Runtime.exceptionThrown') errors.push(msg.params.exceptionDetails);
+    });
+    await call('Page.enable'); await call('Runtime.enable');
+    await call('Emulation.setDeviceMetricsOverride',{width:1280,height:1000,deviceScaleFactor:1,mobile:false});
+    await call('Page.navigate',{url:pathToFileURL(path.join(out,'report.html')).href});
+    for (let i=0;i<60;i++) {
+      if (await evaluate("document.readyState==='complete'")) break;
+      await delay(100);
+    }
+    const desktop = await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    const counts = await evaluate('Array.from(document.querySelectorAll("table")).map(table=>table.tBodies[0].rows.length)');
+    if (counts.length!==8) throw Error('Unexpected table coverage '+JSON.stringify(counts));
+    const hrefs = await evaluate('Array.from(document.querySelectorAll("a[href]")).map(a=>a.getAttribute("href"))');
+    const local = hrefs.filter(href=>!/^https?:/.test(href));
+    for (const href of local) if (!fs.existsSync(path.resolve(out,href))) throw Error('Missing link '+href);
+    await screenshot('report_desktop.png');
+    await evaluate('document.querySelectorAll("h2")[5].scrollIntoView()');
+    await screenshot('report_results_desktop.png');
+    await call('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
+    await evaluate('window.scrollTo(0,0)');
+    const mobile = await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    await screenshot('report_mobile.png');
+    await call('Emulation.setDeviceMetricsOverride',{width:1280,height:1000,deviceScaleFactor:1,mobile:false});
+    await call('Page.navigate',{url:pathToFileURL(path.join(out,'oos_followup.html')).href});
+    for(let i=0;i<60;i++){if(await evaluate("document.readyState==='complete' && document.title==='Kế hoạch và trạng thái OOS'"))break;await delay(100);}
+    const oosDesktop=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    const oosLinks=await evaluate('Array.from(document.querySelectorAll("a[href]")).map(a=>a.getAttribute("href")).filter(href=>!/^https?:/.test(href))');
+    for(const href of oosLinks)if(!fs.existsSync(path.resolve(out,href)))throw Error('Missing OOS link '+href);
+    await screenshot('oos_desktop.png');
+    await call('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
+    const oosMobile=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    await screenshot('oos_mobile.png');
+    await call('Emulation.setDeviceMetricsOverride',{width:1280,height:1000,deviceScaleFactor:1,mobile:false});
+    await call('Page.navigate',{url:pathToFileURL(path.join(root,'outputs/automation_20261020/health.html')).href});
+    for(let i=0;i<60;i++){if(await evaluate("document.readyState==='complete' && document.title==='Topic09 — Vận hành tự động'"))break;await delay(100);}
+    const automationDesktop=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    await screenshot('automation_desktop.png');
+    await call('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
+    const automationMobile=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    await screenshot('automation_mobile.png');
+    await call('Emulation.setDeviceMetricsOverride',{width:1280,height:1000,deviceScaleFactor:1,mobile:false});
+    await call('Page.navigate',{url:pathToFileURL(path.join(root,'dashboard/index.html')).href});
+    for(let i=0;i<60;i++){if(await evaluate("document.readyState==='complete' && Boolean(document.getElementById('liveStatus').textContent)"))break;await delay(100);}
+    const dashboardDesktop=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    const startsWithEstimator=await evaluate("!document.getElementById('responses').hidden && document.getElementById('overview').hidden && document.getElementById('pit').hidden");
+    const noWarningOnMain=await evaluate("!document.body.innerText.includes('Chưa có untouched OOS') && !document.body.innerText.includes('causal identification vô điều kiện chưa được chứng nhận')");
+    const tabButtonsWork=await evaluate("Object.entries(WORKSPACE_GROUPS).every(([group,ids])=>{document.getElementById('tab-'+group).click();return ids.every(id=>!document.getElementById(id).hidden) && document.getElementById('tab-'+group).getAttribute('aria-pressed')==='true'})");
+    await evaluate("document.getElementById('tab-transmission').click()");
+    await evaluate('window.scrollTo(0,0)');
+    await screenshot('dashboard_desktop.png');
+    await evaluate("document.getElementById('tab-forecast').click()");
+    await evaluate("document.getElementById('forecast').scrollIntoView()");
+    await screenshot('dashboard_forecast_desktop.png');
+    await evaluate("document.getElementById('tab-transmission').click()");
+    await evaluate("document.getElementById('asset').value='eth';document.getElementById('shock').value='usd_return_pct';document.getElementById('regime').value='stress';document.getElementById('horizon').value='30';document.getElementById('horizon').dispatchEvent(new Event('change'))");
+    const selectionWorks=await evaluate("document.getElementById('selectionLabel').textContent==='ETH · Căng thẳng · 30 ngày' && responseCsv().split('\\r\\n').length===31");
+    const downloadFolder=path.join(preview,'downloads',String(Date.now()));fs.mkdirSync(downloadFolder,{recursive:true});
+    await call('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:downloadFolder});
+    await call('Runtime.evaluate',{expression:"document.getElementById('exportResponse').click()",userGesture:true});
+    const csvFile=path.join(downloadFolder,'eth_usd_return_pct_stress_response.csv');
+    for(let i=0;i<50&&!fs.existsSync(csvFile);i++)await delay(100);
+    if(!fs.existsSync(csvFile))throw Error('CSV download button produced no file');
+    const exported=fs.readFileSync(csvFile,'utf8'),expectedExport=await evaluate('responseCsv()');
+    const csvDownloadWorks=exported===expectedExport && exported.replace(/^\ufeff/,'').split('\r\n').length===31;
+    await evaluate("document.getElementById('resetResponse').click()");
+    const resetWorks=await evaluate("document.getElementById('asset').value==='btc' && document.getElementById('horizon').value==='1'");
+    await call('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
+    await evaluate('window.scrollTo(0,0)');
+    const dashboardMobile=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    await screenshot('dashboard_mobile.png');
+    const result = {browser:'Chrome',desktop_width:1280,mobile_width:390,
+      desktop_no_horizontal_overflow:desktop,mobile_no_horizontal_overflow:mobile,
+      oos_desktop_no_overflow:oosDesktop,oos_mobile_no_overflow:oosMobile,oos_local_links_verified:oosLinks.length,
+      automation_desktop_no_overflow:automationDesktop,automation_mobile_no_overflow:automationMobile,
+      dashboard_desktop_no_overflow:dashboardDesktop,dashboard_mobile_no_overflow:dashboardMobile,starts_with_estimator:startsWithEstimator,no_academic_warning_on_main:noWarningOnMain,workspace_buttons_work:tabButtonsWork,selection_controls_work:selectionWorks,reset_button_works:resetWorks,csv_download_matches_selected_curve:csvDownloadWorks,tables:counts.length,
+      local_links_verified:local.length,uncaught_errors:errors.length};
+    fs.writeFileSync(path.join(out,'browser_validation.json'),JSON.stringify(result,null,2));
+    if (!desktop || !mobile || !oosDesktop || !oosMobile || !automationDesktop || !automationMobile || !dashboardDesktop || !dashboardMobile || !startsWithEstimator || !noWarningOnMain || !tabButtonsWork || !selectionWorks || !resetWorks || !csvDownloadWorks || errors.length) throw Error(JSON.stringify(result));
+    console.log(JSON.stringify(result,null,2));
+  } finally {
+    if (socket && socket.readyState===WebSocket.OPEN) {
+      try {await call('Browser.close');} catch {}
+      socket.close();
+    }
+    if (child && !child.killed) child.kill();
+    await delay(400);
+    const relative = path.relative(allowed,path.resolve(profile));
+    if (relative && !relative.startsWith('..') && !path.isAbsolute(relative)) {
+      try {fs.rmSync(profile,{recursive:true,force:true});} catch {}
+    }
+  }
+})().catch(error=>{console.error(error.stack||String(error));process.exitCode=1;});

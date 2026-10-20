@@ -1,0 +1,30 @@
+{
+  "version": "release_20261025",
+  "submission_date": "2026-10-25",
+  "historical_snapshot_end": "2026-10-15",
+  "mutable_operational_paths": [
+    "outputs/research/evidence_20261019/prospective/latest_capture.json",
+    "outputs/research/evidence_20261019/prospective/prospective_status.json",
+    "outputs/research/evidence_20261019/prospective/label_status.json",
+    "outputs/research/evidence_20261019/prospective/prospective_evaluation.json",
+    "outputs/research/evidence_20261019/prospective/namespace_audit.json",
+    "outputs/research/evidence_20261019/prospective_operations/last_run.json",
+    "outputs/research/evidence_20261019/prospective_operations/readiness_calendar.csv",
+    "outputs/research/evidence_20261019/prospective_operations/historical_feature_coverage.csv",
+    "outputs/research/evidence_20261019/prospective_operations/rule_audit.json",
+    "outputs/research/evidence_20261019/prospective_operations/report.html",
+    "outputs/research/evidence_20261019/prospective_operations/validation.json",
+    "outputs/research/evidence_20261019/prospective_operations/browser_validation.json",
+    "outputs/research/pit_nested_20261020/independent_validation.json"
+  ],
+  "maintained_paths": [
+    "dashboard/index.html",
+    "paper/README.md",
+    "run_pit_nested.py",
+    "run_prospective.py",
+    "run_evidence.py"
+  ],
+  "preservation_rule": "Only these exact paths may evolve after their original bytes are archived and verified. Source snapshots and fit/input locks remain unchanged. Raw responses/manifests, historical data, models, scientific estimates and protocols are never exempted.",
+  "model_policy": "Render existing frozen results only. No refit, no recalibration, no new learner or prospective performance scoring.",
+  "display_policy": "One canonical report and dashboard, explicit method/source/timing/sample labels. Older scientific reports and ZIPs remain unchanged; original navigation and entrypoints are archived with hashes."
+}

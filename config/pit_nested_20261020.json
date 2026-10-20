@@ -1,0 +1,28 @@
+{
+  "version": "pit_nested_20261020",
+  "historical_source": "data/processed/forecast_origins_vintage_macro.csv",
+  "snapshot_end": "2026-10-15",
+  "interpretation": "Historical exploratory evaluation. Previously viewed outcomes cannot become untouched OOS through nesting.",
+  "scenarios": ["native_asof_d3", "matched_asof_d3", "matched_latest_d3", "matched_asof_d4"],
+  "vintage_counterfactual": "Latest value in the frozen ALFRED archive for exactly the same two observation dates selected by the historical as-of reconstruction. Keep historical observation selection and release eligibility. EX POST ORACLE, not deployable.",
+  "serialization": "Keep baseline frozen CSV values. Round reconstructed latest-vintage features to 12 significant digits, matching source serialization.",
+  "timing": "At target UTC day D use information date D-3 (D-4 sensitivity); market proxies one additional calendar day old. Information date close is I+1 00 UTC; assumed delivery I+2 00 UTC. D3 has 24h buffer before origin; D4 has 48h. Exact historical receipt is not observed.",
+  "matching": "Within each asset and long/common family, intersect D3 asof, D3 latest-same-observations, and D4 asof eligible origins for ALL training, inner validation and outer evaluation. Native D3 retained separately to show sample effect. Own-only shares macro-complete eligibility, as in existing design.",
+  "outer_years": [2023, 2024, 2025, 2026],
+  "inner_validation_semesters": 2,
+  "fit_information_buffer_hours": 24,
+  "label_assumed_available": "Target day D closes D+1 00 UTC; label available D+2 00 UTC. At every inner/outer fit require available <= fold start -24h. Also require ALL inner validation labels available by outer fit cutoff before tuning.",
+  "min_train": 150,
+  "min_validation": 20,
+  "models": ["elastic_net", "gradient_boosting"],
+  "benchmarks": ["historical_mean", "natural_benchmark"],
+  "grids": {
+    "elastic_net": [{"alpha":0.001,"l1_ratio":0.1},{"alpha":0.001,"l1_ratio":0.9},{"alpha":0.01,"l1_ratio":0.1},{"alpha":0.01,"l1_ratio":0.9},{"alpha":0.1,"l1_ratio":0.1},{"alpha":0.1,"l1_ratio":0.9}],
+    "gradient_boosting": [{"max_leaf_nodes":7,"l2_regularization":1.0},{"max_leaf_nodes":7,"l2_regularization":10.0},{"max_leaf_nodes":15,"l2_regularization":1.0},{"max_leaf_nodes":15,"l2_regularization":10.0}]
+  },
+  "learner": "Reuse research_completion.model_fit/model_predict unchanged: training-only standardization; positive variance via EN log-smearing or Poisson boosting. Annual expanding outer refit, no outer-score tuning.",
+  "selection": "Aggregate inner validation daily MSE (return) or QLIKE (squared return); first grid setting wins numerical ties within 64 machine eps * max(1, abs(best_loss)).",
+  "inference": {"calendar_block_days":30,"bootstrap_draws":999,"seed":20261020,"method":"Nonoverlapping calendar 30-day clusters, resample cluster sums/counts. Centered two-sided bootstrap p; percentile paired-mean CI. Approximate exploratory inference. No unconditional full-procedure bootstrap.","bh_families":"Each of macro ablation, benchmark, and sensitivity comparisons separately across all assets/targets/models/scenarios/variants and pooled/fold scopes. No best-scenario selection."},
+  "prospective": "Do not amend original one-year protocol or score its forecasts early. Submission deadline pending; prepare a dated independent OOS proposal before new outcomes and deployment.",
+  "references": ["https://fred.stlouisfed.org/docs/api/fred/realtime_period.html", "https://www.jmlr.org/papers/v11/cawley10a.html", "https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html"]
+}

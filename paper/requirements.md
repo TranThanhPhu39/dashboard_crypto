@@ -1,0 +1,15 @@
+# Yêu cầu triển khai đã đối chiếu với Blueprint 09
+
+Bản ngày 19/10/2026. Tài liệu yêu cầu của người dùng phù hợp với mục tiêu đề. Các chi tiết dưới đây làm rõ phạm vi và cách kiểm chứng, không thay thế yêu cầu trung thực về timing, OOS hoặc identification.
+
+1. **Dữ liệu:** BTC/ETH daily UTC, macro FRED/public và ALFRED vintage khi có. Giữ Coin Metrics USD cho mẫu dài; Binance USDT là nguồn đối chiếu độc lập, không splice. Broad USD được blueprint cho phép và không được đổi nhãn thành DXY. Baseline không MOVE theo quyết định đã thống nhất.
+2. **Đồng bộ:** giữ lịch crypto 7 ngày/tuần. Forward-fill mức thông tin đã được nhận vào bộ thông tin, không backfill, không carry nonzero return/change qua ngày nghỉ, không fill giá crypto. Panel observation-date EXPOST phải tách khỏi panel available-information.
+3. **Kinh tế lượng:** có VAR chung BTC–ETH, IRF và recursive identification assumptions được xuất để review; có LP, pooled stress interactions, pre/post-2020, rolling. Bổ sung quantile để mô tả tail sensitivity. Không bắt buộc triển khai mọi TVP/Markov/SVAR extension và không gọi VAR innovation là pure policy shock khi chưa có identification phù hợp.
+4. **Horizon:** UI có mọi số nguyên 1–30 ngày lịch. Daily information LP đo D…D+h−1 sau cutoff; monetary event LP đo D+1…D+h, loại ngày FOMC. VAR và rolling lịch phiên vẫn giữ đơn vị phiên và nhãn riêng. Không nội suy đường phiên rồi gọi thành ngày lịch.
+5. **ML:** có ít nhất một lựa chọn được nêu trong đề, hiện là Elastic Net; histogram boosting là bổ sung. Target risk dùng squared daily return proxy, benchmark và own-only/macro ablation cùng ngày. Không bắt buộc cả Elastic Net, XGBoost, LightGBM; ML không thay economic identification.
+6. **OOS:** validation chọn tham số, test không dùng để retune. Vì test cũ đã được xem trước khi sửa thiết kế, extension phải ghi exploratory. Quy trình prospective và artifacts frozen chỉ chuẩn bị đánh giá mới; không được đánh dấu đã có untouched results khi chưa thu thập forecast trước outcome và dữ liệu tương lai.
+7. **Timing:** macro vintage và buffer 24h được kiểm tra theo quy tắc khai báo. Tuy nhiên thiếu historical provider delivery/corrections của một số market/crypto feeds: không được chứng nhận tuyệt đối whole-feed PIT hoặc không còn mọi look-ahead. Đây là hạn chế chưa giải quyết hoàn toàn, không phải yêu cầu được miễn.
+8. **Sản phẩm:** báo cáo có dictionary/source log, estimates, uncertainty, subperiod/regime results, figures và limitations; dashboard có 5 loại shock, 2 tài sản, Full/Calm/Stress, response/CI/rolling/analogues. Repository có cấu trúc, model artifacts, tests và entry point tái lập.
+9. **Kết luận:** null results và model inadequacy phải được giữ. Stable VAR không thay whiteness; CI pointwise không phải simultaneous bands; khác p-value không chứng minh khác slope; permutation importance không có nghĩa causal importance.
+
+[Đối chiếu trạng thái thực tế](../outputs/research/blueprint_20261019/compliance.md) · [Báo cáo](../outputs/research/blueprint_20261019/report.html) · [Dashboard](../dashboard/index.html).

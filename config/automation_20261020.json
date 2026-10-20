@@ -1,0 +1,31 @@
+{
+  "version": "automation_20261020",
+  "authorization": "User explicitly requested scheduler, retry, logs and missed-run/error monitoring after reviewing the missing automation on 20/10/2026. This operational extension supersedes the old no-scheduler scope; frozen research protocols are unchanged.",
+  "pipeline_task": "Topic09-MacroCrypto-bai5-Pipeline",
+  "monitor_task": "Topic09-MacroCrypto-bai5-Monitor",
+  "windows_timezone": "SE Asia Standard Time",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "pipeline_minute": 15,
+  "monitor_minute": 45,
+  "repeat_minutes": 60,
+  "refresh_capture_hours": 4,
+  "attempts": 3,
+  "retry_delay_seconds": 60,
+  "subprocess_timeout_seconds": 300,
+  "task_execution_limit_minutes": 25,
+  "scheduler_restart_minutes": 10,
+  "scheduler_restart_count": 2,
+  "stale_after_minutes": 150,
+  "cutoff_warning_minutes": 120,
+  "notification_cooldown_minutes": 360,
+  "stop_after_utc": "2027-10-23T00:00:00Z",
+  "desktop_notifications": true,
+  "requirements": "Computer powered on, account logged in, Internet available. WakeToRun requests waking where supported; no password is stored. StartWhenAvailable and logon triggers resume operations without backdating missed forecasts.",
+  "immutable_inputs": {
+    "data/prospective/latency_20261019/protocol.json": "c4b705d33c3fa8d4d2bf6a8781c71a8db137a184d511a30e92e99cb69739a942",
+    "data/prospective/evidence_20261019/protocol.json": "c4b705d33c3fa8d4d2bf6a8781c71a8db137a184d511a30e92e99cb69739a942",
+    "outputs/research/latency_20261019/model_inventory.csv": "16a23ca5c1ea9862bf69472551772d39bcc2dde533922536edafbbce7214f856",
+    "outputs/research/pit_nested_20261020/model_inventory.csv": "4ffa08d58d4217ff3641e45cd9cc8fd504fc02b7ab9b86f0d4b2d95c693c86cd"
+  },
+  "unchanged": ["models", "feature definitions", "24h receipt cutoff", "matched origins", "no market-return carry", "label latency", "fixed evaluation gate", "no early performance scoring"]
+}

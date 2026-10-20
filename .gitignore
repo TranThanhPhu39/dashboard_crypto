@@ -1,0 +1,50 @@
+# Local Python / browser dependencies and disposable files
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.research_deps/
+.verification/
+.preview/
+.publish/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+.DS_Store
+Thumbs.db
+*.tmp
+*.lock
+
+# Credentials belong to the host / secret manager
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+credentials.json
+
+# Full research archives and runtime data are transferred separately.
+/data/
+/models/
+/*.zip
+/outputs/**
+
+# Selected, non-secret rendered research snapshots for browsing the source repo.
+!/outputs/research/
+!/outputs/research/release_20261025/
+!/outputs/research/release_20261025/report.html
+!/outputs/research/release_20261025/report.md
+!/outputs/research/release_20261025/oos_followup.html
+!/outputs/research/release_20261025/oos_followup.md
+!/outputs/research/release_20261025/source_catalog.csv
+!/outputs/research/evidence_20261019/
+!/outputs/research/evidence_20261019/report.html
+!/outputs/research/evidence_20261019/report.md
+!/outputs/research/pit_nested_20261020/
+!/outputs/research/pit_nested_20261020/report.html
+!/outputs/research/pit_nested_20261020/report.md
+!/outputs/automation_20261020/
+!/outputs/automation_20261020/health.html

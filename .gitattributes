@@ -1,0 +1,5 @@
+# Preserve existing bytes: research source/manifests are SHA-256 protected.
+* -text
+
+# New Linux shell scripts use LF.
+*.sh text eol=lf

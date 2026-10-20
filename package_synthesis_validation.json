@@ -1,0 +1,15 @@
+{
+  "zip": "topic09_lp_fomc_synthesis_20261017.zip",
+  "bytes": 15941013,
+  "files": 698,
+  "sha256": "ad387369980e8170763fce1ea3482855b5b7e244d20edb185ce0e39524f0817f",
+  "crc_check": true,
+  "all_manifest_hashes_verified": true,
+  "required_files_present": true,
+  "official_Fed_evidence_html_count": 6,
+  "excluded": [
+    "ALFRED download forms/errors/request payloads",
+    "local dependencies and browser profiles",
+    "earlier delivery ZIPs"
+  ]
+}

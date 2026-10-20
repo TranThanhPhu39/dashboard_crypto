@@ -1,0 +1,12 @@
+{
+  "version": "prospective_operations_20261019",
+  "authorized_scope": "Audit rigid eligibility rules and continue the existing prospective evaluation; repair operational faults without changing the frozen research design",
+  "namespace": "Existing evidence_20261019 operational ledger; previous research reports, archives and latency implementation preserved",
+  "protocol": "data/prospective/evidence_20261019/protocol.json",
+  "selection": "Earliest complete, valid snapshot within the SAME frozen receipt window and exact requested vintage; later eligible snapshots may replace an incomplete candidate before a forecast is committed",
+  "retries": "Reuse already committed forecasts after validating their hashes, clock and frozen model identity; resume missing assets; never overwrite a committed prediction",
+  "capture": "Reuse a complete capture from the current UTC day by default; retry failed captures, or explicitly request a new immutable capture with --refresh-capture",
+  "evaluation": "Retain the original fixed evaluation end and label delay. Report operational coverage now; do not inspect interim predictive performance",
+  "unchanged": ["40 frozen learned models", "feature definitions and lags", "24h receipt cutoff", "matched origin groups", "UTC targets", "no return carry or crypto interpolation", "BH families", "fixed evaluation window"],
+  "not_authorized_here": ["retraining", "relaxing the buffer", "changing macro features on weekends", "independent own-only live sample", "deploying RV models", "installing a scheduler"]
+}

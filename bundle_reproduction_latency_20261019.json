@@ -1,0 +1,11 @@
+{
+  "zip_sha256": "0fba7da40b8fadd734772ac9635483d86097229e6ee9f587f6f304d68a3e1b97",
+  "extracted_directory": "D:\\UEL\\7. HK 1 2026 - 2027\\GPM2\\bai5\\.verification\\latency_20261019",
+  "independent_validation_exit": 0,
+  "dashboard_validation_exit": 0,
+  "independent_validation_stdout": "{\n  \"passed\": 20,\n  \"total\": 20,\n  \"checks\": {\n    \"all_features_shifted_two_calendar_days_before_selection\": true,\n    \"targets_not_shifted_with_features\": true,\n    \"label_boundary_purging\": true,\n    \"macro_vintage_and_observation_dates_not_future\": true,\n    \"matched_samples_and_shared_values\": true,\n    \"no_USD_features_in_long_and_common_macro\": true,\n    \"40_parameters_selected_by_validation_only\": true,\n    \"all40_model_hashes_and_freeze_verified\": true,\n    \"serialized_artifacts_reproduce_all_test_predictions\": true,\n    \"all_variance_predictions_positive\": true,\n    \"all80_metrics_recomputed\": true,\n    \"manual_loss_HAC_and_BH_all72_comparisons\": true,\n    \"benchmark_training_means_and_variance_formula\": true,\n    \"old_new_timing_compared_on_common_origins\": true,\n    \"snapshot_raw_and_request_hashes\": true,\n    \"actual_ALFRED_requests_match_vintage_metadata\": true,\n    \"next_day_inputs_have_extra_day_and_receipt_evidence\": true,\n    \"no_ineligible_or_backdated_live_forecasts\": true,\n    \"11_critical_deployment_guards\": true,\n    \"old_frozen_files_unchanged\": true\n  },\n  \"protected_files\": 887,\n  \"unit_tests\": 11,\n  \"max_artifact_prediction_error\": 0.0,\n  \"interpretation\": \"Validates code and declared timing; not causal identification, whole-feed historical PIT, or future predictive skill.\"\n}\nOld protected files unchanged: 887\n",
+  "independent_validation_stderr": "...........\n----------------------------------------------------------------------\nRan 11 tests in 0.106s\n\nOK\n",
+  "dashboard_validation_stdout": "{\n  matched_forecast_views: 32,\n  losses_verified_against_CSV: true,\n  finite_values: true,\n  local_links_verified: 23\n}\n",
+  "dashboard_validation_stderr": "",
+  "dependencies": "Existing pinned .research_deps via PYTHONPATH; no network during reproduction"
+}

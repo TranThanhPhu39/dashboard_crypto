@@ -1,0 +1,35 @@
+{
+  "version": "robustness_20261019",
+  "baseline": "blueprint_20261019",
+  "purpose": "Post-hoc diagnostics, not model selection or a new confirmatory test",
+  "monetary": {
+    "horizons": [1, 30],
+    "assets": ["btc", "eth"],
+    "delete": "One stress event at a time; all other event rows retained",
+    "episode_omission_inclusive": ["2020-03-01", "2020-04-30"],
+    "outcome": "D+1 through D+h cumulative log return, percent",
+    "covariance": "Baseline HAC5 with finite correction; on deletion, eligible event-row sequence is compressed, so deletion p-values are descriptive",
+    "multiplicity": "BH over 60 stress differences within each deletion scenario separately; not across selected significant horizons",
+    "support_flag": "Fewer than 10 stress events is sparse support; threshold is descriptive, not a validity theorem",
+    "overlap": "Shared outcome dates and connected components are descriptive, not effective sample size"
+  },
+  "joint_var": {
+    "fits": "Exact six frozen reduced-form fits, crypto_first order, frozen lag and response dates",
+    "acf_cross_correlation": "Lags 1 through 40, Pearson correlations of aligned residual vectors; no individual significance tests",
+    "whiteness_lags": [20, 30, 40],
+    "arch_lags": [5, 10],
+    "arch_ddof": "Number of regressors per equation, including intercept",
+    "multiplicity": "BH over all 60 ARCH LM tests; BH over all 18 system whiteness tests separately",
+    "limitation": "ARCH is conditional on the fitted mean; HAC or variance modeling does not repair residual serial correlation"
+  },
+  "prospective": {
+    "models": "Existing 40 artifacts; no refit",
+    "capture": "New immutable public-source response bytes with local retrieval UTC, SHA256 and HTTP metadata",
+    "historical_pit_claim": false,
+    "buffer_hours": 24,
+    "forecast_origin": "Full UTC day, next 24 hours only, strictly before outcome",
+    "availability": "Actual local retrieval is an upper bound on first availability, not provider-certified historical publication time",
+    "no_silent_change": "Do not backdate retrieval, substitute stale feature dates or relax frozen feature timing",
+    "evaluation": "No future performance claim before actual eligible predictions and observed labels"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "version": "submission_20261025",
+  "submission_date_local": "2026-10-25",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "submission_hour": null,
+  "internal_report_freeze_local": "2026-10-24T18:00:00+07:00",
+  "freeze_is_planning_choice_not_user_deadline": true,
+  "decision": "Use frozen historical nested/sensitivity evidence for submission. Do not register a new confirmatory OOS performance window with only 0-1 potentially mature daily origins. Prospective remains operational under the unchanged one-year protocol; no early score.",
+  "operational_origin_window_start_utc": "2026-10-20T00:00:00Z",
+  "operational_origin_window_end_exclusive_utc": "2026-10-25T00:00:00Z",
+  "operational_window_role": "Readiness/execution planning only; not a new forecast evaluation protocol or proof that forecasts exist.",
+  "label_assumed_delay_days": 2,
+  "receipt_buffer_hours": 24,
+  "information_lag_days": 3,
+  "market_lag_days": 4,
+  "existing_protocol": "data/prospective/latency_20261019/protocol.json",
+  "historical_report": "outputs/research/pit_nested_20261020/report.html",
+  "constraints": ["No model refit or historical result changes", "No backdating or fake forecasts/labels", "No early scoring through another namespace", "Previously inspected historical outcomes remain exploratory", "No scheduler installed"]
+}

@@ -1,0 +1,10 @@
+{
+  "zip_sha256": "18bb57ce2ddceffce523b88d8d3b22c2b20a0571dac591bf40f18666c3d49ef9",
+  "extracted_directory": "D:\\UEL\\7. HK 1 2026 - 2027\\GPM2\\bai5\\.verification\\robustness_20261019",
+  "independent_validation_exit": 0,
+  "dashboard_validation_exit": 0,
+  "independent_validation_stdout": "{\n  \"passed\": 18,\n  \"total\": 18,\n  \"checks\": {\n    \"60_baseline_and_600_deletion_rows\": true,\n    \"11_scenarios_each_60\": true,\n    \"independent_lstsq_all_660_slopes\": true,\n    \"manual_HAC5_all_660_standard_errors\": true,\n    \"manual_partialled_interaction_information_shares\": true,\n    \"BH_per_scenario_all_11\": true,\n    \"saved_baseline_delta_SE_BH_reproduced\": true,\n    \"60_ARCH_manual_auxiliary_regression\": true,\n    \"BH_ARCH_family_60\": true,\n    \"BH_whiteness_family_18\": true,\n    \"cross_correlation_direction_and_lag\": true,\n    \"six_exact_reduced_forms_and_frozen_response_dates\": true,\n    \"outcome_overlap_calendar_arithmetic\": true,\n    \"actual_snapshot_manifest_and_response_bytes\": true,\n    \"actual_capture_never_backdated\": true,\n    \"24h_origin_ceiling_guards\": true,\n    \"no_invented_prospective_predictions\": true,\n    \"all_frozen_baseline_hashes_unchanged\": true\n  },\n  \"protected_files\": 842,\n  \"maximum_errors\": {\n    \"slope\": 5.684341886080802e-14,\n    \"HAC_SE\": 2.8954616482224083e-13,\n    \"ARCH_LM\": 1.2221335055073723e-12,\n    \"correlation\": 1.5265566588595902e-16\n  },\n  \"interpretation\": \"Numerical/provenance checks do not validate economic identification or sparse-state inference.\"\n}\nFrozen files unchanged: 842\n",
+  "independent_validation_stderr": "",
+  "dashboard_validation_stdout": "{\n  monetary_views: 660,\n  joint_residual_views: 30,\n  finite_values: true,\n  source_coefficients_verified: true,\n  local_links_verified: 15\n}\n",
+  "dashboard_validation_stderr": ""
+}

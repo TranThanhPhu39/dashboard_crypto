@@ -1,0 +1,34 @@
+{
+  "version": "evidence_20261019",
+  "authorized": "User approved implementing the literature review proposals on 2026-10-19; separate exploratory extension, no old model or result replacement",
+  "causal": {
+    "events": "Frozen 75 joint scheduled FOMC events from fomc_identification_20261019; source comparisons restricted to exact available source intersection",
+    "minute_windows": {"pre_early": [-70,-40], "pre_late": [-40,-10], "announcement": [-10,20]},
+    "placebo": "Exactly seven calendar days earlier at same America/New_York local clock; exclude any same-day USMPD Statements/Press Conferences/Minutes events; 30-minute close boundary rule unchanged",
+    "controls": ["prior_return","prior_vol30","prior_vix"],
+    "source_comparison": "JK two components jointly vs BS raw and orthogonalized separately, same exact source intersection; bps scales kept distinct, standardized 1SD responses also reported",
+    "inference": "HC3 and chronological-event HAC5 reported; primary BH across all 2 assets * 4 windows * 2 JK components, source comparison BH separately; direct announcement-minus-placebo and interaction contrasts have their own fixed families",
+    "stress": "Pre-event prior_vix >=25 fixed threshold; continuous and binary interaction tests control both shocks and all their interactions, plus regime indicator and prior controls",
+    "rotations": "Analytical endpoint limits over entire admissible normalized-QR interval, potentially unbounded under +10bps component normalization; dense grid is only an illustration",
+    "bootstrap": {"draws":999,"block_events":8,"seed":9019,"rotation_weights":[0.1,0.5,0.9],"description":"Circular block resample full author event rows, rerun PCA/scale/QR and outcome regressions using event multiplicities. Percentile intervals describe fixed interior rotation functionals, NOT confidence sets for full structural identified set"},
+    "simulation": "Coverage diagnostic of fixed-rotation generated-shock bootstrap in a declared Gaussian factor DGP; no claim of uniform validity over real data or sign-restricted identified sets",
+    "three_shock_2026": "Optional only; do not invent FRN series or automatically fit a fragile 3-shock model without verified author data"
+  },
+  "rv": {
+    "source": "Official Binance spot monthly 5m klines BTCUSDT and ETHUSDT, 2017-08 through 2026-09; October daily files through 2026-10-15. Immutable bytes and publisher CHECKSUM. New USDT study, never splice into USD baselines",
+    "sampling_minutes":[5,15],
+    "daily": "UTC close-to-close 24h, 288 successive 5m returns including midnight boundary; require full grid and previous close; no interpolation, carry or partial-day scaling. 15m closes sampled from same 5m grid",
+    "features": "Own RV at D-3, means over 7/30 calendar days ending D-3. Frozen macro vintage row D-3 (market proxies refer D-4). Receipt buffer assumption same as latency historical, not provider-certified PIT",
+    "horizons_days":[1,7],
+    "target": "Sum of complete daily realized variances over D..D+h-1, decimal-return-squared units. Label available D+h+1. No mixing with squared weekly return",
+    "models": "Log HAR and log HAR-X OLS with training residual smearing; all variants share HAR regressors; no nonlinear model added or old model refit",
+    "variants":["long_own","long_macro","common_own","common_macro","common_usd"],
+    "windows_calendar_days":[730,1460,0],
+    "selection": "Train before2023, validation2023-2024, test2025 onward already viewed/exploratory; choose rolling window by validation QLIKE then freeze. Refit monthly on labels available by first eligible origin minus24h. No test-based window selection",
+    "benchmarks": "Trailing30, EWMA(lambda=.94) and zero-mean Gaussian-QMLE GARCH(1,1) on same-source daily returns. GARCH expanding parameters refit monthly, filter up to D-3 and sum forecast steps3..h+2; all benchmarks respect same information cutoff",
+    "loss": "QLIKE primary log(pred)+actual/pred, MSE secondary; strictly positive variance predictions, no post-hoc forecast floor",
+    "inference": "Paired calendar-date loss differences. Circular block bootstrap block30 calendar days,999 draws, seed9020, preserve sparse eligible-origin mask and jointly resample all model losses; BH per declared ablation and benchmark families. Exploratory, no restored untouched test",
+    "preserve": "Baseline no MOVE; historical full sample unchanged; USD vintage from2019, matched comparisons retained. RV availability defines a separate shorter sample"
+  },
+  "prospective": "Run existing frozen latency40 models and identical fixed-window protocol in a new operational namespace; retain actual receipt logs, do not modify old outputs or model inventory; no scheduler, no new prospective score before fixed end"
+}

@@ -1,0 +1,1558 @@
+{
+  "README.md": {
+    "bytes": 23116,
+    "sha256": "b1879c1938a0c199307d91b062768e4a0d42cca616ef64a8dbedd3cb6c8d7b3d"
+  },
+  "requirements.txt": {
+    "bytes": 80,
+    "sha256": "68fda9e655dcea479658346354100902de47335a9fe8e4e596b980d3f9fb59ce"
+  },
+  "download_data.py": {
+    "bytes": 2818,
+    "sha256": "e6097f2d723d0c318480c33ef267d761dc0ab2e561fee140af43db1745aca9f1"
+  },
+  "download_vintages.py": {
+    "bytes": 3750,
+    "sha256": "c31d7ed0e9b9a3749c95dc37546615d53b10cbc9a3721697f7f2f607f45c2e17"
+  },
+  "build_dataset.py": {
+    "bytes": 13786,
+    "sha256": "054c6ecada2e89d354b12ea6b117401457c568b3e2a0843ab578bf9a1292227b"
+  },
+  "download_fomc_crypto.py": {
+    "bytes": 3200,
+    "sha256": "afa7fb460f4dfd3642b2d5c10054c4f1c82d8c0b253afe3b8304cc26e2c56d3b"
+  },
+  "audit_dataset.py": {
+    "bytes": 3130,
+    "sha256": "40d088172f1e73d9e48db9c423829b71970a180546348c35fa91775b390f7046"
+  },
+  "prepare_forecast_design.py": {
+    "bytes": 4720,
+    "sha256": "2d8a200c0ae13bb2acf545b089c4aa099110b0ea29ced617738b48fab97df5e6"
+  },
+  "package_dataset.py": {
+    "bytes": 2755,
+    "sha256": "1f63405705194694d801db28e38317f62419c9bc2b0d6409d5312eb94072f428"
+  },
+  "requirements-research.txt": {
+    "bytes": 137,
+    "sha256": "2c60ee9eca23da2a931480bf27f721428e07b0d3a8f852f441d4bfde99424a86"
+  },
+  "research_common.py": {
+    "bytes": 1310,
+    "sha256": "f1035c962270c6f67d8bf7bb9937009d320fdfacc1ead8330373044b6b605df4"
+  },
+  "research_eda.py": {
+    "bytes": 6725,
+    "sha256": "6a572935b2a5fcadea309193817af977b6e9b4792d799f06d992581b7c3ba592"
+  },
+  "research_econometrics.py": {
+    "bytes": 9017,
+    "sha256": "60cc83fa4470d8f39c9e9f8f4a084a24347e91666fd3d9eb902a4ea4af3d8fb0"
+  },
+  "research_events.py": {
+    "bytes": 3825,
+    "sha256": "414d831c34331141c4c9eabeb335efc1a449a352ced7311f055e95b0934fcf29"
+  },
+  "research_forecasting.py": {
+    "bytes": 8702,
+    "sha256": "86426dbd3413e37df3c5002b503496907d43291aa43cea4a6b2449823873f01f"
+  },
+  "research_report.py": {
+    "bytes": 27676,
+    "sha256": "10b1b862c8b0ac455613b507f297e09b685fa563f9a40fc6260c91e25172cc21"
+  },
+  "run_research.py": {
+    "bytes": 1012,
+    "sha256": "8c477cb4836786ef4fec770ed9a45384a7b379367376af294733e533b9f0eda5"
+  },
+  "validate_research.py": {
+    "bytes": 4450,
+    "sha256": "a98a27eb0adef5f41cda3c61b4b46534a33bdd0ac19c2c3a1335a6a5d3359cef"
+  },
+  "validate_dashboard.cjs": {
+    "bytes": 2866,
+    "sha256": "47a9a56d85b24fc2fd192cd0ccd38bd7234bb76d036f2b296712948980a4aac0"
+  },
+  "research_var_calendar.py": {
+    "bytes": 17556,
+    "sha256": "34f26f1dfdfbb76e8c4ee7ca895be564735780b9b6edc6c780eb5e0345b113bb"
+  },
+  "validate_var_calendar.py": {
+    "bytes": 3085,
+    "sha256": "58048f50c2f7f8ab0ec112b649f3ccdcd7c820b191d489e6fc42361bbb22fe08"
+  },
+  "data/source_log.json": {
+    "bytes": 8338,
+    "sha256": "2bc898cc0a2186784fde5f326ba6645e2b79fa72e3f7e60b88b17ae05392dd6b"
+  },
+  "data/processed/btc_core_complete_sessions.csv": {
+    "bytes": 1106396,
+    "sha256": "4b44358f4aca64634da3b3f546d9c5caaf1ea2a804962eb2be40561a4849fc4c"
+  },
+  "data/processed/btc_core_post2020.csv": {
+    "bytes": 602999,
+    "sha256": "c107d640be4265fb1af58f78f6ea4d5a61eb261e8ebac3ee783a6f5f4bdca480"
+  },
+  "data/processed/btc_core_pre2020.csv": {
+    "bytes": 503984,
+    "sha256": "05b5b81096f726ac42e716939c290930e44a99dc422df006c907d1191d337530"
+  },
+  "data/processed/btc_econometric_sessions.csv": {
+    "bytes": 356137,
+    "sha256": "62dc2e58199ba0aa196ff09d73e2cff77f1cea8a4a33bb7d9932d07c5b24d644"
+  },
+  "data/processed/btc_eth_core_complete_sessions.csv": {
+    "bytes": 989603,
+    "sha256": "01bc3c793593f1e3d14c53bed117d446e854bfb979da3472b5a37fc2b8ed8760"
+  },
+  "data/processed/coverage.csv": {
+    "bytes": 4544,
+    "sha256": "600503f896164e40f0b5df38e25b9878cbf671ac8bdf5eab05229b3245603247"
+  },
+  "data/processed/daily_research_latest.csv": {
+    "bytes": 1399014,
+    "sha256": "d7b1310ec72a44014e80b1375ce73851be94bf63067875d0dab95682f55796d1"
+  },
+  "data/processed/data_dictionary.csv": {
+    "bytes": 10133,
+    "sha256": "c015fc00cf02158d542177f23c767c7e73f1fd6e2c08e266e2ec87f1b01ef9b9"
+  },
+  "data/processed/DCOILWTICO_vintage_periods.csv": {
+    "bytes": 103104,
+    "sha256": "f5e292a9eea0a6e8566ae62087a6d003cf8902cdf40f9ea0e7e86d51e4abfa39"
+  },
+  "data/processed/DFF_vintage_periods.csv": {
+    "bytes": 136227,
+    "sha256": "753acd15e792a54aaaa927715539ee272f0c9b966529d36d7a1a3c2053ae28b0"
+  },
+  "data/processed/DGS10_vintage_periods.csv": {
+    "bytes": 96706,
+    "sha256": "0df6bfded60ca7309cb2b11f8a3f6a76a6aa3da623b5e345ddcb11adfa50e10e"
+  },
+  "data/processed/DGS2_vintage_periods.csv": {
+    "bytes": 96577,
+    "sha256": "ed5ea0a468b0bf10f3adc4776e3c5a1e5656513cf491bf5b428dc489692fe764"
+  },
+  "data/processed/DTWEXBGS_vintage_periods.csv": {
+    "bytes": 641977,
+    "sha256": "a32b65c9b75c4e961429146f6533ddc5a921042c854a42b831dc306d321c336f"
+  },
+  "data/processed/eth_econometric_sessions.csv": {
+    "bytes": 311591,
+    "sha256": "e5909253bdb2ff5fa6ea06f4223c53d07d4c7b8f7a1f18c44056275e0fa48d34"
+  },
+  "data/processed/fomc_crypto_statement_windows.csv": {
+    "bytes": 101477,
+    "sha256": "96289caee38cae5460ceebe583f3123608c4366e499a027bd9905b3bb8eba932"
+  },
+  "data/processed/fomc_events_utc.csv": {
+    "bytes": 279494,
+    "sha256": "70ff158fda3641220bc48d08138542670a3c2533038f691e39c35c379d850548"
+  },
+  "data/processed/fomc_policy_surprises.csv": {
+    "bytes": 6330,
+    "sha256": "3eab996bb37b96fbc4b2eabcfbffd41c29d76130b7fbef98ba9fadc0cc1548ec"
+  },
+  "data/processed/forecast_btc_common_no_usd.csv": {
+    "bytes": 383462,
+    "sha256": "a6700ddf94bbc3fb435de35b3b92ca5cc5e81d3f509148cb7140c9a4fc7dda3f"
+  },
+  "data/processed/forecast_btc_common_with_usd.csv": {
+    "bytes": 417582,
+    "sha256": "5ff58918920555f4b6b317902b629499a6a79a22e33ece47a917eaa82b03d15b"
+  },
+  "data/processed/forecast_btc_no_usd_long.csv": {
+    "bytes": 632451,
+    "sha256": "6ca0b2b33c1008e600f2e64c4bc8de3427eae280d02d646fdda11793d0440db7"
+  },
+  "data/processed/forecast_design_checks.json": {
+    "bytes": 1051,
+    "sha256": "c5239723e955541869d8d78eb738eb348f25052a278af9dd4aad8841babc7f67"
+  },
+  "data/processed/forecast_eth_common_no_usd.csv": {
+    "bytes": 382276,
+    "sha256": "801a531512626f5d0772502eea468fa543a150bb1f658279841417b5d72e5655"
+  },
+  "data/processed/forecast_eth_common_with_usd.csv": {
+    "bytes": 416396,
+    "sha256": "44e05025daa4f4e1802b0258a17357d402a87daf154a5cd2adc5c72184fc97d3"
+  },
+  "data/processed/forecast_eth_no_usd_long.csv": {
+    "bytes": 547244,
+    "sha256": "a5d812816077259bff2f0f78dfc9db4174be0f88202ea6c58eec614f2dfa95ea"
+  },
+  "data/processed/forecast_origins_vintage_macro.csv": {
+    "bytes": 1964449,
+    "sha256": "03f583c427f82c0f8dfdd63df35ca8aadfda64ca3bfdc350684f2f18a69ee410"
+  },
+  "data/processed/forecast_sample_summary.csv": {
+    "bytes": 756,
+    "sha256": "cc66cc9f2a9c51945026fbabb2e23a5193b2b4a9dceb3ec48688aa58f8c99a7a"
+  },
+  "data/processed/gold_futures_session_audit.csv": {
+    "bytes": 175070,
+    "sha256": "1fdc50a58a75791f1e41307c0205d8bca238ef44beb34ab2e253a0eb0549d431"
+  },
+  "data/processed/independent_audit.json": {
+    "bytes": 2171,
+    "sha256": "5689e2f389bd155f0ab3a0a3480b703770e87d68949163b19c9e866a424a0d5b"
+  },
+  "data/processed/NFCI_vintage_periods.csv": {
+    "bytes": 6816072,
+    "sha256": "ee51b00fad67c31c7c07ef7b9bc5c46b7656804b78aab481364995be7a76aa00"
+  },
+  "data/processed/quality_report.json": {
+    "bytes": 971,
+    "sha256": "109b8af0e92e8555e068f364a87e9a322a4bd328423336b6b3fcf1702593f38c"
+  },
+  "data/processed/research_design.json": {
+    "bytes": 3589,
+    "sha256": "f8c81bdc80c1bcab44f082c93f78e36e8ee60713d16c3fd2c61324ffa878217c"
+  },
+  "data/processed/sp500_session_audit.csv": {
+    "bytes": 176674,
+    "sha256": "b9eea7a9a8fc8f9111cf430affe114e0305ab08eb73f6c67c05d33f26411e1b3"
+  },
+  "data/processed/sp500_source_discrepancies.csv": {
+    "bytes": 379,
+    "sha256": "2a27b467e965435e1d2498b9bcd59e21de590990e4e57907957f2019f6914590"
+  },
+  "data/raw/audit_DGS2_2020-03-20.csv": {
+    "bytes": 26059,
+    "sha256": "1ac7bf443165c3c7e34d4109fff9430052de22a45711332bd20ffe3d9bfa5860"
+  },
+  "data/raw/audit_DTWEXBGS_2019-08-16.csv": {
+    "bytes": 28906,
+    "sha256": "bd206de074e7d00e6d08e3c725c98b12d144e64088a3c8c314c51b36d2d96ceb"
+  },
+  "data/raw/audit_NFCI_2014-02-01.csv": {
+    "bytes": 167,
+    "sha256": "48e09a08ca6589d8511dbd451d84e216365dd2208339dd2ecea1db9fb4885235"
+  },
+  "data/raw/audit_NFCI_2020-03-20.csv": {
+    "bytes": 5607,
+    "sha256": "9a207e354b4d7a6630d8f7b30b08b77c315704e29aafffdeba458b57807c5a63"
+  },
+  "data/raw/btc_coinmetrics.json": {
+    "bytes": 403902,
+    "sha256": "34b029fc035ff2855dff45e3979dbc4e523deefa27b95bb73ab805b3bea62b03"
+  },
+  "data/raw/DCOILWTICO_alfred_part00.zip": {
+    "bytes": 13772,
+    "sha256": "451905aab5d7ee58eec6989aafc34268777f65a01cee08a60c051516be4578e4"
+  },
+  "data/raw/DCOILWTICO_alfred_part01.zip": {
+    "bytes": 21036,
+    "sha256": "0c4ece2e991c1877396ed43f6993f021486e3398d48fe39dd801011d403cc3c3"
+  },
+  "data/raw/DCOILWTICO_alfred_realtime.zip": {
+    "bytes": 21299,
+    "sha256": "f522b05deb829f2d1b62a4851368bc137cd08c142427343bcf0b49b917b5cff9"
+  },
+  "data/raw/DCOILWTICO_fred.csv": {
+    "bytes": 56600,
+    "sha256": "416ae99d44982f8aa2c7da1b648a546ad8358f61b716fd4392a9febe897f45c6"
+  },
+  "data/raw/DFEDTARL_fred.csv": {
+    "bytes": 75258,
+    "sha256": "1b9df76dc8b4dc2d9a5a2539cc06152c4ce535fea5bba7d408adcb0e578762c6"
+  },
+  "data/raw/DFEDTARU_fred.csv": {
+    "bytes": 75258,
+    "sha256": "b958110151ca47427c3e20233af21efb3611013b68e8a3b3d6dc430f9d990777"
+  },
+  "data/raw/DFF_alfred_part00.zip": {
+    "bytes": 5500,
+    "sha256": "4eb4dd5d90ae343980ad49601b87e8459c5c9b468bb3b9f32f3d1a158f717fdb"
+  },
+  "data/raw/DFF_alfred_part01.zip": {
+    "bytes": 7747,
+    "sha256": "842e6e6e4ce5f5bd9310cec62146b66ab748ced2402653d3de3dd6a316e1ba93"
+  },
+  "data/raw/DFF_alfred_part02.zip": {
+    "bytes": 10043,
+    "sha256": "51d88515da7ad890b03934649474f87b2b1b1429902dddca3c1cdfa0f5e213bf"
+  },
+  "data/raw/DFF_alfred_part03.zip": {
+    "bytes": 12821,
+    "sha256": "e194e5a7e6834ecc55603976bec9dea77ff2897d4a8da7e45e956cbce6864b50"
+  },
+  "data/raw/DFF_alfred_part04.zip": {
+    "bytes": 14751,
+    "sha256": "ba420ede1e8dbef71400371b818764eedeff61040e066e191e0c78193e968f66"
+  },
+  "data/raw/DFF_alfred_part05.zip": {
+    "bytes": 16965,
+    "sha256": "7c05c10903281e0080155639a95c7072f23b02c44875dadeefe9b991009d1e1a"
+  },
+  "data/raw/DFF_alfred_part06.zip": {
+    "bytes": 19387,
+    "sha256": "2db4a31f46067d6e6a235a49487bd7c6d13041ed7c76057f0e9a173fc4c7aec7"
+  },
+  "data/raw/DFF_alfred_part07.zip": {
+    "bytes": 21923,
+    "sha256": "529860d0f6d2c2ac0fb6ce139cc6f7096ac567d4985e1362f2cce96e08f94281"
+  },
+  "data/raw/DFF_alfred_realtime.zip": {
+    "bytes": 21943,
+    "sha256": "8825291c231615b4d5d9de08722c564024e238f02158ab0431797a8b33f997bc"
+  },
+  "data/raw/DFF_fred.csv": {
+    "bytes": 75237,
+    "sha256": "27b276120e59cb744e331781b78e901de2eccd5dca7bb97f27402869dee66542"
+  },
+  "data/raw/DGS10_alfred_part00.zip": {
+    "bytes": 4555,
+    "sha256": "b6e787f7fb31429808ef0709b47f2952ec639ec72ed16bc16079c202420ab8ec"
+  },
+  "data/raw/DGS10_alfred_part01.zip": {
+    "bytes": 7001,
+    "sha256": "6d0d4c82872a20eb7714291bb8d5b540435e304c38b408232edd40019e1d6daf"
+  },
+  "data/raw/DGS10_alfred_part02.zip": {
+    "bytes": 9441,
+    "sha256": "6c456073fdcb37d6e681a9607c17eb44ec3fbc27527851ba9d69711b20d25dde"
+  },
+  "data/raw/DGS10_alfred_part03.zip": {
+    "bytes": 11985,
+    "sha256": "a23a0c7800a2d2607878ae8e1eb81f5bdc6547be36ce818b40447a681c615522"
+  },
+  "data/raw/DGS10_alfred_part04.zip": {
+    "bytes": 14459,
+    "sha256": "d681982771636861d9af5778a92921abc8591d2ac5546768294e7c5eef816f1e"
+  },
+  "data/raw/DGS10_alfred_part05.zip": {
+    "bytes": 17018,
+    "sha256": "41cba36a842117244a9cfedd6fcb8afd4da6c922f745befea64673af8271c7e6"
+  },
+  "data/raw/DGS10_alfred_part06.zip": {
+    "bytes": 19722,
+    "sha256": "a92f9143d20b9f8272f29cb5586670299c7b83eaf40fcb39f5a7b066fb4bf47b"
+  },
+  "data/raw/DGS10_alfred_part07.zip": {
+    "bytes": 21870,
+    "sha256": "3ff41b5e7a4e2789f190b87828fd6405ad6397ebbff1955900eb92c9409e1c5f"
+  },
+  "data/raw/DGS10_alfred_realtime.zip": {
+    "bytes": 21883,
+    "sha256": "50d89934a69f4b7e4bbaa5025226a24ae0c424cf8d0a621113eac2a7f1c60634"
+  },
+  "data/raw/DGS10_fred.csv": {
+    "bytes": 53191,
+    "sha256": "80ab91364e2e8d5fd0d7fda0054455abaa892a5266799fda8bd4b491bb33956c"
+  },
+  "data/raw/DGS2_alfred_part00.zip": {
+    "bytes": 4252,
+    "sha256": "194beed650d867072db494efa25f8cb8b815c3dca60059645cd6692de2d9954a"
+  },
+  "data/raw/DGS2_alfred_part01.zip": {
+    "bytes": 6640,
+    "sha256": "de8ea88a78bee11b3db7be7b8e1209c95ce55b82cfc16b382a5ef86bce252a79"
+  },
+  "data/raw/DGS2_alfred_part02.zip": {
+    "bytes": 8975,
+    "sha256": "8fc16c3b374500a7aacfa78957c49771479240438bb586c1d72fd62206135748"
+  },
+  "data/raw/DGS2_alfred_part03.zip": {
+    "bytes": 11673,
+    "sha256": "627ce2cb2af823c731d242d5530a4cc9089ee9716f18ea1d0d426dd7ea98264d"
+  },
+  "data/raw/DGS2_alfred_part04.zip": {
+    "bytes": 13817,
+    "sha256": "b1b1d0b4792e46bd669d2d4be518f314a5d1c56196d44c6de3e15e9bef543315"
+  },
+  "data/raw/DGS2_alfred_part05.zip": {
+    "bytes": 16470,
+    "sha256": "6bd3876b1cea18ca98a4c6d1371acfc3dc8becbc341e1eb25a922d6e9278cf32"
+  },
+  "data/raw/DGS2_alfred_part06.zip": {
+    "bytes": 19110,
+    "sha256": "1e3996834f4df1bd998cdfe9557e61b2a157d1017d534b24a78938217793c563"
+  },
+  "data/raw/DGS2_alfred_part07.zip": {
+    "bytes": 21237,
+    "sha256": "90d9474623e32a769afbf05827f4bc83776883781240ae0b53e405ec6461dcce"
+  },
+  "data/raw/DGS2_alfred_realtime.zip": {
+    "bytes": 21193,
+    "sha256": "32705a005c68b07c4e12906d727d1da1403ce18bbddf06961a50e90b42e6535e"
+  },
+  "data/raw/DGS2_fred.csv": {
+    "bytes": 53190,
+    "sha256": "dc3d9f0ac1a96c31756833667130fb9b31c99a1db9ce5d06da7fdc94305ef500"
+  },
+  "data/raw/DTWEXBGS_alfred_part00.zip": {
+    "bytes": 90821,
+    "sha256": "4d6a6a33c15e5d71b28b4eed948342193f2c5483d82e8d29731da7857f3bc1c3"
+  },
+  "data/raw/DTWEXBGS_alfred_realtime.zip": {
+    "bytes": 90519,
+    "sha256": "8417920eec2961929ce317b4758c8c9653a4782fdb1cb0fd168ef24070f1612e"
+  },
+  "data/raw/DTWEXBGS_fred.csv": {
+    "bytes": 65657,
+    "sha256": "7bc43f2eb882e085c4d1de746cb1404b01ca4a1057a57b99a8e8617b730201bc"
+  },
+  "data/raw/eth_coinmetrics.json": {
+    "bytes": 349874,
+    "sha256": "1869b56fe1e2fd6da13e66539fcc7663debac83d394c3caf91a4e288e28ae085"
+  },
+  "data/raw/gold_yahoo.json": {
+    "bytes": 307505,
+    "sha256": "e138cf0f71ab4cdfd8488add78acb0f589a026cae14a596525a8de0133187f4d"
+  },
+  "data/raw/monetary-policy-surprises.zip": {
+    "bytes": 79186,
+    "sha256": "3e540482a62a9f0ff5803bef52c450b344d0555adc9b68f11d9b04c118515859"
+  },
+  "data/raw/NFCI_alfred_part00.zip": {
+    "bytes": 976419,
+    "sha256": "5faa42ae0012e899b1b2e9875546df0bf7a4c73043dfe1d260e9e3c9baa18fe0"
+  },
+  "data/raw/NFCI_alfred_realtime.zip": {
+    "bytes": 978476,
+    "sha256": "919effdc30f99dcebbb7dbd70e8181bea018ae27afe555600c5a1c929827ff8e"
+  },
+  "data/raw/NFCI_fred.csv": {
+    "bytes": 12092,
+    "sha256": "0ed162ff1917033e4b80a29b27ad68308d0ce838187d9ea5a3b3e4e5290684de"
+  },
+  "data/raw/sf_fed_gss.R": {
+    "bytes": 5398,
+    "sha256": "b74553bac9e7b5752ae8182793b1de592e11cb3748ba0c3d7497a06cdcd5e64c"
+  },
+  "data/raw/sf_fed_mps.csv": {
+    "bytes": 17413,
+    "sha256": "be0685dab86311755732ade65957bb1c3bb49f14dce1ce47af765cd7a38c3607"
+  },
+  "data/raw/sf_fed_mps.R": {
+    "bytes": 3667,
+    "sha256": "f7e0a44931ed7ca1bc50671c6b72b54d0de2364577a798305ad5e9525cdf0e81"
+  },
+  "data/raw/sf_fed_mps_minutes.csv": {
+    "bytes": 5657,
+    "sha256": "021b16840e187fa683edc44b4ae5f15de330038b78f5b74e9277a3f081321467"
+  },
+  "data/raw/sf_fed_README.md": {
+    "bytes": 2270,
+    "sha256": "0a5c5452c523e6f729aa67bdb926d42783ca308254ece1815e2064750940fa49"
+  },
+  "data/raw/sf_fed_y1.csv": {
+    "bytes": 194073,
+    "sha256": "d0ddb4d6603ca447a71bb4f68c7e550aa27f68d272b9a7afb6cf188736ebb116"
+  },
+  "data/raw/SP500_fred.csv": {
+    "bytes": 48922,
+    "sha256": "81c5bd84eea8ddcb48606164ca1d3ae5d32e8cc257821c56dfcfb264c969cf93"
+  },
+  "data/raw/sp500_yahoo.json": {
+    "bytes": 339985,
+    "sha256": "bb1ec32d47e76f7de2d02f3a05b4ffd4dfb76aa0230508ae8a56465d84ba4995"
+  },
+  "data/raw/USMPD.xlsx": {
+    "bytes": 198422,
+    "sha256": "f02bfcbf80cf597548d4fccb5a80b30cb1f4373a7d50e26fd1def097d43df1aa"
+  },
+  "data/raw/VIXCLS_fred.csv": {
+    "bytes": 56623,
+    "sha256": "4db63bd4aa51a1eea567e3c1c662ed59cf7160ecee5d4bf0d6a921e4fc7923ec"
+  },
+  "data/raw/fomc_coinbase/BTC_20140129T190000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/BTC_20140319T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/BTC_20140430T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/BTC_20140618T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/BTC_20140730T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/BTC_20140917T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/BTC_20141029T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/BTC_20141217T190000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/BTC_20150128T190000.json": {
+    "bytes": 1449,
+    "sha256": "f78443809b01eb637ae22b286ef77b8582212c70cd7695b289011a731e79b98d"
+  },
+  "data/raw/fomc_coinbase/BTC_20150318T180000.json": {
+    "bytes": 1534,
+    "sha256": "02a74eb84734f1d160b8c912b2af18aeae4e8119b3dc75d86f953e2324c257f1"
+  },
+  "data/raw/fomc_coinbase/BTC_20150429T180000.json": {
+    "bytes": 1513,
+    "sha256": "d66e612e2df3efcc036dc7ae9b3d34f9f677c4fc273528417841b99734795018"
+  },
+  "data/raw/fomc_coinbase/BTC_20150617T180000.json": {
+    "bytes": 1543,
+    "sha256": "2291dbdb0b48b40505fdda3af0d3dd7e452e9119aaf9a6d5eb54fb8bba5ef6de"
+  },
+  "data/raw/fomc_coinbase/BTC_20150729T180000.json": {
+    "bytes": 1334,
+    "sha256": "6a525e51bc587d817fb6b41442301016e372d885cd77d4420bcd0b000f49ffb4"
+  },
+  "data/raw/fomc_coinbase/BTC_20150917T180000.json": {
+    "bytes": 1501,
+    "sha256": "2de31a7787459da4f77c03ebaba9f3441ff5adddc4a5be1f29b4a3815e0c0590"
+  },
+  "data/raw/fomc_coinbase/BTC_20151028T180000.json": {
+    "bytes": 1545,
+    "sha256": "ca1479d5ea31769dbdf9793ce119baea867e8bf12880e3b62160ae87281075b3"
+  },
+  "data/raw/fomc_coinbase/BTC_20151216T190000.json": {
+    "bytes": 1576,
+    "sha256": "2165dae0d370e9b61cc422b03cc4294594862f5633642856bf1ef197cbccb623"
+  },
+  "data/raw/fomc_coinbase/BTC_20160127T190000.json": {
+    "bytes": 1569,
+    "sha256": "47e1d614beb789990ae77d9ded148fec6286fc48aa0007d503c4c0d69cffff41"
+  },
+  "data/raw/fomc_coinbase/BTC_20160316T180000.json": {
+    "bytes": 1542,
+    "sha256": "13b4a27809f4ac2fcabc733510671127ae44776b5d2fc1f3835979e3c41f8202"
+  },
+  "data/raw/fomc_coinbase/BTC_20160427T180000.json": {
+    "bytes": 1567,
+    "sha256": "0df61b98dd3e8646c0e0fb19f9429e53948f48bc77906d8e564d52f94a8672a5"
+  },
+  "data/raw/fomc_coinbase/BTC_20160615T180000.json": {
+    "bytes": 1575,
+    "sha256": "0797a4b29fa14a9c98857da92b5c15a7e22919a482063b41f13e6d3895d9d78d"
+  },
+  "data/raw/fomc_coinbase/BTC_20160727T180000.json": {
+    "bytes": 1585,
+    "sha256": "25cba17bbe04704df0e20cd59697571703a4bfa852902ae80a997c4f6ffe6134"
+  },
+  "data/raw/fomc_coinbase/BTC_20160921T180000.json": {
+    "bytes": 1590,
+    "sha256": "0a27156a83b6cd02b4c3fdb20810963d5985ca268726b384f2b080b219ed454a"
+  },
+  "data/raw/fomc_coinbase/BTC_20161102T180000.json": {
+    "bytes": 1549,
+    "sha256": "1b5f57adfc46bec6e346357906860f640a9215c07fdecc4bb198c0f055141ba3"
+  },
+  "data/raw/fomc_coinbase/BTC_20161214T190000.json": {
+    "bytes": 1585,
+    "sha256": "edd66da548fd13159f3173ebb1af503cbb687116c5402d86e48cbecb6a686616"
+  },
+  "data/raw/fomc_coinbase/BTC_20170201T190000.json": {
+    "bytes": 1559,
+    "sha256": "c496c2735f83fcba059f7c0610c81874f077920a9ffa1e5c45557c558ed77b54"
+  },
+  "data/raw/fomc_coinbase/BTC_20170315T180000.json": {
+    "bytes": 1685,
+    "sha256": "d7cebfb42d87e4db41f3b7403255ee22f673c7804860be0721eaff430e76409e"
+  },
+  "data/raw/fomc_coinbase/BTC_20170503T180000.json": {
+    "bytes": 1682,
+    "sha256": "99e2a85e624b24ad4cb6ffb10169876db4fb3325b29092546d38e1a75db8b20e"
+  },
+  "data/raw/fomc_coinbase/BTC_20170614T180000.json": {
+    "bytes": 1690,
+    "sha256": "42a45d84df587a8c64b09a168fcfc47142efb6e9267f258d1bf9ee23a55a0cc1"
+  },
+  "data/raw/fomc_coinbase/BTC_20170726T180000.json": {
+    "bytes": 1730,
+    "sha256": "cb995839adb2781e790d8e2149dd73d70a61b065403bf2b604816b0fb931df76"
+  },
+  "data/raw/fomc_coinbase/BTC_20170920T180000.json": {
+    "bytes": 1724,
+    "sha256": "4b4bce992ec7986aa6996da17a067e698c9db1d0b8da197cb33a3b47e4ea7c4c"
+  },
+  "data/raw/fomc_coinbase/BTC_20171101T180000.json": {
+    "bytes": 1679,
+    "sha256": "721ae065bea34c98ed273b65e1dc2af59282a9088f380007f27e2d4c4d32e170"
+  },
+  "data/raw/fomc_coinbase/BTC_20171213T190000.json": {
+    "bytes": 1862,
+    "sha256": "78b4107883f70226af554c3136818dbb2507d2b2030483812d51704905c08e4b"
+  },
+  "data/raw/fomc_coinbase/BTC_20180131T190000.json": {
+    "bytes": 1677,
+    "sha256": "72ce579f3342ff319fdf78e83732ef04f5466f005276b4c49653c590329cb808"
+  },
+  "data/raw/fomc_coinbase/BTC_20180321T180000.json": {
+    "bytes": 1689,
+    "sha256": "544b513f8bbadda7b44347efa118e50dea4c357e396e29b8c03519e37b6d2684"
+  },
+  "data/raw/fomc_coinbase/BTC_20180502T180000.json": {
+    "bytes": 1735,
+    "sha256": "9b10804f6b14a3cd38d7dda48b075d9cb710b6f91d35b341cdd67390105134cf"
+  },
+  "data/raw/fomc_coinbase/BTC_20180613T180000.json": {
+    "bytes": 1729,
+    "sha256": "2319bb0cf32ddd781c9734e723dc59ae91a95f550dbc31bda49a1a4975f39aec"
+  },
+  "data/raw/fomc_coinbase/BTC_20180801T180000.json": {
+    "bytes": 1729,
+    "sha256": "e554e3da6bc3ce6de48a7d8b25b3d028d7db62c2fb09ded61374ecff885e98f6"
+  },
+  "data/raw/fomc_coinbase/BTC_20180926T180000.json": {
+    "bytes": 1736,
+    "sha256": "6194c4dc07cb0b5ba750a2076328bcb1a349682e7cc70ba97bc63ff9e6cfedec"
+  },
+  "data/raw/fomc_coinbase/BTC_20181108T190000.json": {
+    "bytes": 1789,
+    "sha256": "570193dc09f5ae241222523a90b32f875e7e7aaff9a85a7091e26efe7bd4345d"
+  },
+  "data/raw/fomc_coinbase/BTC_20181219T190000.json": {
+    "bytes": 1694,
+    "sha256": "bcbd30c6e7324479968bac2fc288383c8cf7340b6cec7ba9db9a0a874c9730b4"
+  },
+  "data/raw/fomc_coinbase/BTC_20190130T190000.json": {
+    "bytes": 1732,
+    "sha256": "01dca2514ac065679e05990176c1a999e67c05825170bb6e772224dce32d4f5d"
+  },
+  "data/raw/fomc_coinbase/BTC_20190320T180000.json": {
+    "bytes": 1739,
+    "sha256": "9557a37b349a30ececc8b0eef75b47860e805910bcfa44c672cc391ceca39451"
+  },
+  "data/raw/fomc_coinbase/BTC_20190501T180000.json": {
+    "bytes": 1756,
+    "sha256": "6b1a3ae8a4ad241b6457631d8541b19f3e704ea5b68eab1e5f1f1bd9653085b0"
+  },
+  "data/raw/fomc_coinbase/BTC_20190619T180000.json": {
+    "bytes": 1686,
+    "sha256": "918f557d32b5fc2388bebe3d24b77cdd36869aaa639d51d6bec32bb068007957"
+  },
+  "data/raw/fomc_coinbase/BTC_20190731T180000.json": {
+    "bytes": 1824,
+    "sha256": "8a9d8eb1b51b991785acbe4e41b328775fe4fb1db2a848f1c25786b41455cba5"
+  },
+  "data/raw/fomc_coinbase/BTC_20190918T180000.json": {
+    "bytes": 1857,
+    "sha256": "1da4b73317f2e18779b668265124e0c651fe6a219e963e97b13fab5ea209f910"
+  },
+  "data/raw/fomc_coinbase/BTC_20191004T150000.json": {
+    "bytes": 1746,
+    "sha256": "6868682eedb4980519f71c2507ba46e67a891fe436e298639c9430a4bbf45497"
+  },
+  "data/raw/fomc_coinbase/BTC_20191030T180000.json": {
+    "bytes": 1755,
+    "sha256": "5c82c634cc73d0dbec5bbba50ff79d5dee151d895e10c190af68fbaca3caeb49"
+  },
+  "data/raw/fomc_coinbase/BTC_20191211T190000.json": {
+    "bytes": 1775,
+    "sha256": "52d00390946b3652ebe79124012b097b28dabc7a9139b76aadfc05b0770fe222"
+  },
+  "data/raw/fomc_coinbase/BTC_20200129T190000.json": {
+    "bytes": 1749,
+    "sha256": "011e9b1d91205a6a0f47c8acadcc3869dd379a7446034e18ae0d8566b35fffc8"
+  },
+  "data/raw/fomc_coinbase/BTC_20200303T150000.json": {
+    "bytes": 1779,
+    "sha256": "c7287aeba680e134b1fc8c52fc57669eb9e0b71092a85a57506ef9a89f919b21"
+  },
+  "data/raw/fomc_coinbase/BTC_20200315T210000.json": {
+    "bytes": 1753,
+    "sha256": "130a5980dc9e7f07360435d0e5d85fe9f30606c3e4ad69e5f0dfb21b09eec9cb"
+  },
+  "data/raw/fomc_coinbase/BTC_20200319T130000.json": {
+    "bytes": 1768,
+    "sha256": "c7cd2988fdfa20b629982f93c97789d285b20e2af87faf1b58cd57ecbe1179d1"
+  },
+  "data/raw/fomc_coinbase/BTC_20200323T120000.json": {
+    "bytes": 1784,
+    "sha256": "809afc79f5b074070f694dae43a2da26b6bdc1905ac4a41bd44589d7351354bb"
+  },
+  "data/raw/fomc_coinbase/BTC_20200331T123000.json": {
+    "bytes": 1774,
+    "sha256": "676f7dc61fb6a2f2ec1c59dafc44565fa4d24a37d8e55fe57592fb0acfb0168e"
+  },
+  "data/raw/fomc_coinbase/BTC_20200429T180000.json": {
+    "bytes": 1756,
+    "sha256": "5cfffbbc3e68af40b4c6d925c05e97a70fcf221b5b66aa72c9277b593f6f0bac"
+  },
+  "data/raw/fomc_coinbase/BTC_20200610T180000.json": {
+    "bytes": 1753,
+    "sha256": "ea1fa11382f3bf17bbac36d5288c34d7432645d65e3180e1c01f17b80756bda3"
+  },
+  "data/raw/fomc_coinbase/BTC_20200729T180000.json": {
+    "bytes": 1866,
+    "sha256": "346cec6a21ec1ea8b17cfbb167f56695cddac16874b5315d244541510ac15672"
+  },
+  "data/raw/fomc_coinbase/BTC_20200827T131000.json": {
+    "bytes": 1884,
+    "sha256": "0af04e97e241ded0048ef435d08bb7050f945af69ec4b4d161bb1b98031d0bca"
+  },
+  "data/raw/fomc_coinbase/BTC_20200916T180000.json": {
+    "bytes": 1911,
+    "sha256": "615df58d40b95f08afe37dd2677e4fa0199577443b4c9ce303a56ee81783bc35"
+  },
+  "data/raw/fomc_coinbase/BTC_20201105T190000.json": {
+    "bytes": 1886,
+    "sha256": "1b9c28bbc5a4c817623a1bdf86f008d316be2c40e74994861dd1af9e72382abe"
+  },
+  "data/raw/fomc_coinbase/BTC_20201216T190000.json": {
+    "bytes": 1931,
+    "sha256": "274d8350c06aadf96d51f35bab9e6efa136db2cae16f1ff0b9d49a8c141cb5e6"
+  },
+  "data/raw/fomc_coinbase/BTC_20210127T190000.json": {
+    "bytes": 1896,
+    "sha256": "a1749eaa3a5d19796eeecbe34cbb4f891b5cd8e71271436a46ff69e92c41a7a5"
+  },
+  "data/raw/fomc_coinbase/BTC_20210317T180000.json": {
+    "bytes": 1892,
+    "sha256": "be2d95ae412d735f2f0193e053f038b3aeccae5ae9ce9b1fc5f1b160cc9d8248"
+  },
+  "data/raw/fomc_coinbase/BTC_20210428T180000.json": {
+    "bytes": 1891,
+    "sha256": "f766235a699b00861d58874c706c467250830b6b32e1a6eac42ea798e44fdf5e"
+  },
+  "data/raw/fomc_coinbase/BTC_20210616T180000.json": {
+    "bytes": 1906,
+    "sha256": "f56203e5b9dedc3478019507815ac0805b91cebb8fc8c5070a5ef50a1561c416"
+  },
+  "data/raw/fomc_coinbase/BTC_20210728T180000.json": {
+    "bytes": 1876,
+    "sha256": "b8f10192683db4f906c457bb33a9cbe28623179801dc27611eade55af143f784"
+  },
+  "data/raw/fomc_coinbase/BTC_20210922T180000.json": {
+    "bytes": 1906,
+    "sha256": "23d1c9c3a299e6eb64b3efec92c7e9ed673b634d0bb2dc62de9224767b237b55"
+  },
+  "data/raw/fomc_coinbase/BTC_20211103T180000.json": {
+    "bytes": 1889,
+    "sha256": "71d484d420ea49e6ea07dca341cc43251de5a1dd135754ff150772f6a5b124f8"
+  },
+  "data/raw/fomc_coinbase/BTC_20211215T190000.json": {
+    "bytes": 1908,
+    "sha256": "2050474c1e585522d30e8c6d6479500eeaffaa05a6e649d3bf249120b657374c"
+  },
+  "data/raw/fomc_coinbase/BTC_20220126T190000.json": {
+    "bytes": 1899,
+    "sha256": "b03a342f4a245fb44a719c003c0f0d15357bd3474aa4dc871b9fc91181371d18"
+  },
+  "data/raw/fomc_coinbase/BTC_20220316T180000.json": {
+    "bytes": 1920,
+    "sha256": "d0a331b521b7dc40e5203a1745b382e5bae13f8b93a836d911b04a0f5e95e892"
+  },
+  "data/raw/fomc_coinbase/BTC_20220504T180000.json": {
+    "bytes": 1936,
+    "sha256": "5bf175f4320a20cb7a061cbeeba908e7811270a222607dbd956d14cd3a4858f6"
+  },
+  "data/raw/fomc_coinbase/BTC_20220615T180000.json": {
+    "bytes": 1926,
+    "sha256": "83b720adddca6ecbf94f7ba3093ae44cc87eda7e61493e9d992948fc9de93616"
+  },
+  "data/raw/fomc_coinbase/BTC_20220727T180000.json": {
+    "bytes": 1927,
+    "sha256": "add5a46cd02e2f7fa8f53207a88e6131c2b51e9dd73d61defc3e3bd71a757aa4"
+  },
+  "data/raw/fomc_coinbase/BTC_20220921T180000.json": {
+    "bytes": 1937,
+    "sha256": "9ba2b5ca47812b36cecdbf6b43fcac529c6a5e78b8492340a69503cf744c9f2f"
+  },
+  "data/raw/fomc_coinbase/BTC_20221102T180000.json": {
+    "bytes": 1945,
+    "sha256": "cc9fffd4318dead6b31e781555870c6b932ee6456a83d2c379aa097a44105676"
+  },
+  "data/raw/fomc_coinbase/BTC_20221214T190000.json": {
+    "bytes": 1953,
+    "sha256": "179008f40859a5a254ad801a986acf462bb645a5e6cf9e0d2aeed49f624a1cd0"
+  },
+  "data/raw/fomc_coinbase/BTC_20230201T190000.json": {
+    "bytes": 1915,
+    "sha256": "326255c9452839550308e495e30c11b4faf1d1b639b7dde24b03e90fb4da7628"
+  },
+  "data/raw/fomc_coinbase/BTC_20230322T180000.json": {
+    "bytes": 1928,
+    "sha256": "87a8d5900cab4fee093d992c56964beee1fbd3b6db3ba8bf3bfcbeb801eef960"
+  },
+  "data/raw/fomc_coinbase/BTC_20230503T180000.json": {
+    "bytes": 1898,
+    "sha256": "760492e020ff2b9722efe75dbcb0f94a11702ca1f06a624da591b749596a3cc5"
+  },
+  "data/raw/fomc_coinbase/BTC_20230614T180000.json": {
+    "bytes": 1917,
+    "sha256": "947d01fd97e11fb62f548ff04ce93afedff6cf8059a24cda61b21e1a94b5edb6"
+  },
+  "data/raw/fomc_coinbase/BTC_20230726T180000.json": {
+    "bytes": 1920,
+    "sha256": "c4de8f6464429a3ea3431955160e6f417a79b547125a87681b3b1fba6cb6994d"
+  },
+  "data/raw/fomc_coinbase/BTC_20230920T180000.json": {
+    "bytes": 1916,
+    "sha256": "32a5c470b99d32497705338efd7e57d0575b0b797493169e6c9881b907b72418"
+  },
+  "data/raw/fomc_coinbase/BTC_20231101T180000.json": {
+    "bytes": 1919,
+    "sha256": "49ad275900a4ee3e0ed13e7480b340d2246820ce8bf08d0bc4318f4d1f852099"
+  },
+  "data/raw/fomc_coinbase/BTC_20231213T190000.json": {
+    "bytes": 1922,
+    "sha256": "7cae34994e7a3d010ffa6d9b0a7092d8f524811f506f507589c48da883f91c2f"
+  },
+  "data/raw/fomc_coinbase/BTC_20240131T190000.json": {
+    "bytes": 1908,
+    "sha256": "9c6e5e17cb1bc5de437f65f388b66ddf0e7769d96e1793389883a57c01026345"
+  },
+  "data/raw/fomc_coinbase/BTC_20240320T180000.json": {
+    "bytes": 1922,
+    "sha256": "47d0abae88a718471a90d73265201a43bdf5050e3bb4de4fc1aa39bba2b8a45b"
+  },
+  "data/raw/fomc_coinbase/BTC_20240501T180000.json": {
+    "bytes": 1906,
+    "sha256": "957ceab07c699a9f74cccfd387d17054759882838a7390d9e786d3682bbd29a0"
+  },
+  "data/raw/fomc_coinbase/BTC_20240612T180000.json": {
+    "bytes": 1885,
+    "sha256": "e8c66625500ef72a4c30d8d0251817089854fe3e565e32efd8240706c880c784"
+  },
+  "data/raw/fomc_coinbase/BTC_20240731T180000.json": {
+    "bytes": 1909,
+    "sha256": "2869cb52ad5e5b754f9b57b5f7bbd739aceb84f78bc91857ecdd3b82ee6de9c2"
+  },
+  "data/raw/fomc_coinbase/BTC_20240918T180000.json": {
+    "bytes": 1921,
+    "sha256": "c87ce5cbf66ffa175193b8a9e06b0ac68bb7fcf17c12bfaced3377f97ba6a302"
+  },
+  "data/raw/fomc_coinbase/BTC_20241107T190000.json": {
+    "bytes": 1917,
+    "sha256": "5ef842b161f3dd83e22eda9dfdd9c20c4beabdb1208744d5f574742bebceec41"
+  },
+  "data/raw/fomc_coinbase/BTC_20241218T190000.json": {
+    "bytes": 2046,
+    "sha256": "c08f6a3deecec706d10136a48bd769e12ee2f0559e5c0016b0f0bd1478933de8"
+  },
+  "data/raw/fomc_coinbase/BTC_20250129T190000.json": {
+    "bytes": 2051,
+    "sha256": "8734275875de6661d72f213534ff552cf67eb51583d8a7d47367d76036d43386"
+  },
+  "data/raw/fomc_coinbase/BTC_20250319T180000.json": {
+    "bytes": 1908,
+    "sha256": "d9483becdfc31b1e5c43ff96584c1ce20fee1ef5590720a03b877bfd707fb32f"
+  },
+  "data/raw/fomc_coinbase/BTC_20250507T180000.json": {
+    "bytes": 1924,
+    "sha256": "026e6315b01b60fc282bb2ea3f48faba58fe98fa10abb3237e2d4e3ad0fe1dd8"
+  },
+  "data/raw/fomc_coinbase/BTC_20250618T180000.json": {
+    "bytes": 2041,
+    "sha256": "7e9fbb8e1873a49640ad1a5eabf559c0a631574c5aeadcdadc02cf18c70d6ed6"
+  },
+  "data/raw/fomc_coinbase/BTC_20250730T180000.json": {
+    "bytes": 2012,
+    "sha256": "39c8bf89e37bd2b108dd4683c0358f6f0cff98b23b1a6b8a3b50af26dca61ef4"
+  },
+  "data/raw/fomc_coinbase/BTC_20250917T180000.json": {
+    "bytes": 2010,
+    "sha256": "abcab30b3027af8033453e5d640683e307670e0be81ea09d7dbc127f49cbbf4e"
+  },
+  "data/raw/fomc_coinbase/BTC_20251029T180000.json": {
+    "bytes": 2001,
+    "sha256": "16c96e46fd0c639987aee34714a87fa84dae967371de88efb0c601155980cbd9"
+  },
+  "data/raw/fomc_coinbase/BTC_20251210T190000.json": {
+    "bytes": 1874,
+    "sha256": "54ed9832d5045a6c0afc537b28c84b078f9be3042c1ad34931dc2a4f57f97019"
+  },
+  "data/raw/fomc_coinbase/BTC_20260128T190000.json": {
+    "bytes": 1855,
+    "sha256": "7b8af80fe7ab38886464e5ac4dedf6160a910d55dac7ef553932fd65a07e81c4"
+  },
+  "data/raw/fomc_coinbase/BTC_20260318T180000.json": {
+    "bytes": 1896,
+    "sha256": "ebab84e035a00a7852eccca46b550e28428b1842ae0d0f91dab8cde14d765025"
+  },
+  "data/raw/fomc_coinbase/BTC_20260429T180000.json": {
+    "bytes": 1895,
+    "sha256": "3463a8224621147d700ec4caaedd71d1f50de70f28712c727a237c880cc1d160"
+  },
+  "data/raw/fomc_coinbase/BTC_20260617T180000.json": {
+    "bytes": 1878,
+    "sha256": "9c40c825f0a7af06d07370724380a00122e0bd0e33e41ea7b8c02c522850591c"
+  },
+  "data/raw/fomc_coinbase/BTC_20260729T180000.json": {
+    "bytes": 1881,
+    "sha256": "23ffebb2b6e3285d11fae8aaff5126b6f847fc1bab44e1b2eac6a7a7739596f0"
+  },
+  "data/raw/fomc_coinbase/BTC_20260916T180000.json": {
+    "bytes": 1897,
+    "sha256": "71095d921c6ea5e961e4fe2b9a2dbe068f433f742e2ee28a16004f930125ca09"
+  },
+  "data/raw/fomc_coinbase/ETH_20140129T190000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20140319T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20140430T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20140618T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20140730T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20140917T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20141029T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20141217T190000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20150128T190000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20150318T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20150429T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20150617T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20150729T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20150917T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20151028T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20151216T190000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20160127T190000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20160316T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20160427T180000.json": {
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "data/raw/fomc_coinbase/ETH_20160615T180000.json": {
+    "bytes": 522,
+    "sha256": "c8f740d2ae382e89ce3806170d95d3f80001a19d995bb6873f56003cd8fcc915"
+  },
+  "data/raw/fomc_coinbase/ETH_20160727T180000.json": {
+    "bytes": 1361,
+    "sha256": "4c1c52390d14a167e7a4a9ea72378a2a3f11ef55a14f41ceca9cc9c1f79fbae6"
+  },
+  "data/raw/fomc_coinbase/ETH_20160921T180000.json": {
+    "bytes": 1465,
+    "sha256": "ca9d8f888bc1bdda582193e742b1bbf1956b4f5212e17561e0d33c3d41e3064e"
+  },
+  "data/raw/fomc_coinbase/ETH_20161102T180000.json": {
+    "bytes": 953,
+    "sha256": "577e7646c1f63adffc0afbfdb528eea1b7faaf3acfbe794dc5ea71da09df5da5"
+  },
+  "data/raw/fomc_coinbase/ETH_20161214T190000.json": {
+    "bytes": 819,
+    "sha256": "918937f7cc19039cecf2b5db01baa6aee569df58f0af0fd37dff565963f12bc9"
+  },
+  "data/raw/fomc_coinbase/ETH_20170201T190000.json": {
+    "bytes": 1288,
+    "sha256": "0c642fb9d832ee415c8379b5f5b9c100c34d1d898f2a2c9250f22f95b1f91194"
+  },
+  "data/raw/fomc_coinbase/ETH_20170315T180000.json": {
+    "bytes": 1514,
+    "sha256": "5be81d9e414c8a0bcc3a65f5a0737de728e3a5e50c3fc8b92cf40a83753e42b4"
+  },
+  "data/raw/fomc_coinbase/ETH_20170503T180000.json": {
+    "bytes": 1524,
+    "sha256": "b427c9d5dc962bb5141096fc6283de86cb05ef3cbf04beac192fc772448263f4"
+  },
+  "data/raw/fomc_coinbase/ETH_20170614T180000.json": {
+    "bytes": 1637,
+    "sha256": "8670972afa265bfa83b4cadd34ce378010fea8295fc75777a43b9698c00ad75f"
+  },
+  "data/raw/fomc_coinbase/ETH_20170726T180000.json": {
+    "bytes": 1626,
+    "sha256": "34ca774451de906a050dec2663c4286521ce46cb45fa038593dffb47d86e664d"
+  },
+  "data/raw/fomc_coinbase/ETH_20170920T180000.json": {
+    "bytes": 1659,
+    "sha256": "f0f9bd99f9275f3e46cc22a9f52ccdb7e47cdbddf02622325485f59a32792816"
+  },
+  "data/raw/fomc_coinbase/ETH_20171101T180000.json": {
+    "bytes": 1671,
+    "sha256": "b514cf727063ab73a21a782b54e468ee860449a66b0944550ccf0579f6488b21"
+  },
+  "data/raw/fomc_coinbase/ETH_20171213T190000.json": {
+    "bytes": 1608,
+    "sha256": "ca584d92b19d549bc9ce9d7f5a7a251e66cdf1d3b72aa1ef204afde709e89e88"
+  },
+  "data/raw/fomc_coinbase/ETH_20180131T190000.json": {
+    "bytes": 1747,
+    "sha256": "55fb1baf460ebdddafddf89e01fbd801a22b9e152c7845cee5633d424a103bfa"
+  },
+  "data/raw/fomc_coinbase/ETH_20180321T180000.json": {
+    "bytes": 1639,
+    "sha256": "358e934190bd50125bccca9cbe2c5cb8e97c263a42915cf6babd2717d902814e"
+  },
+  "data/raw/fomc_coinbase/ETH_20180502T180000.json": {
+    "bytes": 1572,
+    "sha256": "06de0e275b95ae46b4cc2f49699ed46e544486c9e7f6d84f3d0447217530039b"
+  },
+  "data/raw/fomc_coinbase/ETH_20180613T180000.json": {
+    "bytes": 1657,
+    "sha256": "59dd9698c9aec567669250e11a2207f351eb7ddd469d6a11705356afe40cd1f0"
+  },
+  "data/raw/fomc_coinbase/ETH_20180801T180000.json": {
+    "bytes": 1686,
+    "sha256": "86ba07e6a94ed2bfc83c86515b834a59d2794a308933f7720ed386970e85d8e5"
+  },
+  "data/raw/fomc_coinbase/ETH_20180926T180000.json": {
+    "bytes": 1671,
+    "sha256": "938e551e459d19d988501dfd67079b4067f3d636f85d107de59771c53597e596"
+  },
+  "data/raw/fomc_coinbase/ETH_20181108T190000.json": {
+    "bytes": 1660,
+    "sha256": "e30a6a7d4f03d591d2826286495dcaed21e1e604e008a239fdc7c05e0887e33f"
+  },
+  "data/raw/fomc_coinbase/ETH_20181219T190000.json": {
+    "bytes": 1697,
+    "sha256": "36e565f9fabb4de7b43f8fabb44861bd81962e40bae7665d9cfdafc92e52d17d"
+  },
+  "data/raw/fomc_coinbase/ETH_20190130T190000.json": {
+    "bytes": 1600,
+    "sha256": "02318d777d68749e340fd7b8278efbb31a2c4067b9b6b477e3032df96a57c41b"
+  },
+  "data/raw/fomc_coinbase/ETH_20190320T180000.json": {
+    "bytes": 1606,
+    "sha256": "269f256b5b4061e76e22eeca5e05ff6ced6f8f2a927f68c2585ba883e6617a06"
+  },
+  "data/raw/fomc_coinbase/ETH_20190501T180000.json": {
+    "bytes": 1668,
+    "sha256": "a4bbf6e77799cbf8b6d39fe7c23b44ac8d310cb80eb9f6c6f4b30203d8f30336"
+  },
+  "data/raw/fomc_coinbase/ETH_20190619T180000.json": {
+    "bytes": 1675,
+    "sha256": "0204fc06e78ebb205423995aefe7695e141535eaa2e8deb9cf75fd8b5f29a511"
+  },
+  "data/raw/fomc_coinbase/ETH_20190731T180000.json": {
+    "bytes": 1664,
+    "sha256": "73da18f66d07c7435b5fa5ae401612b1a9d9bde75be3e530dce52d9100912ba6"
+  },
+  "data/raw/fomc_coinbase/ETH_20190918T180000.json": {
+    "bytes": 1663,
+    "sha256": "9334dfa1259490a405ee9e0afb1a9ab1e33c5092e9e9d6120ec887e7e5a8f832"
+  },
+  "data/raw/fomc_coinbase/ETH_20191004T150000.json": {
+    "bytes": 1648,
+    "sha256": "6ddb8ef56e788ddc104904649110c2e8e10ab4750bbfd484c8d24885d2753843"
+  },
+  "data/raw/fomc_coinbase/ETH_20191030T180000.json": {
+    "bytes": 1678,
+    "sha256": "dd040ad480efb51309998ca6731217b8451cf1e30662ae5eeeefa3b2a25856e4"
+  },
+  "data/raw/fomc_coinbase/ETH_20191211T190000.json": {
+    "bytes": 1673,
+    "sha256": "e64f46c7801a259bd5d36b91c4d7827f162921ebace22f65144e42bcca9c25bd"
+  },
+  "data/raw/fomc_coinbase/ETH_20200129T190000.json": {
+    "bytes": 1652,
+    "sha256": "b4b465860ccbfa8b2573b6c50ea7d8db39c3d6ed480fe5fb05f078dbbb714d6d"
+  },
+  "data/raw/fomc_coinbase/ETH_20200303T150000.json": {
+    "bytes": 1700,
+    "sha256": "b402f712a6af74b63766a28f1463d8584233e819b5072dc64931178ec7f592fc"
+  },
+  "data/raw/fomc_coinbase/ETH_20200315T210000.json": {
+    "bytes": 1694,
+    "sha256": "370fb937c715b9ddecc7dcfa208155ac7653fa20e7c627e1369975178bd173cd"
+  },
+  "data/raw/fomc_coinbase/ETH_20200319T130000.json": {
+    "bytes": 1702,
+    "sha256": "b2a924318a9476fd374691d6e560c97e564e7921e59f9333de58b060d6d644a0"
+  },
+  "data/raw/fomc_coinbase/ETH_20200323T120000.json": {
+    "bytes": 1699,
+    "sha256": "7034daf712beae3aa1dd6f00e5c0492266397a5de3640528c2b34a63c089fbbf"
+  },
+  "data/raw/fomc_coinbase/ETH_20200331T123000.json": {
+    "bytes": 1680,
+    "sha256": "84bdb6bb66753d0b8633bf9fec34e83579106d69fc2a2913c4d3cb2020e50dd5"
+  },
+  "data/raw/fomc_coinbase/ETH_20200429T180000.json": {
+    "bytes": 1702,
+    "sha256": "6d592cf9e9d6f5199bef08d475ca17274b99776c95e49af40b0ac5b86743fee5"
+  },
+  "data/raw/fomc_coinbase/ETH_20200610T180000.json": {
+    "bytes": 1669,
+    "sha256": "0276aeaf39aab270ad82dcd8f34622720204fab913cbe3cb7b0fbff28b3c8520"
+  },
+  "data/raw/fomc_coinbase/ETH_20200729T180000.json": {
+    "bytes": 1660,
+    "sha256": "2498c0c58bdca352fde80a3142b127e76858836dd2f76d7e38e9b30a56c3ba23"
+  },
+  "data/raw/fomc_coinbase/ETH_20200827T131000.json": {
+    "bytes": 1701,
+    "sha256": "4f67fe63b2013d0aa229a20644a8cd1cb3d2e6e4159a39f85eac447955a00088"
+  },
+  "data/raw/fomc_coinbase/ETH_20200916T180000.json": {
+    "bytes": 1689,
+    "sha256": "0ad68e2ac55c52f3830a531b22bb80a6f90ba3b3903a0c258b30521504786cf0"
+  },
+  "data/raw/fomc_coinbase/ETH_20201105T190000.json": {
+    "bytes": 1680,
+    "sha256": "f67b3358431785e6f501a326887584a75e98d5bed259f94dc6a050590086b7e9"
+  },
+  "data/raw/fomc_coinbase/ETH_20201216T190000.json": {
+    "bytes": 1694,
+    "sha256": "5ec705a461a5a2b13364c8b806e1041bb7e4d5c66236d6c2029994b5754977c1"
+  },
+  "data/raw/fomc_coinbase/ETH_20210127T190000.json": {
+    "bytes": 1810,
+    "sha256": "25a3b13a17e7fddcb924e7622cb8c77ea3f4e9b996d634988660ef4ae892b2ab"
+  },
+  "data/raw/fomc_coinbase/ETH_20210317T180000.json": {
+    "bytes": 1801,
+    "sha256": "5871a4b8cf72e5397de6471faed04bb762ce3c0c03ff75361b40950db55437e8"
+  },
+  "data/raw/fomc_coinbase/ETH_20210428T180000.json": {
+    "bytes": 1823,
+    "sha256": "5cc9c39d0809d56200a068247fcd878ef86028002e8351c932ed39a290493cc6"
+  },
+  "data/raw/fomc_coinbase/ETH_20210616T180000.json": {
+    "bytes": 1830,
+    "sha256": "178ffeaaf1a6819a2b29304f70f7ef4777694532ef0cc931870933062e5db06d"
+  },
+  "data/raw/fomc_coinbase/ETH_20210728T180000.json": {
+    "bytes": 1817,
+    "sha256": "28bd1fe062e95823135a325481e7f4f5ea873dcb724c3a198f276fdd5559c542"
+  },
+  "data/raw/fomc_coinbase/ETH_20210922T180000.json": {
+    "bytes": 1835,
+    "sha256": "d173dbf1c71463e9309803ff5be0cf3989c15732ad1491788c43278cddda4e4e"
+  },
+  "data/raw/fomc_coinbase/ETH_20211103T180000.json": {
+    "bytes": 1822,
+    "sha256": "1894d43273e171d905d8b928672cc0565a2679acb845071c262580aa4c8ae780"
+  },
+  "data/raw/fomc_coinbase/ETH_20211215T190000.json": {
+    "bytes": 1823,
+    "sha256": "a04c65f317bdfa19d49d921d3feeeafa2c029de2bad60531bafd208c82ea19dc"
+  },
+  "data/raw/fomc_coinbase/ETH_20220126T190000.json": {
+    "bytes": 1846,
+    "sha256": "19bc342704628820e693c43b02346ea54a050b7092ea8089741956a6417fe983"
+  },
+  "data/raw/fomc_coinbase/ETH_20220316T180000.json": {
+    "bytes": 1828,
+    "sha256": "a3f58a2ebe0c4bb2c3fc9f7ecc3715ca4c18f1b11f5b3cee519a4192510229e3"
+  },
+  "data/raw/fomc_coinbase/ETH_20220504T180000.json": {
+    "bytes": 1820,
+    "sha256": "6a8d8234a16d1e7659ceadd08d7debcd133aadafb3ba58cce230fe4094265e18"
+  },
+  "data/raw/fomc_coinbase/ETH_20220615T180000.json": {
+    "bytes": 1836,
+    "sha256": "e20439a5d9cfb2c2adb5df7535a05337208c6ddfd4c7357c66a343d732dec28c"
+  },
+  "data/raw/fomc_coinbase/ETH_20220727T180000.json": {
+    "bytes": 1834,
+    "sha256": "f06123862632ab9e9a20e34738c388f9daf00c4f8b764052b625b267305a0ee2"
+  },
+  "data/raw/fomc_coinbase/ETH_20220921T180000.json": {
+    "bytes": 1838,
+    "sha256": "3b0f794af59317b0a865b6e63f1f3725ada26d92096d8e5f20f7542b20f33e94"
+  },
+  "data/raw/fomc_coinbase/ETH_20221102T180000.json": {
+    "bytes": 1848,
+    "sha256": "881128d99f77217eb09d776e11bec0174a6ed5adc02d6c93ae2834f9f6fb8201"
+  },
+  "data/raw/fomc_coinbase/ETH_20221214T190000.json": {
+    "bytes": 1845,
+    "sha256": "775aadd0a7e74dd31ecd2d49440a33255acc37dd6e9839f909a8c6a104043478"
+  },
+  "data/raw/fomc_coinbase/ETH_20230201T190000.json": {
+    "bytes": 1833,
+    "sha256": "78836adfc3dde72c37b9914d6fb10f8c15445809b0f3705ba49818bc9906a1de"
+  },
+  "data/raw/fomc_coinbase/ETH_20230322T180000.json": {
+    "bytes": 1808,
+    "sha256": "af70075ad95bdb05e0cd4fb2733ade25b47c94d3481a8bf4cfc94364453c9230"
+  },
+  "data/raw/fomc_coinbase/ETH_20230503T180000.json": {
+    "bytes": 1821,
+    "sha256": "8f4ac6cf6023fd02f8503ba718964b31ce653dac9418326d1e8f8336417ac8ce"
+  },
+  "data/raw/fomc_coinbase/ETH_20230614T180000.json": {
+    "bytes": 1815,
+    "sha256": "82244f99f43d375473661fc8dcb435651b92361c4aac7db0e33de3094b726f5f"
+  },
+  "data/raw/fomc_coinbase/ETH_20230726T180000.json": {
+    "bytes": 1822,
+    "sha256": "49fc56522cc83bb5ac4c570fc96d6a75cd1a79cf6d757a5bc8a9b63ef9959496"
+  },
+  "data/raw/fomc_coinbase/ETH_20230920T180000.json": {
+    "bytes": 1806,
+    "sha256": "a2b1d0196a47e8a53c08587f5bebb6bf02c11b7f705beff31f8415bdd7fba7e7"
+  },
+  "data/raw/fomc_coinbase/ETH_20231101T180000.json": {
+    "bytes": 1822,
+    "sha256": "760b301f7331c5ce652cf1e4e2b62ce8c20d696bf412bcf2e683c05234a27162"
+  },
+  "data/raw/fomc_coinbase/ETH_20231213T190000.json": {
+    "bytes": 1826,
+    "sha256": "29852337c1f520f5f2b08b367f780de8017410e991b2308793c6adbf57f23993"
+  },
+  "data/raw/fomc_coinbase/ETH_20240131T190000.json": {
+    "bytes": 1810,
+    "sha256": "cbbcf4fb96cd37f33bff250607f31cf002c058ec496637c030058d144338a782"
+  },
+  "data/raw/fomc_coinbase/ETH_20240320T180000.json": {
+    "bytes": 1836,
+    "sha256": "d2d14af505b380ea8de4206ec5f3121fdc35ef5b553846cc6331d576d308b12e"
+  },
+  "data/raw/fomc_coinbase/ETH_20240501T180000.json": {
+    "bytes": 1828,
+    "sha256": "67833753d949b1f08f32e4ffbdcca53de98a853482466c605e70093b28be2068"
+  },
+  "data/raw/fomc_coinbase/ETH_20240612T180000.json": {
+    "bytes": 1809,
+    "sha256": "b16d18637f3bd160393e84f031bf4731a784f2be287f6ee17ee132bfe98e8852"
+  },
+  "data/raw/fomc_coinbase/ETH_20240731T180000.json": {
+    "bytes": 1823,
+    "sha256": "6dea35a16ca8803d44afe2d96474b745dc5f7097eee4d66914093b108368f702"
+  },
+  "data/raw/fomc_coinbase/ETH_20240918T180000.json": {
+    "bytes": 1828,
+    "sha256": "abdb5b268a7790797f349d2d38993f9417c2df9742525a8bdf86e23052a9098c"
+  },
+  "data/raw/fomc_coinbase/ETH_20241107T190000.json": {
+    "bytes": 1825,
+    "sha256": "d5edcfc42b80ed89455cc8c63e742784ddd584a01ceba8893a35457167365666"
+  },
+  "data/raw/fomc_coinbase/ETH_20241218T190000.json": {
+    "bytes": 1831,
+    "sha256": "0195249470039b4398489a78fff7ed1cd8b3de69a8a2334c96b46df671728a5f"
+  },
+  "data/raw/fomc_coinbase/ETH_20250129T190000.json": {
+    "bytes": 1836,
+    "sha256": "bb56e932547ed29c450842e11a3ea1b76dc98bef5bb5cc40b38ca5e120743687"
+  },
+  "data/raw/fomc_coinbase/ETH_20250319T180000.json": {
+    "bytes": 1839,
+    "sha256": "a3fbb3a65ac8f5aaf3c7e550535afa09ced8a8330f4a0f73c8c79dd733567173"
+  },
+  "data/raw/fomc_coinbase/ETH_20250507T180000.json": {
+    "bytes": 1841,
+    "sha256": "b26a6297d25a836f8b19af1af2ae513cbcb7dee628ff453175080c90cfe15dbb"
+  },
+  "data/raw/fomc_coinbase/ETH_20250618T180000.json": {
+    "bytes": 1818,
+    "sha256": "79c4ca29565b288dd64ff0907b23b54f26c594f279569d39cf9abbe6cfc2b3a5"
+  },
+  "data/raw/fomc_coinbase/ETH_20250730T180000.json": {
+    "bytes": 1812,
+    "sha256": "69b7c2329b1039a4167eefb2344ff951dfe0ffafef6aff3826f030f690817779"
+  },
+  "data/raw/fomc_coinbase/ETH_20250917T180000.json": {
+    "bytes": 1809,
+    "sha256": "c22fdb7a577a8420640dec55d53568b00d8b26204cb55b950029e8a94749ffd1"
+  },
+  "data/raw/fomc_coinbase/ETH_20251029T180000.json": {
+    "bytes": 1822,
+    "sha256": "749a939f111f757990a5aa6a97f2ba1d293a6f8e7674521843de289bb16f11d1"
+  },
+  "data/raw/fomc_coinbase/ETH_20251210T190000.json": {
+    "bytes": 1815,
+    "sha256": "81a2968d02ce5130a71db24eeab05a43419587c84913f98f926d3343c60d369d"
+  },
+  "data/raw/fomc_coinbase/ETH_20260128T190000.json": {
+    "bytes": 1810,
+    "sha256": "03323968a1f226ba87036297351c441897d7b22c0a2655b375e46ba5486b8f44"
+  },
+  "data/raw/fomc_coinbase/ETH_20260318T180000.json": {
+    "bytes": 1824,
+    "sha256": "3f4d620e22d402f09157ec38b9a584c037df3fa6ca0c685bbc55b50645030a35"
+  },
+  "data/raw/fomc_coinbase/ETH_20260429T180000.json": {
+    "bytes": 1818,
+    "sha256": "5ce342413a26115681961762d41ca66aeaea5307f25a23fa41fb2da697e485c1"
+  },
+  "data/raw/fomc_coinbase/ETH_20260617T180000.json": {
+    "bytes": 1794,
+    "sha256": "d8faa23e541b4c9060d4ec2ffe216bdcff2201bb913ca7bd2a5c5000fc9e1a8e"
+  },
+  "data/raw/fomc_coinbase/ETH_20260729T180000.json": {
+    "bytes": 1779,
+    "sha256": "634baf0f6f62dbd9dacedf9ec9affdfaeca446100c39dcd00f649b5654b5c691"
+  },
+  "data/raw/fomc_coinbase/ETH_20260916T180000.json": {
+    "bytes": 1828,
+    "sha256": "d0c9d8e60c960305a4e07cdb05ab22d37c781d16a30cb6771945d93c90c551aa"
+  },
+  "outputs/research/dashboard_validation.json": {
+    "bytes": 282,
+    "sha256": "fccd4cc0a117df27941ed1c8ed91edb7fc6b647ca276edc7134c07819a18bffb"
+  },
+  "outputs/research/econometric_method.json": {
+    "bytes": 725,
+    "sha256": "a97faf656c8eb64c3afaae3f554c979e36f9c061e1cc2e5187264d6a314b9719"
+  },
+  "outputs/research/eda_audit.json": {
+    "bytes": 632,
+    "sha256": "cb3677a3b2f35dd0fba48ddf78fd84b503ef10e7eaaa77746f953ce67ba95a2a"
+  },
+  "outputs/research/environment.json": {
+    "bytes": 235,
+    "sha256": "ce36446b540c7b8e223daaa44631d0419427a868a8c25360c3230b8017464bf7"
+  },
+  "outputs/research/fomc_method.json": {
+    "bytes": 601,
+    "sha256": "07246ecded75aaf11a2ebbd69c76edfab9ed70b7a88f4059d7fe3bb63494ecf7"
+  },
+  "outputs/research/forecast_method.json": {
+    "bytes": 1034,
+    "sha256": "3d87dbc516ee93edcb7eed96615f27b95ba95069447c9c9878f786a400eb638c"
+  },
+  "outputs/research/report.html": {
+    "bytes": 38273,
+    "sha256": "fe1f2087ed28d4cc6c43f3c46fc2dfcaf8b79df13c237f32765830809e8cdba1"
+  },
+  "outputs/research/report.md": {
+    "bytes": 4888,
+    "sha256": "517448b9b695c291ba1652aeff73d8b3c61c0f464753dd5dd82f661013ef44c7"
+  },
+  "outputs/research/validation_report.json": {
+    "bytes": 5202,
+    "sha256": "4d6eddda3b01631fae91442cc0316fbd7be5872600d1148de3d6d910524e1c08"
+  },
+  "outputs/research/dashboard/index.html": {
+    "bytes": 261349,
+    "sha256": "28e7c96c730e4fc5fb84d631a463c4c8500acb45f09ec62d027fef377c876213"
+  },
+  "outputs/research/figures/eda_correlations.png": {
+    "bytes": 116434,
+    "sha256": "8d2ccab4260e774f95ccd349029d03a02b83748090d5a389eec141a433bd85df"
+  },
+  "outputs/research/figures/eda_history.png": {
+    "bytes": 347960,
+    "sha256": "bcd86791cfd5de6468c10fad36f53f79e5159804eb265c1114b4acf2ce372c45"
+  },
+  "outputs/research/figures/eda_returns_volatility.png": {
+    "bytes": 249572,
+    "sha256": "5232156ecb8074dbcc211a1c1a1aa50a279ab6fa20075d4721d08a49a1316a63"
+  },
+  "outputs/research/figures/fomc_scatter.png": {
+    "bytes": 108792,
+    "sha256": "8b3f2a65262a25866a82a18839c36995c5bd19b37dc7a64ea8d1572694f061c5"
+  },
+  "outputs/research/figures/forecast_usd_comparison.png": {
+    "bytes": 79101,
+    "sha256": "af5b2fa35010acad2a7d173b0c2089d141a6763a21e326ab77f705aa33e7c08f"
+  },
+  "outputs/research/figures/lp_responses.png": {
+    "bytes": 280239,
+    "sha256": "4b547ad25e6ff7144b347af35e9be61b47b09d4a061303aa838f6a3f65d277ef"
+  },
+  "outputs/research/figures/rolling_sensitivity.png": {
+    "bytes": 328270,
+    "sha256": "e48cf00d4166e367aabfc43504c601d7885f8e26051a496d24a6286cede25db8"
+  },
+  "outputs/research/tables/crypto_extreme_returns.csv": {
+    "bytes": 858,
+    "sha256": "fbff1c3a1a06a20cd7c050cf607f37bf785c3fb319e56c8ac419d4c0bc6afd8c"
+  },
+  "outputs/research/tables/descriptive_correlations.csv": {
+    "bytes": 3325,
+    "sha256": "2a17a64fc0c8daee5740f604f2805d11c51146ceffdd034efe0748d05bd10dc2"
+  },
+  "outputs/research/tables/descriptive_statistics.csv": {
+    "bytes": 5503,
+    "sha256": "68a8206288108cb4a138bffce109c633ae5b6e542224970b80e1d334e9eaf9b5"
+  },
+  "outputs/research/tables/fomc_analysis_observations.csv": {
+    "bytes": 110721,
+    "sha256": "426b82c1f1bbe9461d8735560178ed650d629916bae43df6ab33c2230fc13fc2"
+  },
+  "outputs/research/tables/fomc_regressions.csv": {
+    "bytes": 5746,
+    "sha256": "ee7847d0ed705d1e5bb38fb686c87245c369ed90b10d6261460249c5a65a7225"
+  },
+  "outputs/research/tables/fomc_sample_counts.csv": {
+    "bytes": 666,
+    "sha256": "fa2a5967c5fcc8e81226689ce83d0f658b152da8ff74574f4200d58eb93bfe61"
+  },
+  "outputs/research/tables/forecast_label_availability_checks.csv": {
+    "bytes": 1458,
+    "sha256": "25b85e6ac1bb79ebd517c8d91f58ab445d1f5acc3994723a763b1936b821ffba"
+  },
+  "outputs/research/tables/forecast_selected_parameters.csv": {
+    "bytes": 4205,
+    "sha256": "0f3adbab26045585430554bb0d7aba406995352d9708579794cd3ebcbc7e200f"
+  },
+  "outputs/research/tables/forecast_test_metrics.csv": {
+    "bytes": 5653,
+    "sha256": "98ad4e78acbe003625317378addfa6a0fc3f04a784831704af677e03448ab36d"
+  },
+  "outputs/research/tables/forecast_test_predictions.csv": {
+    "bytes": 1792907,
+    "sha256": "f9398daa4254578c3b841a80232eb5472206baa8dfa9af1fad035500b8eb66c3"
+  },
+  "outputs/research/tables/forecast_usd_paired_tests.csv": {
+    "bytes": 1161,
+    "sha256": "a90d70f179f2640f09f65cf24ff533ee3d362dc46da489aa4191a2fb8d5abf11"
+  },
+  "outputs/research/tables/forecast_validation_search.csv": {
+    "bytes": 12368,
+    "sha256": "33130a72e879ab40880f7645039caac3685037443c9b4c1ea2e9d6922bc776b2"
+  },
+  "outputs/research/tables/forecast_validation_selected_models.csv": {
+    "bytes": 1534,
+    "sha256": "9641ea4ff0821bb09b0609fbab9ab5233cb93bf6729f23eed48e44a69baae603"
+  },
+  "outputs/research/tables/forecast_variance_floor_diagnostics.csv": {
+    "bytes": 1167,
+    "sha256": "b7dcc285659f97ac8f3f2ad917c27132ba90cf571f4fe2952e4afaf35619f88a"
+  },
+  "outputs/research/tables/local_projections.csv": {
+    "bytes": 26389,
+    "sha256": "4c66841ff27c7bb206c0f261cb953ec9db63dbc5459ff2ae4334b31c5b4a2c88"
+  },
+  "outputs/research/tables/missingness.csv": {
+    "bytes": 1120,
+    "sha256": "2f72954a9e78d782a72e504a0c20d8e654adecf62a31a1e3922e78334da762fd"
+  },
+  "outputs/research/tables/regime_interactions.csv": {
+    "bytes": 9068,
+    "sha256": "c69e3c41f4b5fac1b1271fe596f7ee9f49e17765bba0ba88d5149994c22b0964"
+  },
+  "outputs/research/tables/rolling_sensitivity.csv": {
+    "bytes": 56260,
+    "sha256": "f78d91aab1cc4fdb63524627329bbdce866ea4e9f748068295c41513a7168a34"
+  },
+  "outputs/research/tables/sp500_discrepancy_sensitivity.csv": {
+    "bytes": 221,
+    "sha256": "a81a913ae22a7f0ae1cfcf89a4a7c89138106896452fe2bfb66a36d3bdc03271"
+  },
+  "outputs/research/tables/stationarity_tests.csv": {
+    "bytes": 2128,
+    "sha256": "74b9473e3bfc70828b9be8c192227a6e802fd8b53ccb2a82f499417c98ea22a9"
+  },
+  "outputs/research/tables/var_diagnostics.csv": {
+    "bytes": 468,
+    "sha256": "2a3c486096f1df5a17c444718c015ffd4326190f11d8eb6a0bdbce9a6b94578c"
+  },
+  "outputs/research/tables/var_impulse_responses.csv": {
+    "bytes": 98132,
+    "sha256": "ebbd87989a9a14ff51e34d949ee9b8917f76fc8d9ec9939a69a9bdb65be3a08b"
+  },
+  "outputs/research/tables/var_robustness_diagnostics.csv": {
+    "bytes": 692,
+    "sha256": "775e64ad8e3db98eb7b738d144e3bc4a78a1413cf7fac6acad84242870180202"
+  },
+  "outputs/research/var_calendar_extension/baseline_comparison.csv": {
+    "bytes": 1935,
+    "sha256": "247e742a2f11d899a539c804e167ebf7122130f3d376e1f0c13f4ea89b042ba8"
+  },
+  "outputs/research/var_calendar_extension/btc_calendar_controls.csv": {
+    "bytes": 76121,
+    "sha256": "6c401a326e5eff152f7a2657b5cc45efc4860462083cf3a7cff498bc901b24e5"
+  },
+  "outputs/research/var_calendar_extension/calendar_coefficients.csv": {
+    "bytes": 59177,
+    "sha256": "c979e4247eae06c9bd3a13aa7a27c28010e2ee33ce051b5a961973271f21e506"
+  },
+  "outputs/research/var_calendar_extension/control_rank_checks.csv": {
+    "bytes": 778,
+    "sha256": "a3e6bdfec46c9a577d5a36e0ac423b7fc0a7717c0b8bf21f0828e92006f22ec7"
+  },
+  "outputs/research/var_calendar_extension/diagnostics.csv": {
+    "bytes": 5377,
+    "sha256": "997a313d57e26b3dfed54d1a42a65db65b7f4d3f75a91c538f580a0bc4ab7e4d"
+  },
+  "outputs/research/var_calendar_extension/eth_calendar_controls.csv": {
+    "bytes": 66665,
+    "sha256": "317b16e3134e0b4f42f1f1945f2eda009a8f92e75e799ce8c2218996e0d9a7d5"
+  },
+  "outputs/research/var_calendar_extension/impulse_responses.csv": {
+    "bytes": 700708,
+    "sha256": "bc652ff2186f69a18a34783c63ebafa9974ac6e2a558e29ce3e849d4129f6a43"
+  },
+  "outputs/research/var_calendar_extension/independent_validation.json": {
+    "bytes": 940,
+    "sha256": "20db190ead3189af20c72741628bd4fd5d2dbd871e4396a8e375331b0c69b898"
+  },
+  "outputs/research/var_calendar_extension/irf_comparison.csv": {
+    "bytes": 237677,
+    "sha256": "93d2601e522dc7dad50e1e34ca7b34ba23cb85b466c22b795047d30214eb6d7d"
+  },
+  "outputs/research/var_calendar_extension/irf_comparison_aic.png": {
+    "bytes": 280654,
+    "sha256": "01638342878f897fc5d4b2ff42e891100ce2cd412477c386019ab34243cc17ec"
+  },
+  "outputs/research/var_calendar_extension/irf_comparison_bic.png": {
+    "bytes": 229596,
+    "sha256": "d4fd10009e02ad5756ba6b2bdce4744c07d61b150dd7579fbffff19d033f45a5"
+  },
+  "outputs/research/var_calendar_extension/lag_selection.csv": {
+    "bytes": 23619,
+    "sha256": "0a2cc79b4b786954f5c85431fe66f4612c1cd2dc95104ab8915a256d7b7c2151"
+  },
+  "outputs/research/var_calendar_extension/report.html": {
+    "bytes": 23059,
+    "sha256": "e2f6d4ef31a0bf7750fcef57335e274d570783f51b30b49363ae8ef0e05c5020"
+  },
+  "outputs/research/var_calendar_extension/report.md": {
+    "bytes": 1766,
+    "sha256": "9ec90b88a974478b34d435b62c5e93bbb4fdd8ec271e86a13d40fec960baf914"
+  },
+  "outputs/research/var_calendar_extension/residual_cross_correlations.csv": {
+    "bytes": 923816,
+    "sha256": "c9e8745118b7eb82aaf63b914dffa83af2f9e3c9d0d6c844877a71b572d4c97d"
+  },
+  "outputs/research/var_calendar_extension/residual_own_serial_tests.csv": {
+    "bytes": 18242,
+    "sha256": "fb0a0a49d4326e8a02b67e3300496365be99fc075ca356794738aabb0777ac4b"
+  },
+  "outputs/research/var_calendar_extension/validation.json": {
+    "bytes": 44429,
+    "sha256": "7d097c21e765f6eb0a0d458f50b4286cb7d0bf0550a7e61213da14701afbbc96"
+  },
+  "notebooks/01_eda.ipynb": {
+    "bytes": 1711,
+    "sha256": "4c349c85f58d8c4f0b4391098a7988f9c445db1bd452bcc804551f3e5a4bfecc"
+  }
+}

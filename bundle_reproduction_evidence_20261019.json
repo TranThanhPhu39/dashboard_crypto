@@ -1,0 +1,11 @@
+{
+  "supplement_sha256": "3840adada238bc241242621748a076d0cbb46739250ce431d124337fdefeedef",
+  "mode": "Applied supplement to read-only-use hardlinked base prerequisites in separate workspace directory; not standalone",
+  "base_prerequisites_linked": 1214,
+  "independent_validation_exit": 0,
+  "dashboard_validation_exit": 0,
+  "independent_stdout": "Independent evidence checks: 21 / 21\nOld protected files unchanged: 1202\n",
+  "independent_stderr": "",
+  "dashboard_stdout": "{\n  causal_views: 4,\n  rotation_views: 384,\n  forecast_views: 40,\n  total_views: 428,\n  csv_coefficients_and_metrics_verified: true,\n  analytic_infinity_rendered_as_symbol: true,\n  local_links_verified: 33\n}\n",
+  "dashboard_stderr": ""
+}

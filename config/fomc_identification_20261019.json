@@ -1,0 +1,23 @@
+{
+  "version": "fomc_identification_20261019",
+  "scope": "Authorized FOMC source/coverage audit, policy-information shock decomposition and matched timing comparison; no changes to previous research outputs",
+  "sample": ["2014-01-01", "2026-10-15"],
+  "events": "USMPD Statements; scheduled meetings primary (Unscheduled==0), exact Eastern announcement timestamp converted with America/New_York DST",
+  "shock_primary": "Authors' maintained jkshocks_update_fed MP_median and CBI_median, exact announcement date-time match; no proxy substitution when unavailable",
+  "decomposition": "Reproduce author's signrestr_median on published pc1 and sp500 over the author's full complete sample, w=0.5; sensitivity w=0.1,0.9 on the same calibration sample",
+  "shock_units": "Components in percentage points of the published policy indicator; multiply by10 for coefficients per +10bps contribution to pc1. Not STMT, FF3 or a pure observed Fed rate change",
+  "intraday_primary": [-10,20],
+  "boundary": "Coinbase USD minute close immediately before each boundary; require all31 endpoint-inclusive candles, no interpolation",
+  "daily_source": "Download Coinbase BTC-USD/ETH-USD 86400-second candles into separate immutable cache; same exchange and USD quote as intraday, complete UTC-day labels; never splice into frozen Coin Metrics history",
+  "outcomes": "Intraday [-10,+20], full event UTC-day return, post-event D+1..D+h for h=1..30, all percent log returns",
+  "primary_membership": "Joint BTC/ETH intersection of scheduled events with exact author timestamp, finite two shocks, complete intraday, Coinbase daily outcomes through h30 and fixed prior controls; same events for all32 outcomes and both assets",
+  "controls": "Per asset Coinbase return D-2, trailing30 daily RMS annualized ending D-2, and frozen calendar-information prior VIX proxy; same controls for every timing outcome",
+  "inference": "OLS with intercept and both shock components jointly; HAC5 finite correction on chronological event rows, approximate normal pointwise95% intervals; conditional on generated shock series, not full two-stage/posterior uncertainty",
+  "families": "Primary full:128 coefficients (2assets*32outcomes*2shocks), BH together. Pre/post fits separately reported, BH over256 possible tests with missing/insufficient cells treated p=1. Rotation sensitivities descriptive, no selection by p-values",
+  "minimum_fit_rows": 12,
+  "identification_sensitivity": "All eligible rotation coefficients saved at w=0.1,0.5,0.9; ranges are not confidence intervals; covariance/PC-calibration uncertainty is not covered",
+  "timing_differences": "Fit outcome differences on identical X to obtain direct intraday versus event-day/post7 slope differences with covariance; separate BH8 tests, not comparing p-values from separate windows",
+  "daily_coverage_sensitivity": "Repeat full daily/event and post-h fits on all eligible per-asset daily events without intraday membership; compare sample counts and point estimates descriptively",
+  "interpretation": "Application of published high-frequency sign-restricted shock series to crypto, not a replication of JK2020 monthly Bayesian VAR. Causal interpretation remains conditional on no confounding announcement-window news, sign restrictions and external validity; VIX/USD causality untouched",
+  "preserve": "All old data/models/outputs/ZIPs and prospective protocol remain unchanged; no scheduler, new forecasting model or stress threshold change"
+}

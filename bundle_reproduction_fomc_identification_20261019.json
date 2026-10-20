@@ -1,0 +1,11 @@
+{
+  "supplement_sha256": "ba30279860a1cf35122468f16e8ccda7f0a027a17dacb23b5e3e7381b18dcef8",
+  "mode": "Applied to read-only-use hardlinked base prerequisites in a separate workspace directory; no standalone claim",
+  "base_prerequisites_linked": 1086,
+  "independent_validation_exit": 0,
+  "dashboard_validation_exit": 0,
+  "independent_stdout": "{\n  \"passed\": 20,\n  \"total\": 20,\n  \"checks\": {\n    \"pinned_author_source_hashes\": true,\n    \"pre_fit_design_membership_lock\": true,\n    \"independent_Cholesky_rotation_and_sign_restrictions\": true,\n    \"published_median_shocks_reproduced\": true,\n    \"PCA_independent_eigendecomposition\": true,\n    \"missing_author_stock_inputs_not_zero_imputed\": true,\n    \"identical_events_both_assets_all32_outcomes\": true,\n    \"scheduled_exact_timestamp_shocks_only\": true,\n    \"ET_UTC_timestamp_alignment\": true,\n    \"all_primary_minute_boundaries_and31_candles\": true,\n    \"daily_and_post_outcomes_same_venue_exact_UTC_days\": true,\n    \"prior_controls_are_backward_only\": true,\n    \"all384_coefficients_manual_OLS_HAC5\": true,\n    \"BH128_full_and256_periods\": true,\n    \"direct_timing_differences_include_cross_covariance\": true,\n    \"all9600_case_deletion_coefficients_independently_refit\": true,\n    \"posthoc_influence_disclosed\": true,\n    \"all_Coinbase_daily_source_hashes\": true,\n    \"five_identification_and_boundary_guards\": true,\n    \"all_previous_outputs_models_protocols_and_ZIPs_unchanged\": true\n  },\n  \"protected_files\": 1077,\n  \"unit_tests\": 5,\n  \"maximum_errors\": {\n    \"median_rotation\": 1.6653345369377348e-16,\n    \"coefficients\": 2.8066438062523957e-13,\n    \"HAC_se\": 3.055333763768431e-13,\n    \"timing_difference\": 1.554312234475219e-14,\n    \"leave_one_out\": 1.3855583347321954e-13\n  },\n  \"interpretation\": \"Numerical/alignment checks; no validation of exclusion/sign assumptions or full generated-shock uncertainty.\"\n}\nOld protected files unchanged: 1077\n",
+  "independent_stderr": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.012s\n\nOK\n",
+  "dashboard_stdout": "{\n  response_views: 384,\n  source_coefficients_verified: true,\n  rotation_and_direct_difference_views: 384,\n  finite_values: true,\n  local_links_verified: 25\n}\n",
+  "dashboard_stderr": ""
+}
