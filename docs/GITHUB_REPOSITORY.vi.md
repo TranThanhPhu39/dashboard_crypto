@@ -20,6 +20,8 @@ Thành viên sửa trên nhánh riêng, tạo pull request, kiểm tra rồi mer
 
 Hướng dẫn: [GitHub và server](DEPLOYMENT_GITHUB_SERVER.vi.md).
 
+Bản web có `compose.yaml`, cấu hình Nginx và exporter danh sách file công khai. Làm theo [VPS Linux/Docker](VPS_LINUX_DOCKER.vi.md) để chạy dashboard snapshot; worker Python và CI/CD cần cấu hình/kiểm thử riêng.
+
 **Các thành phần được giữ riêng**
 
 - `data/`, `models/`: dữ liệu và mô hình nghiên cứu/vận hành.

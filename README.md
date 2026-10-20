@@ -2,6 +2,8 @@
 
 Repository GitHub: [TranThanhPhu39/dashboard_crypto](https://github.com/TranThanhPhu39/dashboard_crypto). Bản clone chứa mã nguồn, dashboard nhúng dữ liệu hiển thị và một số báo cáo snapshot; raw data, models, ledger và bộ bằng chứng đầy đủ được chuyển riêng. Xem [phạm vi repository](docs/GITHUB_REPOSITORY.vi.md) và [hướng dẫn GitHub/server](docs/DEPLOYMENT_GITHUB_SERVER.vi.md) trước khi chạy pipeline trên máy mới. Lịch Windows trên máy nghiên cứu không được cài lại tự động khi clone.
 
+[Hướng dẫn VPS Linux/Docker](docs/VPS_LINUX_DOCKER.vi.md): bản Compose phục vụ dashboard snapshot qua Nginx; worker thu thập/dự báo Linux và CI/CD triển khai là phần cấu hình riêng.
+
 Bộ dữ liệu nghiên cứu tải ngày **16/10/2026**, mẫu theo ngày UTC **01/01/2014–15/10/2026**. Chỉ dùng ngày đã kết thúc. Không kéo dài dữ liệu đến cuối năm 2026 khi chưa có quan sát. Mô hình và báo cáo được triển khai theo thiết kế đã thống nhất dưới đây.
 
 ## Bản tổng hợp nộp 25/10/2026 — entry point hiện tại

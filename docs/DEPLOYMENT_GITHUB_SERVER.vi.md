@@ -119,7 +119,7 @@ Phần tích hợp phải ánh xạ `shared` vào đúng các đường dẫn t�
 
 **6. Hoàn thiện lớp Linux trước lần deploy đầu**
 
-Qua kiểm tra ngày 20/10, repo chưa có Dockerfile, Compose hoặc workflow GitHub Actions để deploy. `src/automation_runtime.py` đã có khóa tiến trình POSIX, nhưng vẫn gọi PowerShell để kiểm tra scheduler và gửi thông báo. Vì vậy chưa thể chỉ clone rồi chạy `run_automation.py run` trên Linux như bản Windows.
+Repo đã có `compose.yaml` cho web, cấu hình Nginx và script xuất dashboard theo danh sách file công khai; xem [hướng dẫn VPS/Docker](VPS_LINUX_DOCKER.vi.md). Repo chưa có image/adapter worker Linux hoặc workflow GitHub Actions để deploy. `src/automation_runtime.py` đã có khóa tiến trình POSIX, nhưng vẫn gọi PowerShell để kiểm tra scheduler và gửi thông báo. Vì vậy chưa thể chỉ clone rồi chạy `run_automation.py run` trên Linux như bản Windows.
 
 Những thành phần cần bổ sung và kiểm thử:
 

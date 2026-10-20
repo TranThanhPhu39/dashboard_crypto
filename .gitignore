@@ -14,7 +14,6 @@ node_modules/
 .DS_Store
 Thumbs.db
 *.tmp
-*.lock
 
 # Credentials belong to the host / secret manager
 .env
@@ -29,6 +28,7 @@ credentials.json
 # Full research archives and runtime data are transferred separately.
 /data/
 /models/
+/public/
 /*.zip
 /outputs/**
 

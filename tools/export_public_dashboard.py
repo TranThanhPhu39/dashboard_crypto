@@ -1,0 +1,96 @@
+"""Export an allowlisted web snapshot; never publish the repository root."""
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import tempfile
+
+ROOT = Path(__file__).resolve().parents[1]
+PUBLIC = ROOT / 'public'
+FILES = (
+    'dashboard/index.html',
+    'outputs/research/release_20261025/report.html',
+    'outputs/research/release_20261025/report.md',
+    'outputs/research/release_20261025/oos_followup.html',
+    'outputs/research/release_20261025/oos_followup.md',
+    'outputs/research/release_20261025/source_catalog.csv',
+    'outputs/research/evidence_20261019/report.html',
+    'outputs/research/evidence_20261019/report.md',
+    'outputs/research/pit_nested_20261020/report.html',
+    'outputs/research/pit_nested_20261020/report.md',
+    'outputs/automation_20261020/health.html',
+)
+
+
+def write_public(relative, content):
+    destination = (PUBLIC / relative).resolve()
+    if not destination.is_relative_to(PUBLIC.resolve()):
+        raise ValueError('Export destination escapes public directory')
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    parent = destination.parent
+    while True:
+        parent.chmod(0o755)
+        if parent == PUBLIC.resolve():
+            break
+        parent = parent.parent
+    with tempfile.NamedTemporaryFile(dir=destination.parent, delete=False) as stream:
+        temporary = Path(stream.name)
+        stream.write(content)
+        stream.flush()
+        os.fsync(stream.fileno())
+    try:
+        temporary.chmod(0o644)
+        os.replace(temporary, destination)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def git_value(*arguments):
+    try:
+        result = subprocess.run(['git', '-C', str(ROOT), *arguments],
+                                capture_output=True, text=True, timeout=15, check=True)
+        return result.stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+
+def main():
+    if PUBLIC.is_symlink() or not PUBLIC.resolve().is_relative_to(ROOT):
+        raise ValueError('Public directory must be a real directory within this repository')
+    allowed = set(FILES) | {'index.html', 'build_info.json'}
+    if PUBLIC.exists():
+        for path in PUBLIC.rglob('*'):
+            if path.is_symlink() or not path.resolve().is_relative_to(PUBLIC.resolve()):
+                raise ValueError('Unexpected symlink in public directory')
+            if path.is_file() and path.relative_to(PUBLIC).as_posix() not in allowed:
+                raise ValueError('Unknown file in public directory; inspect it before publishing')
+    contents = {}
+    for relative in FILES:
+        source = (ROOT / relative).resolve()
+        if not source.is_relative_to(ROOT) or not source.is_file():
+            raise ValueError('Missing or invalid public snapshot: ' + relative)
+        contents[relative] = source.read_bytes()
+    state = git_value('status', '--porcelain', '--untracked-files=no')
+    metadata = {
+        'exported_at_utc': datetime.now(timezone.utc).isoformat(),
+        'source_commit': git_value('rev-parse', 'HEAD'),
+        'tracked_worktree_changes': bool(state) if state is not None else None,
+        'scope': 'Rendered snapshot; exporting does not collect data or run a forecast worker',
+        'files_sha256': {name: hashlib.sha256(data).hexdigest() for name, data in contents.items()},
+    }
+    # Publish the self-contained dashboard last; other files are optional detail pages.
+    for relative, data in contents.items():
+        if relative != 'dashboard/index.html':
+            write_public(relative, data)
+    write_public('build_info.json', (json.dumps(metadata, ensure_ascii=False, indent=2) + '\n').encode())
+    write_public('index.html', b'<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=dashboard/"><a href="dashboard/">Dashboard</a>')
+    write_public('dashboard/index.html', contents['dashboard/index.html'])
+    print(json.dumps({'exported_files': len(FILES), 'directory': str(PUBLIC),
+                      'source_commit': metadata['source_commit'], 'snapshot_only': True}))
+
+
+if __name__ == '__main__':
+    main()
