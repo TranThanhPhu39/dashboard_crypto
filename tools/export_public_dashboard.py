@@ -31,8 +31,9 @@ def dashboard_only_bytes(data):
     """Keep analysis/scripts; omit links to unpublished research/health pages."""
     text = data.decode('utf-8')
     pattern = r'''<a\b[^>]*\bhref=(["'])(\.\./outputs/[^"']+)\1[^>]*>(.*?)</a\s*>'''
-    return re.sub(pattern, lambda match: match.group(3), text,
-                  flags=re.IGNORECASE | re.DOTALL).encode('utf-8')
+    text = re.sub(pattern, '', text, flags=re.IGNORECASE | re.DOTALL)
+    text = re.sub(r'<p\b[^>]*>\s*(?:[\u00b7|]\s*)*</p\s*>', '', text, flags=re.IGNORECASE)
+    return text.encode('utf-8')
 
 
 def write_public(relative, content, public=PUBLIC):
