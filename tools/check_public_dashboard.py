@@ -15,9 +15,12 @@ class Links(HTMLParser):
     def __init__(self):
         super().__init__()
         self.links = []
+        self.ids = []
 
     def handle_starttag(self, tag, attrs):
         for name, value in attrs:
+            if name == 'id':
+                self.ids.append(value)
             if value and (name == 'src' or (tag in ('a', 'link') and name == 'href')):
                 self.links.append(value)
 
@@ -67,6 +70,10 @@ def main():
     for relative in ('index.html', 'dashboard/index.html'):
         parser = Links()
         parser.feed((public/relative).read_text(encoding='utf-8'))
+        if args.dashboard_only and relative == 'dashboard/index.html':
+            source_parser = Links()
+            source_parser.feed((ROOT/relative).read_text(encoding='utf-8'))
+            require(parser.ids == source_parser.ids, 'Dashboard DOM IDs changed during export')
         for link in parser.links:
             url = urlsplit(link)
             if url.scheme or url.netloc or not url.path:
