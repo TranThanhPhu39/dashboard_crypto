@@ -64,7 +64,8 @@ def build():
     now=pd.Timestamp.now(tz='UTC');local=now.tz_convert('Asia/Ho_Chi_Minh').isoformat();status=live_status()
     from src.oos_followup import build_followup
     oos_followup=build_followup(status,now)
-    automation_note=('Đã cài lịch pipeline mỗi giờ phút15 và giám sát phút45; chạy thêm khi đăng nhập. Máy cần bật, tài khoản Admin đăng nhập và có Internet.' if status['scheduler_installed'] else 'Chưa xác minh được hai tác vụ Windows đang bật; xem trạng thái giám sát.')
+    from src.automation_runtime import automation_description
+    automation_note=automation_description(status['automation'])
     summary=f'FOMC: thành phần chính sách gắn với phản ứng intraday âm, dưới các giả định nhận dạng. Khác biệt chế độ có {int((regimes.qvalue_bh<.05).sum())}/256 kiểm định đạt BH với HAC, {int((regimes.qvalue_hc3_bh<.05).sum())}/256 với HC3. Dự báo daily: macro cải thiện 3/32 so sánh ở mẫu D3 gốc; ba mẫu matched đều 0/32. Mỗi scenario gộp có 0/40 mô hình vượt benchmark sau BH. RV thắng benchmark ở {rvwins}/120 so sánh, nhưng macro chỉ cải thiện {rvmacro}/32. Chưa xác nhận quan hệ nhân quả vô điều kiện hoặc khả năng dự báo tương lai.'
     latest=dict(generatedUtc=now.isoformat(),generatedLocal=local,summary=summary,live=status,ablation=records(ablation),benchmarks=records(bench),sensitivity=records(sensitivity),
         metrics=records(metrics),samples=records(samples),fomc=records(ranges),regimes=records(regimes),rvAblation=records(rvab),rvBenchmarks=records(rvbench),rvMetrics=records(rvmetrics),pit=records(features),revision=records(revision),pooled=records(counts))

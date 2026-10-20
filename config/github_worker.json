@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "repository": "TranThanhPhu39/dashboard_crypto",
+  "bootstrap": {
+    "id": 659736622,
+    "name": "bootstrap-catalog-c3ef08c08e80417b82fd94ea2f5e78ec.enc",
+    "tag": "worker-bootstrap-v1",
+    "sha256": "52a073f43d2c07800c04c5743766da94c8b110f975d8e8d10873eba076a4adc6",
+    "bytes": 697986
+  },
+  "storage_branch": "worker-state",
+  "pipeline_cron": "15 * * * *",
+  "monitor_cron": "45 * * * *"
+}

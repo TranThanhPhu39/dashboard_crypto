@@ -1,6 +1,6 @@
 # OOS: bằng chứng đã có và vận hành tiếp theo
 
-Cập nhật 2026-10-20T21:45:17.889604+07:00. [Báo cáo chính](report.html) · [Review tài liệu](../../../paper/untouched_oos_followup_20261020.md) · [Audit có provenance](oos_followup.json).
+Cập nhật 2026-10-20T22:32:21.875861+07:00. [Báo cáo chính](report.html) · [Review tài liệu](../../../paper/untouched_oos_followup_20261020.md) · [Audit có provenance](oos_followup.json).
 
 ## Hai mốc thời gian khác nhau
 
@@ -20,7 +20,7 @@ Protocol hiện tại chạy từ **2026-10-20T00:00:00Z** tới trước **2027
 
 Lần thử gần nhất: BTC: INELIGIBLE_INPUTS; ETH: INELIGIBLE_INPUTS. Ledger có **0 forecast commits, 0 dự báo mô hình và 0 label files**. Dùng **40 latency artifacts đã khóa**; không triển khai 640 nested artifacts thay thế. Chưa chấm performance trước fixed endpoint, không suy ra skill từ tình trạng collector.
 
-Lịch eligibility/receipt/logging nằm trong [readiness calendar](../evidence_20261019/prospective_operations/readiness_calendar.csv); đây là điều kiện vận hành, không phải dự báo đã tồn tại. Nhật ký ghi cả lần thiếu inputs; không backdate hoặc bù dự báo sau outcome. Đã cài hai tác vụ Windows: pipeline mỗi giờ phút15, giám sát phút45, chạy thêm khi đăng nhập. Có retry và cảnh báo cục bộ khi lỗi/bỏ lỡ; máy cần bật, tài khoản Admin đăng nhập và có Internet. [Giám sát, cảnh báo và log](../../automation_20261020/health.html).
+Lịch eligibility/receipt/logging nằm trong [readiness calendar](../evidence_20261019/prospective_operations/readiness_calendar.csv); đây là điều kiện vận hành, không phải dự báo đã tồn tại. Nhật ký ghi cả lần thiếu inputs; không backdate hoặc bù dự báo sau outcome. Đã cài lịch pipeline mỗi giờ phút 15 và giám sát phút 45; chạy thêm khi đăng nhập. Máy cần bật, tài khoản Admin đăng nhập và có Internet. [Giám sát, cảnh báo và log](../../automation_20261020/health.html).
 
 ## Việc cần chạy tiếp theo
 

@@ -96,9 +96,18 @@ def automation_summary(folder=OUT):
     health = read_json(folder/'health.json', {})
     installation = read_json(folder/'installation.json', {})
     tasks = scheduler.get('tasks', [])
-    installed = bool(installation.get('registered') and scheduler.get('verified') and len(tasks)==2
+    installed = bool(state.get('status')!='finished_schedule' and installation.get('registered') and scheduler.get('verified') and len(tasks)==2
                      and all(task.get('enabled') and task.get('action_matches') for task in tasks))
-    return dict(installed=installed, schedule='Mỗi giờ phút 15; thêm khi đăng nhập',
+    if scheduler.get('provider') == 'github-actions':
+        return dict(installed=installed, provider='github-actions', schedule='GitHub Actions: mỗi giờ phút 15 (UTC; có thể trễ)',
+                monitor_schedule='GitHub Actions: mỗi giờ phút 45 (UTC; có thể trễ)',
+                scheduler_checked_at_utc=scheduler.get('checked_at_utc'),
+                next_run_local=next((row.get('next_run_local') for row in tasks if row.get('role')=='pipeline'), None),
+                latest_status=state.get('status', 'not_run'), last_success_utc=state.get('last_success_utc'),
+                health_status=health.get('status', 'not_checked'), active_alerts=len(health.get('issues', [])),
+                health_checked_at_utc=health.get('checked_at_utc'), desktop_notifications=False,
+                requirements='Chạy trên GitHub, không cần bật máy cá nhân. Lịch có thể trễ; receipt và cutoff dùng thời điểm thực, không bù dự báo quá hạn.')
+    return dict(installed=installed, provider='windows', schedule='Mỗi giờ phút 15; thêm khi đăng nhập',
                 monitor_schedule='Mỗi giờ phút 45; thêm khi đăng nhập',
                 scheduler_checked_at_utc=scheduler.get('checked_at_utc'),
                 next_run_local=next((row.get('next_run_local') for row in tasks if row.get('role')=='pipeline'), None),
@@ -107,6 +116,18 @@ def automation_summary(folder=OUT):
                 health_checked_at_utc=health.get('checked_at_utc'),
                 desktop_notifications=installation.get('desktop_notifications', False),
                 requirements='Máy bật, tài khoản Admin đăng nhập và có Internet; chạy bù không tạo lại forecasts quá hạn.')
+
+
+def automation_description(summary):
+    if summary.get('latest_status')=='finished_schedule':
+        return 'Lịch vận hành đã kết thúc theo stop_after_utc của thiết kế đã khóa.'
+    if summary.get('provider') == 'github-actions':
+        return ('Tự động trên GitHub Actions: pipeline mỗi giờ phút 15, giám sát phút 45; không cần bật máy cá nhân. '
+                'Lịch có thể trễ; cutoff và thời điểm nhận dữ liệu giữ nguyên.' if summary['installed'] else
+                'Chưa xác minh được lịch GitHub Actions đang bật; kiểm tra workflow và trạng thái vận hành.')
+    return ('Đã cài lịch pipeline mỗi giờ phút 15 và giám sát phút 45; chạy thêm khi đăng nhập. '
+            'Máy cần bật, tài khoản Admin đăng nhập và có Internet.' if summary['installed'] else
+            'Chưa xác minh được hai tác vụ Windows đang bật; xem trạng thái giám sát.')
 
 
 def check_immutable(cfg, root=ROOT):
@@ -146,7 +167,7 @@ def health_issues(now, cfg, installation, scheduler, state, readiness=()):
     if state.get('status')=='failed':
         add('pipeline_failed', 'Pipeline lỗi sau các lần thử; xem log: '+str(state.get('log', '')))
     last = state.get('last_success_utc') or installation.get('installed_at_utc')
-    if last and now-timestamp(last)>timedelta(minutes=cfg['stale_after_minutes']):
+    if state.get('status')!='finished_schedule' and last and now-timestamp(last)>timedelta(minutes=cfg['stale_after_minutes']):
         add('missed_runs', 'Quá thời gian dự kiến chưa có lần pipeline thành công; kiểm tra máy, tài khoản, mạng và Task Scheduler.')
     if state.get('status')=='running' and now-timestamp(state['started_at_utc'])>timedelta(minutes=cfg['task_execution_limit_minutes']):
         add('pipeline_hung', 'Lần chạy đang vượt giới hạn thời gian; watchdog sẽ giữ cảnh báo cho tới khi phục hồi.')
@@ -201,6 +222,10 @@ def send_health_notifications(issues, cfg, installation, folder=OUT, sender=noti
 
 
 def refresh_scheduler_status(root=ROOT):
+    if os.environ.get('GITHUB_ACTIONS') == 'true':
+        from src.github_scheduler import refresh
+        refresh(Path(root))
+        return
     result=subprocess.run([str(POWERSHELL), '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden',
         '-File', str(Path(root)/'tools/manage_topic09_automation.ps1'), '-Action', 'Status'],
         capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=40,
@@ -221,6 +246,10 @@ def write_health_page(health, state, folder=OUT):
     body=body.replace('Kiểm tra UTC: '+html.escape(health['checked_at_utc']), 'Kiểm tra giờ Việt Nam: '+checked_local)
     body=body.replace('<strong>'+health['status']+'</strong>', '<strong>'+status_label+'</strong>')
     body=body.replace('Lần thành công UTC: '+html.escape(str(state.get('last_success_utc','chưa có'))), 'Lần thành công giờ Việt Nam: '+success_local)
+    summary=automation_summary(folder)
+    if summary.get('provider')=='github-actions':
+        body=body.replace('Windows Task Scheduler', 'GitHub Actions scheduler')
+        body=body.replace('Lịch pipeline mỗi giờ phút 15; giám sát mỗi giờ phút 45; chạy thêm khi đăng nhập. Máy cần bật, tài khoản Admin đăng nhập và có Internet. Task yêu cầu wake khi Windows hỗ trợ; không thay power policy.', automation_description(summary))
     (folder/'health.html').write_text(body, encoding='utf-8')
 
 
@@ -235,7 +264,7 @@ def monitor(refresh=True, root=ROOT, folder=OUT):
     with source.open(encoding='utf-8-sig', newline='') as stream:
         readiness=list(csv.DictReader(stream))
     now=now_utc(); issues=health_issues(now,cfg,installation,scheduler,state,readiness)
-    deliveries=send_health_notifications(issues,cfg,installation,folder=folder,now=now) if cfg['desktop_notifications'] else []
+    deliveries=send_health_notifications(issues,cfg,installation,folder=folder,now=now) if cfg['desktop_notifications'] and installation.get('provider')!='github-actions' else []
     health=dict(checked_at_utc=now.isoformat(), status='attention' if issues else 'healthy', issues=issues,
                 notifications=deliveries, performance_evaluated=False)
     atomic_json(folder/'health.json',health); write_health_page(health,state,folder)
@@ -274,7 +303,7 @@ def operate_frozen(op, refresh_capture=False, at=None):
 def run_pipeline():
     OUT.mkdir(parents=True,exist_ok=True);cfg=read_json(CONFIG)
     installation=read_json(OUT/'installation.json', {})
-    executable=installation.get('python_executable') or str(Path(sys.executable).with_name('python.exe'))
+    executable=(installation.get('python_executable') or str(Path(sys.executable).with_name('python.exe'))) if os.name=='nt' else sys.executable
     started=now_utc(); stamp=started.strftime('%Y%m%dT%H%M%S%fZ')
     log=OUT/'logs'/(stamp+'.log'); log.parent.mkdir(parents=True,exist_ok=True)
     with process_lock(OUT/'worker.lock'):
@@ -347,7 +376,7 @@ def main():
         with process_lock(OUT/'monitor.lock'):
             health=monitor()
             installation=read_json(OUT/'installation.json',{})
-            executable=installation.get('python_executable') or str(Path(sys.executable).with_name('python.exe'))
+            executable=(installation.get('python_executable') or str(Path(sys.executable).with_name('python.exe'))) if os.name=='nt' else sys.executable
             log=OUT/'logs'/(now_utc().strftime('%Y%m%dT%H%M%S%fZ')+'_monitor.log');log.parent.mkdir(parents=True,exist_ok=True)
             # Do not race the pipeline's rendering or write into its status.
             try:

@@ -71,6 +71,7 @@ def git_value(*arguments):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dashboard-only', action='store_true', help='Export only the dashboard to public-pages')
+    parser.add_argument('--worker', action='store_true', help='Bind a runtime-rendered dashboard to its durable checkpoint')
     args = parser.parse_args()
     public = PUBLIC_PAGES if args.dashboard_only else PUBLIC
     files = ('dashboard/index.html',) if args.dashboard_only else FILES
@@ -102,6 +103,24 @@ def main():
         'source_files_sha256': source_hashes,
         'files_sha256': {name: hashlib.sha256(data).hexdigest() for name, data in contents.items()},
     }
+    if args.worker:
+        if not args.dashboard_only or os.environ.get('GITHUB_ACTIONS') != 'true':
+            raise ValueError('Worker export requires dashboard-only mode on GitHub Actions')
+        persisted = json.loads((ROOT/'.worker-work/persisted.json').read_text())
+        if not re.fullmatch(r'[a-f0-9]{40}', persisted['state_commit']):
+            raise ValueError('Missing durable runtime commit')
+        changed = git_value('diff', '--name-only', 'HEAD').splitlines()
+        allowed = {'dashboard/index.html', 'paper/README.md',
+            'outputs/automation_20261020/health.html',
+            'outputs/research/release_20261025/report.html',
+            'outputs/research/release_20261025/report.md',
+            'outputs/research/release_20261025/oos_followup.html',
+            'outputs/research/release_20261025/oos_followup.md'}
+        if not set(changed).issubset(allowed):
+            raise ValueError('Tracked source changed outside runtime allowlist')
+        metadata['worker'] = {**persisted, 'run_url': 'https://github.com/' + os.environ['GITHUB_REPOSITORY'] +
+            '/actions/runs/' + os.environ['GITHUB_RUN_ID'], 'runtime_modified_paths': changed}
+        metadata['scope'] = 'Runtime dashboard from frozen artifacts; durable encrypted checkpoint committed before publication'
     # Publish the self-contained dashboard last; other files are optional detail pages.
     for relative, data in contents.items():
         if relative != 'dashboard/index.html':

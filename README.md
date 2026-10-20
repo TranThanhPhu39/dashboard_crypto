@@ -4,7 +4,7 @@ Repository GitHub: [TranThanhPhu39/dashboard_crypto](https://github.com/TranThan
 
 [Hướng dẫn VPS Linux/Docker](docs/VPS_LINUX_DOCKER.vi.md): bản Compose phục vụ dashboard snapshot qua Nginx; worker thu thập/dự báo Linux và CI/CD triển khai là phần cấu hình riêng.
 
-[Dashboard GitHub Pages](https://tranthanhphu39.github.io/dashboard_crypto/dashboard/) · [Cách xuất bản miễn phí](docs/GITHUB_PAGES.vi.md). Workflow Pages kiểm tra PR và deploy snapshot sau khi push/merge vào `main`; dữ liệu mới trên máy nghiên cứu cần được đồng bộ thành commit để xuất hiện trên web.
+[Dashboard GitHub Pages](https://tranthanhphu39.github.io/dashboard_crypto/dashboard/) · [Worker GitHub Actions + Pages](docs/GITHUB_ACTIONS_WORKER.vi.md). Worker Ubuntu khôi phục dữ liệu/mô hình/checkpoint mã hóa, vận hành thiết kế đã khóa và deploy dashboard sau khi lưu trạng thái bền vững. Pipeline dự kiến mỗi giờ phút 15, giám sát phút 45; push/merge `main` chạy với source mới. Chỉ bàn giao khỏi Windows sau khi preflight và kiểm tra end-to-end thành công. Xem workflow để biết trạng thái thực tế; không cần commit raw data/ledger lên nhánh mã nguồn.
 
 [Tạo server Oracle Always Free](docs/ORACLE_ALWAYS_FREE.vi.md): hướng dẫn chuẩn bị máy ARM64, SSH và các bước bàn giao worker. Windows tiếp tục vận hành đến khi server được kiểm chứng và tiếp quản.
 

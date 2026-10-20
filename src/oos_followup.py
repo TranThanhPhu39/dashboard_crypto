@@ -82,7 +82,8 @@ def build_followup(live, now):
         estimates_changed=False, performance_claim=False)
     save_json(OUT/'oos_followup.json', obj)
     capture_state = obj['prospective']['latest_capture']
-    automation_note=('Đã cài hai tác vụ Windows: pipeline mỗi giờ phút15, giám sát phút45, chạy thêm khi đăng nhập. Có retry và cảnh báo cục bộ khi lỗi/bỏ lỡ; máy cần bật, tài khoản Admin đăng nhập và có Internet.' if live['scheduler_installed'] else 'Chưa xác minh được hai tác vụ Windows đang bật; kiểm tra trang health trước khi dựa vào lịch tự động.')
+    from src.automation_runtime import automation_description
+    automation_note=automation_description(live['automation'])
     attempt_text = '; '.join(f"{row['asset'].upper()}: {row['status']}" for row in attempts)
     next_origin = plan['next_conditional_origin']
     next_note = 'Chưa có candidate trong khoảng lịch hiện được audit; cần chạy operate để làm mới readiness.'

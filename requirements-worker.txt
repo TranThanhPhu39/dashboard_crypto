@@ -1,0 +1,12 @@
+# Match the versions used to serialize the frozen models; never train in CI.
+numpy==2.4.6
+pandas==3.0.6
+scipy==1.17.1
+scikit-learn==1.9.1
+joblib==1.6.0
+matplotlib==3.11.2
+statsmodels==0.15.0
+threadpoolctl==3.7.0
+requests==2.34.2
+tzdata>=2024.1
+cryptography==50.0.2

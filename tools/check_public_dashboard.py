@@ -65,7 +65,17 @@ def main():
                         re.findall(pattern, source, re.IGNORECASE | re.DOTALL), 'Dashboard code/data changed')
     if os.environ.get('GITHUB_SHA'):
         require(metadata['source_commit'] == os.environ['GITHUB_SHA'], 'Wrong source commit')
-        require(metadata['tracked_worktree_changes'] is False, 'CI source worktree is dirty')
+        if metadata.get('worker'):
+            receipt = json.loads((ROOT/'.worker-work/persisted.json').read_text())
+            require(metadata['worker']['state_commit'] == receipt['state_commit'] and
+                    metadata['worker']['catalog_sha256'] == receipt['catalog_sha256'] and
+                    metadata['worker']['generation'] == receipt['generation'], 'Runtime commit receipt mismatch')
+            require(os.environ.get('GITHUB_ACTIONS') == 'true', 'Runtime publication outside Actions')
+            from export_public_dashboard import git_value
+            changed = git_value('diff', '--name-only', 'HEAD').splitlines()
+            require(changed == metadata['worker']['runtime_modified_paths'], 'Runtime paths changed after export')
+        else:
+            require(metadata['tracked_worktree_changes'] is False, 'CI source worktree is dirty')
     linked_files = 0
     for relative in ('index.html', 'dashboard/index.html'):
         parser = Links()

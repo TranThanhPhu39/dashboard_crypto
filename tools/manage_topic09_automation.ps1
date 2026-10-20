@@ -1,4 +1,4 @@
-param([ValidateSet('Plan','Install','Status','RunNow','RunMonitor','Uninstall')][string]$Action='Status',[string]$PythonExecutable)
+param([ValidateSet('Plan','Install','Status','RunNow','RunMonitor','Pause','Resume','Uninstall')][string]$Action='Status',[string]$PythonExecutable)
 $ErrorActionPreference='Stop'
 $projectRoot=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $configPath=Join-Path $projectRoot 'config\automation_20261020.json'
@@ -69,6 +69,19 @@ if ($Action -in @('Plan','Install')) {
     $record=[ordered]@{registered=$true;installed_at_utc=[DateTimeOffset]::UtcNow.ToString('o');account=$account;project_root=$projectRoot;python_executable=$PythonExecutable;python_windowless=$pythonWindowless;desktop_notifications=[bool]$cfg.desktop_notifications;toast_app_id=$app.AppID;config_sha256=(Get-FileHash -LiteralPath $configPath -Algorithm SHA256).Hash.ToLower();authorization=$cfg.authorization;logon_type='Interactive';password_stored=$false;end_local=$endLocal}
     Save-JsonAtomic $installationFile $record
     $installation=[pscustomobject]$record
+}
+if ($Action -in @('Pause','Resume')) {
+    if (-not $installation.registered) { throw 'No owned installation to pause/resume.' }
+    foreach ($item in @(@{Name=$cfg.pipeline_task;Stage='run'},@{Name=$cfg.monitor_task;Stage='monitor'})) {
+        $task=Get-ScheduledTask -TaskName $item.Name
+        if (-not (Verify-OwnTask $task $item.Stage $installation.python_windowless)) { throw ('Task identity differs: '+$item.Name) }
+    }
+    foreach ($name in @($cfg.pipeline_task,$cfg.monitor_task)) {
+        if ($Action -eq 'Pause') { $null=Disable-ScheduledTask -TaskName $name }
+        else { $null=Enable-ScheduledTask -TaskName $name }
+    }
+    # Do not terminate an in-flight collector. The handoff script takes all
+    # three OS locks before capturing the final authoritative local state.
 }
 if ($Action -eq 'Uninstall') {
     if (-not $installation) { throw 'No owned installation record; refusing task removal.' }

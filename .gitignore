@@ -30,6 +30,9 @@ credentials.json
 /models/
 /public/
 /public-pages/
+/.worker-cache/
+/.worker-work/
+/.worker-bin/
 /*.zip
 /outputs/**
 
