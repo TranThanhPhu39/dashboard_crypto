@@ -156,6 +156,11 @@ class DurableWorkerTests(unittest.TestCase):
         summary = auto.automation_summary(folder)
         self.assertTrue(summary['installed'])
         self.assertIn('không cần bật máy cá nhân', auto.automation_description(summary))
+        auto.write_health_page({'checked_at_utc': '2026-10-21T01:00:00+00:00', 'status': 'healthy', 'issues': []},
+                               {'status': 'succeeded'}, folder)
+        page = (folder/'health.html').read_text(encoding='utf-8')
+        self.assertIn('không cần bật máy cá nhân', page)
+        self.assertNotIn('Máy cần bật', page)
         auto.atomic_json(folder/'scheduler_status.json', {'provider': 'github-actions', 'verified': False, 'tasks': []})
         self.assertFalse(auto.automation_summary(folder)['installed'])
 
