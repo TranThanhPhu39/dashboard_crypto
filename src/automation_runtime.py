@@ -145,6 +145,12 @@ def needs_refresh(now, cfg, root=ROOT):
     if digest(manifest_path) != pointer['sha256']:
         raise AssertionError('Capture manifest integrity failure')
     capture = read_json(manifest_path)
+    if os.environ.get('TOPIC09_FRED_TRANSPORT')=='official-api':
+        from src.data.github_fred_api import VERSION
+        if capture.get('transport_version')!=VERSION:
+            # One immutable capture proves the new transport at handoff. Old
+            # receipts remain eligible under the original earliest-input rule.
+            return True
     return (now-timestamp(capture['capture_started_utc']) >= timedelta(hours=cfg['refresh_capture_hours'])
             or len(capture['sources']) != 17 or any(row['status']!='ok' for row in capture['sources']))
 

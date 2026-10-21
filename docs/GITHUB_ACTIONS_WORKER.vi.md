@@ -20,6 +20,8 @@ Adapter `src/data/github_fred_api.py` giữ nguyên 13 lượt dữ liệu FRED/
 
 Preflight còn đối chiếu API với các web vintage đã archive nếu có cùng ngày, và đối chiếu VIX trên phần ngày giao nhau. Đây là kiểm tra tương đương đầu vào khi chuyển host, không phải đánh giá forecast skill. Windows giữ collector cũ khi không có cờ transport GitHub; lịch sử và receipt cũ không bị chuyển đổi hoặc ghi đè.
 
+Lượt bàn giao đầu tiên thu thêm một capture API thật nếu checkpoint vẫn trỏ tới web collector cũ. Sau đó giữ nhịp refresh 4 giờ/nguồn lỗi hiện có. Capture cũ không bị thay; selector vẫn chọn input đủ nội dung sớm nhất trong cutoff ban đầu. Preflight thành công ngày 21/10/2026: 17/17 nguồn, 40 model predictions tương đương và 820 observations đối chiếu API/web đạt (6 series vintage 19/10 và phần VIX giao nhau).
+
 ## Dữ liệu và trạng thái bền vững
 
 - **GitHub Releases:** bootstrap và các gói thay đổi được mã hóa AES-256-GCM bằng khóa 32 byte. Mỗi phần dưới 48 MiB plaintext, có SHA-256 cho ciphertext, archive và từng file. Release trạng thái tách theo ngày để tránh giới hạn số asset trên một release.
