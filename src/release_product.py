@@ -88,10 +88,14 @@ def build():
     template=template.replace('Báo cáo hiện tại','Snapshot blueprint 19/10')
     template=template.replace('Macro daily đo liên hệ với cập nhật bộ thông tin đã khả dụng;', 'Calendar LP baseline 19/10 (khác FOMC components và forecasting bên dưới). Macro daily đo liên hệ với cập nhật bộ thông tin đã khả dụng;')
     template=template.replace('function renderForecast(){'+template.split('function renderForecast(){',1)[1].split('\nfunction renderImportance',1)[0], '')
-    additions=(ROOT/'dashboard/release_functions.js').read_text(encoding='utf-8')
+    from src.historical_oos import load as load_historical_oos
+    history=load_historical_oos()
+    additions=(ROOT/'dashboard/historical_oos.js').read_text(encoding='utf-8')+'\n'+(ROOT/'dashboard/release_functions.js').read_text(encoding='utf-8')
     template=template.replace('for(let h=1;h<=30;h++)',additions+'\nfor(let h=1;h<=30;h++)',1)
     template=template.replace('const DATA=__PAYLOAD__;','const DATA=__PAYLOAD__;\nconst LATEST=__LATEST__;')
     template=template.replace('__PAYLOAD__',json.dumps(base,ensure_ascii=False,allow_nan=False).replace('</','<\/')).replace('__LATEST__',json.dumps(latest,ensure_ascii=False,allow_nan=False).replace('</','<\/'))
+    history_json=json.dumps(history,ensure_ascii=False,allow_nan=False,separators=(',',':'))
+    template=template.replace('const LATEST=', 'const HISTORICAL='+history_json.replace('</', '<'+'\\'+'/')+';\nconst LATEST=',1)
     from src.dashboard_workspace import workspace
     template=workspace(template)
     (ROOT/'dashboard/index.html').write_text(template,encoding='utf-8')
@@ -197,6 +201,14 @@ Native có949 origins và matched728 mỗi tài sản. Khác significance giữa
 {rvwins}/120 HAR/HAR-X-vs-benchmark comparisons thắng sauBH; {rvmacro}/32 incremental macro comparisons cải thiện sauBH. Model confidence set membership không chứng minh macro skill. Kết quả này ủng hộ một số cấu trúc lịch sử RV trong sample hơn một số benchmark, chưa xác nhận macro hoặc future predictive ability. [Nguồn, sample và loss đầy đủ](../evidence_20261019/report.html).
 
 ![RV forecast comparisons](../evidence_20261019/figures/rv_forecasting.png)
+
+## 7b. Kiểm thử OOS trên dữ liệu quá khứ theo khoảng ngày
+
+Dashboard → **Dự báo rủi ro → Phát lại dự báo trên dữ liệu quá khứ** cho phép chọn khoảng ngày UTC trong 01/01/2023–13/10/2026, tài sản, target, model, scenario và cặp so sánh. Hiển thị thực tế/base/added/benchmark, loss cộng dồn, timing và model SHA-256 của từng origin; CSV giữ nguyên dự báo và các mốc thời gian. Chỉ các origins đã đủ điều kiện trong thiết kế gốc được dùng, không tạo forecast cho ngày thiếu.
+
+Đã replay **{history['audit']['artifacts_replayed']} artifacts**, đối chiếu **{history['audit']['learned_predictions_checked']} learned predictions** và **{history['audit']['benchmark_predictions_checked']} benchmark predictions** với CSV đã khóa; kiểm tra chronology, label availability và train-only scaling. Không refit, không thay ước lượng hoặc ghi dự báo lịch sử vào ledger prospective. Chạy lại bằng `py -3.11 run_release.py validate-history`; dữ liệu hiển thị và bằng chứng checksum ở `dashboard/historical_oos_data.json` và `dashboard/historical_oos_audit.json`.
+
+Đây là **historical pseudo-OOS** kiểm chứng quy trình tính toán, khác với tính độc lập của toàn bộ thiết kế cuối với outcomes đã xem. Scenario latest-vintage giữ nhãn **EX POST ORACLE**. Khoảng ngày người dùng chọn chỉ tính thống kê mô tả; các bảng CI/BH vẫn dùng kỳ/năm đánh giá đã khóa, không suy luận significance cho đoạn được chọn sau khi xem biểu đồ.
 
 ## 8. PIT, OOS độc lập và hạn nộp
 

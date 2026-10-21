@@ -1,0 +1,13 @@
+<div class="historical-oos" id="historicalOos">
+<div class="history-heading"><div><div class="eyebrow">HISTORICAL OOS REPLAY · UTC</div><h3>Phát lại dự báo trên dữ liệu quá khứ</h3></div><span class="history-badge" id="historyAuditBadge"></span></div>
+<p class="section-intro">Dùng tài sản, target, model, scenario và cặp so sánh ở trên. Chọn khoảng ngày để xem từng dự báo ngoài mẫu của các fold lịch sử.</p>
+<div class="controls"><label>Từ ngày UTC<input type="date" id="historyStart" aria-label="Ngày bắt đầu backtest UTC"></label><label>Đến ngày UTC<input type="date" id="historyEnd" aria-label="Ngày kết thúc backtest UTC"></label><label>Kiểm tra một ngày<select id="historyDay" aria-label="Ngày dự báo lịch sử"></select></label></div>
+<div class="workspace-actions"><button type="button" class="action-primary" id="exportHistoricalOos">Tải CSV dự báo &amp; timing</button><button type="button" class="action-secondary" id="resetHistoricalOos">Toàn bộ kỳ đang chọn</button></div>
+<p id="historyContext" class="compact-meta" role="status" aria-live="polite"></p>
+<div class="history-metrics"><div><span>Ngày dự báo ghép cặp</span><strong id="historyCount"></strong></div><div><span>Loss mô hình gốc</span><strong id="historyBaseLoss"></strong></div><div><span>Loss mô hình bổ sung</span><strong id="historyAddedLoss"></strong></div><div><span>Bổ sung − benchmark</span><strong id="historyBenchmarkDelta"></strong></div></div>
+<div id="historyPredictionChart"></div><div class="history-legend"><span style="--line:#64748b">Thực tế</span><span style="--line:#ad5f2c">Gốc</span><span style="--line:#087196">Bổ sung</span><span style="--line:#7e67a6">Benchmark</span></div>
+<h4>Loss added − base cộng dồn</h4><div id="historyLossChart"></div><p id="historyLossSummary" class="compact-meta"></p>
+<h4>Dự báo và thông tin khả dụng tại ngày đang chọn</h4><div class="table-wrap" id="historyPointTable"></div>
+<details class="method-details"><summary>Kiểm tra thời gian và model của ngày này</summary><div class="table-wrap" id="historyTimingTable"></div><p id="historyModelHashes" class="history-hashes"></p></details>
+<details class="method-details"><summary>Phát lại này kiểm chứng điều gì?</summary><p id="historyAuditDetail"></p><p>Train và chọn tham số dùng các fold trước origin, với purge theo thời điểm nhãn khả dụng. Đây là historical pseudo-OOS; receipts lịch sử vẫn dựa vào vintage và giả định độ trễ. Dữ liệu lịch sử đã tham gia phát triển thiết kế cuối. Khoảng ngày tùy chọn cho thống kê mô tả; không tính lại p-value/BH sau khi chọn đoạn. Nhánh prospective giữ ledger và lịch chấm riêng.</p></details>
+</div>

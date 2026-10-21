@@ -12,7 +12,7 @@ function renderForecast(){
  const t=LATEST.sensitivity.filter(r=>matches(r,{asset:s.asset,target:s.target,model:s.model,scope:s.scope})&&r.variant===pair[1]);
  el('sensitivityTable').innerHTML=table(['Variant / thay đổi','n','Δloss','95% CI','BH q'],t.map(r=>[`${r.variant} / ${r.comparison}`,r.n,latestNumber(r.mean_loss_new_minus_base),interval(r.ci_low,r.ci_high),prob(r.qvalue_bh)]));
  el('forecastContext').textContent=`${scenarioNames[s.scenario]} · ${s.scope==='pooled'?'Gộp 2023–2026':s.scope} · ${s.target==='return'?'MSE return':'QLIKE squared return'} · ${rows.length?rows[0].n:'N/A'} paired origins. Native và matched có mẫu khác nhau; chỉ diễn giải timing/vintage qua các paired sensitivity đã ghép cả train/validation/test.`;
- renderImportance();
+ renderImportance();renderHistoricalOos();
 }
 function renderFOMC(){
  const asset=el('eAsset').value,outcome=el('eOutcome').value;
@@ -34,9 +34,10 @@ function initializeRelease(){
  el('liveStatus').textContent=`Trạng thái đọc lúc ${LATEST.generatedLocal}: ${LATEST.live.prediction_files} forecast commits (${LATEST.live.prediction_rows} dự báo mô hình), ${LATEST.live.label_files} nhãn. Kỳ OOS kết thúc ${LATEST.live.fixed_end}; trạng thái đánh giá ${LATEST.live.performance}. ${LATEST.live.scheduler_installed?(LATEST.live.automation.provider==='github-actions'?'Tự động trên GitHub: pipeline mỗi giờ phút 15, giám sát phút 45; không cần bật máy cá nhân.':'Tự động: pipeline mỗi giờ phút 15, giám sát phút 45; máy bật, Admin đăng nhập và có mạng.'):'Chưa xác minh được lịch tự động.'} Lần vận hành gần nhất ${LATEST.live.last_run_local}.`;
  for(const outcome of [...new Set(LATEST.fomc.map(r=>r.outcome))])el('eOutcome').innerHTML+=`<option value="${esc(outcome)}">${esc(outcome==='intraday'?'Intraday −10/+20 phút':outcome)}</option>`;
  el('eOutcome').value='intraday';
- for(const id of ['fAsset','fScenario','fScope'])el(id).addEventListener('change',renderForecast);
+ for(const id of ['fAsset','fScenario'])el(id).addEventListener('change',renderForecast);
+ el('fScope').addEventListener('change',()=>{resetHistoricalRange();renderForecast();});
  for(const id of ['eAsset','eOutcome'])el(id).addEventListener('change',renderFOMC);
  for(const id of ['rvAsset','rvSampling','rvHorizon'])el(id).addEventListener('change',renderRV);
- renderFOMC();renderRV();
+ initializeHistoricalOos();renderFOMC();renderRV();
 }
 initializeRelease();

@@ -27,6 +27,8 @@ def workspace(html):
         elif key=='forecast':
             piece=re.sub(r'</h2><p>.*?</p>','</h2><p class="section-intro">So sánh mô hình có và không có thông tin vĩ mô theo tài sản, target, mẫu và kỳ đánh giá.</p>',piece,count=1,flags=re.S)
             piece=piece.replace('<p id="forecastContext" class="note"></p>','<p id="forecastContext" class="compact-meta"></p>')
+            history=(ROOT/'dashboard/historical_oos.html').read_text(encoding='utf-8')
+            piece=piece.replace('<div id="forecastTable"',history+'<h3>Kiểm định theo kỳ đánh giá đã khóa</h3><p class="compact-meta">Các bảng dưới dùng kỳ/năm ở bộ chọn phía trên; khoảng ngày replay chỉ áp dụng cho biểu đồ và CSV.</p><div id="forecastTable"',1)
         elif key=='fomc':
             piece=re.sub(r'</h2><p>.*?</p>','</h2><p class="section-intro">Tra cứu phản ứng quanh FOMC và khác biệt trước/sau 2020 hoặc giữa các chế độ thị trường.</p>',piece,count=1,flags=re.S)
             piece=re.sub(r'<p>HAC và HC3.*?</p>','<p class="compact-meta">Đơn vị: điểm phần trăm return / +10 bps component PC1. Hai cột BH tương ứng HAC và HC3.</p>',piece,count=1,flags=re.S)

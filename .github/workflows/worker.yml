@@ -96,6 +96,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TOPIC09_STATE_KEY: ${{ secrets.TOPIC09_STATE_KEY }}
         run: python tools/run_github_worker.py restore
+      - name: Replay frozen historical OOS artifacts
+        run: python run_release.py validate-history
       - name: Execute selected operation
         id: operation
         continue-on-error: true

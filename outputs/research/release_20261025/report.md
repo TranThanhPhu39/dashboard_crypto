@@ -1,6 +1,6 @@
 # Global Financial Conditions → Bitcoin và Ethereum
 
-**Bản tổng hợp nộp ngày 25/10/2026.** Dữ liệu lịch sử đến 15/10/2026; sản phẩm cập nhật 2026-10-21T09:25:47.051786+07:00. [Dashboard tương tác](../../../dashboard/index.html). Các estimates dưới đây được lấy từ những phiên bản đã khóa, không huấn luyện lại hoặc đổi specification trong bước hợp nhất này.
+**Bản tổng hợp nộp ngày 25/10/2026.** Dữ liệu lịch sử đến 15/10/2026; sản phẩm cập nhật 2026-10-21T19:39:27.592454+07:00. [Dashboard tương tác](../../../dashboard/index.html). Các estimates dưới đây được lấy từ những phiên bản đã khóa, không huấn luyện lại hoặc đổi specification trong bước hợp nhất này.
 
 ## 1. Câu hỏi nghiên cứu và kết luận
 
@@ -156,6 +156,14 @@ Native có 949 origins và matched 728 mỗi tài sản. Khác significance gi�
 
 ![RV forecast comparisons](../evidence_20261019/figures/rv_forecasting.png)
 
+## 7b. Kiểm thử OOS trên dữ liệu quá khứ theo khoảng ngày
+
+Dashboard → **Dự báo rủi ro → Phát lại dự báo trên dữ liệu quá khứ** cho phép chọn khoảng ngày UTC trong 01/01/2023–13/10/2026, tài sản, target, model, scenario và cặp so sánh. Hiển thị thực tế/base/added/benchmark, loss cộng dồn, timing và model SHA-256 của từng origin; CSV giữ nguyên dự báo và các mốc thời gian. Chỉ các origins đã đủ điều kiện trong thiết kế gốc được dùng, không tạo forecast cho ngày thiếu.
+
+Đã replay **640 artifacts**, đối chiếu **125320 learned predictions** và **125320 benchmark predictions** với CSV đã khóa; kiểm tra chronology, label availability và train-only scaling. Không refit, không thay ước lượng hoặc ghi dự báo lịch sử vào ledger prospective. Chạy lại bằng `py -3.11 run_release.py validate-history`; dữ liệu hiển thị và bằng chứng checksum ở `dashboard/historical_oos_data.json` và `dashboard/historical_oos_audit.json`.
+
+Đây là **historical pseudo-OOS** kiểm chứng quy trình tính toán, khác với tính độc lập của toàn bộ thiết kế cuối với outcomes đã xem. Scenario latest-vintage giữ nhãn **EX POST ORACLE**. Khoảng ngày người dùng chọn chỉ tính thống kê mô tả; các bảng CI/BH vẫn dùng kỳ/năm đánh giá đã khóa, không suy luận significance cho đoạn được chọn sau khi xem biểu đồ.
+
 ## 8. PIT, OOS độc lập và hạn nộp
 
 15 feature definitions, 28.026 macro-lineage rows, 353/353 checks đối chiếu raw ALFRED spells và calendar transforms đạt. Không phát hiện vi phạm observation/vintage date trong phạm vi metadata được audit; không chứng nhận mọi feed có đầy đủ historical receipt/revision evidence. Targets/nhãn cũng là retrospective Coin Metrics snapshot; D+2 là giả định availability. D4 delay không sửa được unknown revisions hoặc biến kết quả thành causal identification.
@@ -166,7 +174,7 @@ Native có 949 origins và matched 728 mỗi tài sản. Khác significance gi�
 
 Reality Check/SPA xử lý một số dạng data snooping; SPA gốc có giới hạn với recursive expanding estimation nên chưa được thêm máy móc vào annual expanding backtest. Xem [White (2000)](https://users.ssc.wisc.edu/~behansen/718/White2000.pdf), [Hansen (2005)](https://doi.org/10.1198/073500105000000063) và [review áp dụng cho repo](../../../paper/untouched_oos_followup_20261020.md). Chưa xác lập được holdout lịch sử độc lập; **mục untouched OOS cho cấu hình cuối chưa hoàn thành**. Đánh giá mới cần forecasts trước outcomes hoặc một tập thực sự chưa tham gia phát triển.
 
-Trạng thái lúc 2026-10-21T09:25:47.051786+07:00: **0 forecast commits, 0 labels**; evaluation status **PENDING_FIXED_EVALUATION_WINDOW**. Lần vận hành gần nhất 2026-10-21T09:20:31.369974+07:00; capture có 17/17 nguồn thành công. Protocol hiện có giữ nguyên đến 2027-10-20T00:00:00Z; một năm là thời lượng đã chọn, không phải yêu cầu khoa học phổ quát. Đổi lịch chấm cần một protocol được thống nhất trước outcomes liên quan. Tự động trên GitHub Actions: pipeline mỗi giờ phút 15, giám sát phút 45; không cần bật máy cá nhân. Lịch có thể trễ; cutoff và thời điểm nhận dữ liệu giữ nguyên. [Giám sát tự động](../../automation_20261020/health.html), [kế hoạch và trạng thái OOS](oos_followup.html), [lịch chạy theo giờ Việt Nam](next_operations.csv), [provenance của cập nhật](oos_followup.json).
+Trạng thái lúc 2026-10-21T19:39:27.592454+07:00: **0 forecast commits, 0 labels**; evaluation status **PENDING_FIXED_EVALUATION_WINDOW**. Lần vận hành gần nhất 2026-10-21T09:20:31.369974+07:00; capture có 17/17 nguồn thành công. Protocol hiện có giữ nguyên đến 2027-10-20T00:00:00Z; một năm là thời lượng đã chọn, không phải yêu cầu khoa học phổ quát. Đổi lịch chấm cần một protocol được thống nhất trước outcomes liên quan. Tự động trên GitHub Actions: pipeline mỗi giờ phút 15, giám sát phút 45; không cần bật máy cá nhân. Lịch có thể trễ; cutoff và thời điểm nhận dữ liệu giữ nguyên. [Giám sát tự động](../../automation_20261020/health.html), [kế hoạch và trạng thái OOS](oos_followup.html), [lịch chạy theo giờ Việt Nam](next_operations.csv), [provenance của cập nhật](oos_followup.json).
 
 ## 9. Đối chiếu yêu cầu và giới hạn kết luận
 

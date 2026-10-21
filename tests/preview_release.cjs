@@ -106,6 +106,22 @@ async function screenshot(name) {
     await evaluate("document.getElementById('tab-forecast').click()");
     await evaluate("document.getElementById('forecast').scrollIntoView()");
     await screenshot('dashboard_forecast_desktop.png');
+    await evaluate("document.getElementById('fAsset').value='eth';document.getElementById('target').value='return';document.getElementById('forecastModel').value='gradient_boosting';document.getElementById('forecastPair').value='2';document.getElementById('fScenario').value='matched_asof_d3';document.getElementById('fScope').value='pooled';document.getElementById('fScope').dispatchEvent(new Event('change'));document.getElementById('historyStart').value='2024-12-15';document.getElementById('historyEnd').value='2025-01-15';document.getElementById('historyEnd').dispatchEvent(new Event('change'));document.getElementById('historicalOos').scrollIntoView()");
+    const historicalDatesWork=await evaluate("historicalRows().length>0 && historicalRows().every(r=>r.date>='2024-12-15'&&r.date<='2025-01-15') && new Set(historicalRows().map(r=>r.year)).size===2 && document.getElementById('historyModelHashes').textContent.includes('fold 2025')");
+    const historicalDesktop=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    await screenshot('dashboard_history_desktop.png');
+    const historicalDownloadFolder=path.join(preview,'downloads','history-'+Date.now());fs.mkdirSync(historicalDownloadFolder,{recursive:true});
+    await call('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:historicalDownloadFolder});
+    await call('Runtime.evaluate',{expression:"document.getElementById('exportHistoricalOos').click()",userGesture:true});
+    const historicalCsvFile=path.join(historicalDownloadFolder,'historical_oos_eth_return_matched_asof_d3_2024-12-15_2025-01-15.csv');
+    for(let i=0;i<50&&!fs.existsSync(historicalCsvFile);i++)await delay(100);
+    if(!fs.existsSync(historicalCsvFile))throw Error('Historical CSV button produced no file');
+    const historicalCsvWorks=fs.readFileSync(historicalCsvFile,'utf8')===await evaluate('historicalOosCsv()');
+    await call('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
+    await evaluate("document.getElementById('historicalOos').scrollIntoView()");
+    const historicalMobile=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    await screenshot('dashboard_history_mobile.png');
+    await call('Emulation.setDeviceMetricsOverride',{width:1280,height:1000,deviceScaleFactor:1,mobile:false});
     await evaluate("document.getElementById('tab-transmission').click()");
     await evaluate("document.getElementById('asset').value='eth';document.getElementById('shock').value='usd_return_pct';document.getElementById('regime').value='stress';document.getElementById('horizon').value='30';document.getElementById('horizon').dispatchEvent(new Event('change'))");
     const selectionWorks=await evaluate("document.getElementById('selectionLabel').textContent==='ETH · Căng thẳng · 30 ngày' && responseCsv().split('\\r\\n').length===31");
@@ -128,9 +144,10 @@ async function screenshot(name) {
       oos_desktop_no_overflow:oosDesktop,oos_mobile_no_overflow:oosMobile,oos_local_links_verified:oosLinks.length,
       automation_desktop_no_overflow:automationDesktop,automation_mobile_no_overflow:automationMobile,
       dashboard_desktop_no_overflow:dashboardDesktop,dashboard_mobile_no_overflow:dashboardMobile,starts_with_estimator:startsWithEstimator,no_academic_warning_on_main:noWarningOnMain,workspace_buttons_work:tabButtonsWork,selection_controls_work:selectionWorks,reset_button_works:resetWorks,csv_download_matches_selected_curve:csvDownloadWorks,tables:counts.length,
+      historical_dates_work:historicalDatesWork,historical_csv_download_matches:historicalCsvWorks,historical_desktop_no_overflow:historicalDesktop,historical_mobile_no_overflow:historicalMobile,
       local_links_verified:local.length,uncaught_errors:errors.length};
     fs.writeFileSync(path.join(out,'browser_validation.json'),JSON.stringify(result,null,2));
-    if (!desktop || !mobile || !oosDesktop || !oosMobile || !automationDesktop || !automationMobile || !dashboardDesktop || !dashboardMobile || !startsWithEstimator || !noWarningOnMain || !tabButtonsWork || !selectionWorks || !resetWorks || !csvDownloadWorks || errors.length) throw Error(JSON.stringify(result));
+    if (!desktop || !mobile || !oosDesktop || !oosMobile || !automationDesktop || !automationMobile || !dashboardDesktop || !dashboardMobile || !startsWithEstimator || !noWarningOnMain || !tabButtonsWork || !selectionWorks || !resetWorks || !csvDownloadWorks || !historicalDatesWork || !historicalCsvWorks || !historicalDesktop || !historicalMobile || errors.length) throw Error(JSON.stringify(result));
     console.log(JSON.stringify(result,null,2));
   } finally {
     if (socket && socket.readyState===WebSocket.OPEN) {

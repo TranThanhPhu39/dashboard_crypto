@@ -4,11 +4,14 @@ from src.evaluation.release_preservation import install,validate
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('stage',choices=['build','validate','operate','validate-pit','package','all'])
+    p.add_argument('stage',choices=['build','validate','operate','validate-pit','prepare-history','validate-history','package','all'])
     p.add_argument('--refresh-capture',action='store_true',help='Archive new immutable source responses during an operational run')
     a=p.parse_args();install()
     if a.refresh_capture and a.stage!='operate':p.error('--refresh-capture requires operate')
-    if a.stage=='operate':
+    if a.stage in ['prepare-history','validate-history']:
+        from src.historical_oos import prepare,validate as validate_history
+        (prepare if a.stage=='prepare-history' else validate_history)()
+    elif a.stage=='operate':
         from src.automation_runtime import assert_writer_allowed,HostedAuthorityError
         try:
             assert_writer_allowed()
