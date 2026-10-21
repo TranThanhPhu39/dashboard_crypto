@@ -12,6 +12,12 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / 'public'
 PUBLIC_PAGES = ROOT / 'public-pages'
+RUNTIME_FILES = frozenset({
+    'dashboard/index.html', 'paper/README.md', 'outputs/automation_20261020/health.html',
+    'outputs/research/release_20261025/report.html', 'outputs/research/release_20261025/report.md',
+    'outputs/research/release_20261025/oos_followup.html', 'outputs/research/release_20261025/oos_followup.md',
+    'outputs/research/release_20261025/source_catalog.csv',
+})
 FILES = (
     'dashboard/index.html',
     'outputs/research/release_20261025/report.html',
@@ -110,13 +116,7 @@ def main():
         if not re.fullmatch(r'[a-f0-9]{40}', persisted['state_commit']):
             raise ValueError('Missing durable runtime commit')
         changed = git_value('diff', '--name-only', 'HEAD').splitlines()
-        allowed = {'dashboard/index.html', 'paper/README.md',
-            'outputs/automation_20261020/health.html',
-            'outputs/research/release_20261025/report.html',
-            'outputs/research/release_20261025/report.md',
-            'outputs/research/release_20261025/oos_followup.html',
-            'outputs/research/release_20261025/oos_followup.md'}
-        if not set(changed).issubset(allowed):
+        if not set(changed).issubset(RUNTIME_FILES):
             raise ValueError('Tracked source changed outside runtime allowlist')
         metadata['worker'] = {**persisted, 'run_url': 'https://github.com/' + os.environ['GITHUB_REPOSITORY'] +
             '/actions/runs/' + os.environ['GITHUB_RUN_ID'], 'runtime_modified_paths': changed}

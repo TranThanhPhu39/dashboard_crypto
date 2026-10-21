@@ -8,7 +8,7 @@ from pathlib import Path
 import re
 from urllib.parse import unquote, urlsplit
 
-from export_public_dashboard import FILES, PUBLIC, PUBLIC_PAGES, ROOT, dashboard_only_bytes
+from export_public_dashboard import FILES, PUBLIC, PUBLIC_PAGES, ROOT, RUNTIME_FILES, dashboard_only_bytes
 
 
 class Links(HTMLParser):
@@ -73,6 +73,7 @@ def main():
             require(os.environ.get('GITHUB_ACTIONS') == 'true', 'Runtime publication outside Actions')
             from export_public_dashboard import git_value
             changed = git_value('diff', '--name-only', 'HEAD').splitlines()
+            require(set(changed).issubset(RUNTIME_FILES), 'Tracked source changed outside runtime allowlist')
             require(changed == metadata['worker']['runtime_modified_paths'], 'Runtime paths changed after export')
         else:
             require(metadata['tracked_worktree_changes'] is False, 'CI source worktree is dirty')
