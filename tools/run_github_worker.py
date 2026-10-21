@@ -23,17 +23,16 @@ def prepare_host():
     """Frozen source calls curl.exe. Resolve that name to Linux's actual curl."""
     if os.environ.get('GITHUB_ACTIONS') != 'true' or os.environ.get('GITHUB_REPOSITORY') != REPOSITORY:
         raise ValueError('This adapter runs only in the authorized repository on GitHub Actions')
-    if os.name != 'posix':
-        raise ValueError('Ubuntu runner required')
-    curl = shutil.which('curl')
+    curl = shutil.which('curl.exe') or shutil.which('curl')
     if not curl:
         raise RuntimeError('curl unavailable')
-    shim = ROOT / '.worker-bin'
-    shim.mkdir(exist_ok=True)
-    link = shim / 'curl.exe'
-    if not link.exists():
-        link.symlink_to(curl)
-    os.environ['PATH'] = str(shim) + os.pathsep + os.environ['PATH']
+    if os.name == 'posix':
+        shim = ROOT / '.worker-bin'
+        shim.mkdir(exist_ok=True)
+        link = shim / 'curl.exe'
+        if not link.exists():
+            link.symlink_to(curl)
+        os.environ['PATH'] = str(shim) + os.pathsep + os.environ['PATH']
     from src.automation_runtime import OUT, atomic_json, now_utc
     old = json.loads((OUT/'installation.json').read_text(encoding='utf-8-sig'))
     installed = old.get('github_installed_at_utc') or now_utc().isoformat()

@@ -88,7 +88,8 @@ def create_bootstrap(api, key):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('stage', choices=['initialize', 'handoff-state', 'enable', 'disable', 'preflight', 'run', 'monitor', 'status', 'actions'])
+    parser.add_argument('stage', choices=['initialize', 'handoff-state', 'enable', 'disable', 'preflight', 'run', 'monitor', 'probe', 'status', 'actions'])
+    parser.add_argument('--runner', choices=['ubuntu-24.04', 'windows-2025', 'macos-15'])
     args = parser.parse_args()
     api = GitHub(credential())
     if args.stage == 'initialize':
@@ -119,8 +120,14 @@ def main():
     elif args.stage in ('enable', 'disable'):
         variable(api, 'true' if args.stage=='enable' else 'false')
         print('Worker enabled' if args.stage=='enable' else 'Worker paused on GitHub')
+    elif args.stage == 'probe':
+        api.json('/actions/workflows/network-probe.yml/dispatches', 'POST', json={'ref': 'main'})
+        print('Dispatched network probe')
     elif args.stage in ('preflight', 'run', 'monitor'):
-        api.json('/actions/workflows/worker.yml/dispatches', 'POST', json={'ref': 'main', 'inputs': {'mode': args.stage}})
+        inputs = {'mode': args.stage}
+        if args.runner:
+            inputs['runner'] = args.runner
+        api.json('/actions/workflows/worker.yml/dispatches', 'POST', json={'ref': 'main', 'inputs': inputs})
         print('Dispatched ' + args.stage)
     elif args.stage == 'actions':
         for name, tag in [('cache', 'v5'), ('cache', 'v4')]:
