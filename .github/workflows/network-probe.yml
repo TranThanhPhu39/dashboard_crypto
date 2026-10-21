@@ -1,6 +1,11 @@
 name: Diagnose public data connectivity
 on:
   workflow_dispatch:
+    inputs:
+      api_only:
+        type: boolean
+        default: false
+        description: Test API reachability without sending an API key
 permissions:
   contents: read
 jobs:
@@ -11,6 +16,8 @@ jobs:
         os: [ubuntu-24.04, windows-2025, macos-15]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 8
+    env:
+      API_ONLY: ${{ inputs.api_only }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:

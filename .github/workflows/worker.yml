@@ -16,8 +16,8 @@ on:
       runner:
         type: choice
         description: Standard hosted runner for cross-platform verification
-        default: ubuntu-24.04
-        options: [ubuntu-24.04, windows-2025, macos-15]
+        default: configured
+        options: [configured, ubuntu-24.04, windows-2025, macos-15]
 
 permissions:
   contents: read
@@ -29,7 +29,7 @@ concurrency:
 jobs:
   worker:
     if: github.repository == 'TranThanhPhu39/dashboard_crypto' && github.ref == 'refs/heads/main' && (vars.TOPIC09_WORKER_ENABLED == 'true' || inputs.mode == 'preflight')
-    runs-on: ${{ inputs.runner || vars.TOPIC09_WORKER_RUNNER || 'ubuntu-24.04' }}
+    runs-on: ${{ (inputs.runner != 'configured' && inputs.runner) || vars.TOPIC09_WORKER_RUNNER || 'ubuntu-24.04' }}
     defaults:
       run:
         shell: bash

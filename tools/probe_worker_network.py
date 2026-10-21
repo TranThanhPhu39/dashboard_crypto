@@ -1,6 +1,7 @@
 """No-secret connectivity diagnostic; responses never enter the research ledger."""
 from datetime import datetime, timedelta, timezone
 import json
+import os
 from pathlib import Path
 import platform
 import shutil
@@ -17,7 +18,10 @@ def main():
     end = (now-timedelta(days=1)).date().isoformat()
     start = (now-timedelta(days=14)).date().isoformat()
     urls = [('fred', f'https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS&cosd={start}&coed={end}'),
-            ('alfred', 'https://alfred.stlouisfed.org/series/downloaddata?seid=DGS2')]
+            ('alfred', 'https://alfred.stlouisfed.org/series/downloaddata?seid=DGS2'),
+            ('fred_api_without_key', 'https://api.stlouisfed.org/fred/series/observations?series_id=VIXCLS&file_type=json')]
+    if os.environ.get('API_ONLY') == 'true':
+        urls = urls[-1:]
     rows = []
     folder = ROOT/'.worker-work/network-probe'
     folder.mkdir(parents=True, exist_ok=True)
@@ -29,6 +33,9 @@ def main():
             with urllib.request.urlopen(request, timeout=35) as response:
                 data = response.read()
                 row.update(status=response.status, bytes=len(data), ok=response.status==200)
+        except urllib.error.HTTPError as error:
+            row.update(status=error.code, ok=name=='fred_api_without_key' and error.code==400,
+                       authentication_required=name=='fred_api_without_key' and error.code==400)
         except Exception as error:
             row.update(ok=False, error=str(error))
         row['seconds'] = round(time.monotonic()-started, 2)
@@ -41,7 +48,8 @@ def main():
             '--write-out', '%{http_code}', url], capture_output=True, text=True, timeout=40)
         row = {'source': name, 'transport': 'curl_ipv4', 'returncode': result.returncode,
                'http_status': result.stdout, 'error': result.stderr[-300:],
-               'seconds': round(time.monotonic()-started, 2), 'ok': result.returncode==0}
+               'seconds': round(time.monotonic()-started, 2),
+               'ok': result.returncode==0 or (name=='fred_api_without_key' and result.stdout=='400')}
         rows.append(row)
         print(json.dumps(row), flush=True)
     record = {'checked_at_utc': now.isoformat(), 'platform': platform.platform(), 'checks': rows,

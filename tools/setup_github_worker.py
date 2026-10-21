@@ -90,6 +90,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('stage', choices=['initialize', 'handoff-state', 'enable', 'disable', 'preflight', 'run', 'monitor', 'probe', 'status', 'actions'])
     parser.add_argument('--runner', choices=['ubuntu-24.04', 'windows-2025', 'macos-15'])
+    parser.add_argument('--api-only', action='store_true')
     args = parser.parse_args()
     api = GitHub(credential())
     if args.stage == 'initialize':
@@ -121,7 +122,8 @@ def main():
         variable(api, 'true' if args.stage=='enable' else 'false')
         print('Worker enabled' if args.stage=='enable' else 'Worker paused on GitHub')
     elif args.stage == 'probe':
-        api.json('/actions/workflows/network-probe.yml/dispatches', 'POST', json={'ref': 'main'})
+        api.json('/actions/workflows/network-probe.yml/dispatches', 'POST', json={'ref': 'main',
+            'inputs': {'api_only': str(args.api_only).lower()}})
         print('Dispatched network probe')
     elif args.stage in ('preflight', 'run', 'monitor'):
         inputs = {'mode': args.stage}
