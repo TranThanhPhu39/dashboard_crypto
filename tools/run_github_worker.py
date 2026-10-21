@@ -40,9 +40,6 @@ def prepare_host():
         installed_at_utc=installed, github_installed_at_utc=installed, python_executable=sys.executable,
         desktop_notifications=False, password_stored=False, repository=REPOSITORY,
         workflow='worker.yml', run_id=os.environ['GITHUB_RUN_ID']))
-    if os.environ.get('TOPIC09_FRED_TRANSPORT') == 'official-api':
-        from src.data.github_fred_api import install as install_api_transport
-        install_api_transport()
 
 
 def model_smoke():
@@ -167,6 +164,9 @@ def main():
         return
     prepare_host()
     if args.stage == 'preflight':
+        if os.environ.get('TOPIC09_FRED_TRANSPORT') == 'official-api':
+            from src.data.github_fred_api import install as install_api_transport
+            install_api_transport()
         preflight()
         return
     from src import automation_runtime as auto

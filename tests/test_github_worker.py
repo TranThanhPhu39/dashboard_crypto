@@ -1,10 +1,12 @@
 """Migration failure cases: persistence, tampering, missing state, competing hosts."""
 import copy
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -174,6 +176,18 @@ class DurableWorkerTests(unittest.TestCase):
         summary = auto.automation_summary(folder)
         self.assertFalse(summary['installed'])
         self.assertIn('kết thúc', auto.automation_description(summary))
+
+    def test_local_mirror_cannot_start_a_second_writer(self):
+        from src import automation_runtime as auto
+        folder=self.root/store.AUTO
+        auto.atomic_json(folder/'installation.json', {'provider':'github-actions'})
+        before=(folder/'state.json').read_bytes()
+        with patch.dict(os.environ,{'GITHUB_ACTIONS':'false'}), patch.object(auto,'OUT',folder):
+            with self.assertRaises(auto.HostedAuthorityError):
+                auto.run_pipeline()
+        self.assertEqual((folder/'state.json').read_bytes(),before)
+        with patch.dict(os.environ,{'GITHUB_ACTIONS':'true'}):
+            auto.assert_writer_allowed(folder)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 # OOS: bằng chứng đã có và vận hành tiếp theo
 
-Cập nhật 2026-10-20T22:32:21.875861+07:00. [Báo cáo chính](report.html) · [Review tài liệu](../../../paper/untouched_oos_followup_20261020.md) · [Audit có provenance](oos_followup.json).
+Cập nhật 2026-10-21T09:25:47.051786+07:00. [Báo cáo chính](report.html) · [Review tài liệu](../../../paper/untouched_oos_followup_20261020.md) · [Audit có provenance](oos_followup.json).
 
 ## Hai mốc thời gian khác nhau
 
@@ -14,13 +14,13 @@ Protocol hiện tại chạy từ **2026-10-20T00:00:00Z** tới trước **2027
 - Phân biệt test lịch sử đã tham gia phát triển với holdout chưa sử dụng. Chưa có bằng chứng xác lập một holdout lịch sử độc lập cho thiết kế cuối.
 - Liên kết phương pháp với [Gillet/Chicago Fed (2024)](https://www.chicagofed.org/publications/economic-perspectives/2024/7), [Cawley–Talbot (2010)](https://www.jmlr.org/papers/v11/cawley10a.html), [White (2000)](https://users.ssc.wisc.edu/~behansen/718/White2000.pdf) và [Hansen (2005)](https://doi.org/10.1198/073500105000000063). Nested evaluation và data-snooping inference giải quyết những phần khác nhau của rủi ro đánh giá; không biến test đã xem thành holdout độc lập.
 - Giữ SPA ở trạng thái chưa triển khai: cần suy luận tương thích expanding estimation và universe đã tìm kiếm. Không thêm một p-value không đáp ứng assumptions.
-- Tiếp tục collector thực tế: lần capture bắt đầu **2026-10-20T12:29:48.315561+00:00**, **17/17 nguồn** trả thành công. Thành công của nguồn không tự có nghĩa forecast đủ điều kiện.
+- Tiếp tục collector thực tế: lần capture bắt đầu **2026-10-21T02:16:29.919173+00:00**, **17/17 nguồn** trả thành công. Thành công của nguồn không tự có nghĩa forecast đủ điều kiện.
 
 ## Trạng thái thực tế
 
 Lần thử gần nhất: BTC: INELIGIBLE_INPUTS; ETH: INELIGIBLE_INPUTS. Ledger có **0 forecast commits, 0 dự báo mô hình và 0 label files**. Dùng **40 latency artifacts đã khóa**; không triển khai 640 nested artifacts thay thế. Chưa chấm performance trước fixed endpoint, không suy ra skill từ tình trạng collector.
 
-Lịch eligibility/receipt/logging nằm trong [readiness calendar](../evidence_20261019/prospective_operations/readiness_calendar.csv); đây là điều kiện vận hành, không phải dự báo đã tồn tại. Nhật ký ghi cả lần thiếu inputs; không backdate hoặc bù dự báo sau outcome. Đã cài lịch pipeline mỗi giờ phút 15 và giám sát phút 45; chạy thêm khi đăng nhập. Máy cần bật, tài khoản Admin đăng nhập và có Internet. [Giám sát, cảnh báo và log](../../automation_20261020/health.html).
+Lịch eligibility/receipt/logging nằm trong [readiness calendar](../evidence_20261019/prospective_operations/readiness_calendar.csv); đây là điều kiện vận hành, không phải dự báo đã tồn tại. Nhật ký ghi cả lần thiếu inputs; không backdate hoặc bù dự báo sau outcome. Tự động trên GitHub Actions: pipeline mỗi giờ phút 15, giám sát phút 45; không cần bật máy cá nhân. Lịch có thể trễ; cutoff và thời điểm nhận dữ liệu giữ nguyên. [Giám sát, cảnh báo và log](../../automation_20261020/health.html).
 
 ## Việc cần chạy tiếp theo
 

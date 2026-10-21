@@ -4,6 +4,10 @@ Dashboard: <https://tranthanhphu39.github.io/dashboard_crypto/dashboard/>.
 
 Workflow: [Scheduled crypto worker and Pages](https://github.com/TranThanhPhu39/dashboard_crypto/actions/workflows/worker.yml).
 
+## Bàn giao đã kiểm chứng ngày 21/10/2026
+
+[Preflight](https://github.com/TranThanhPhu39/dashboard_crypto/actions/runs/39531412055) đạt 17 nguồn, 40 mô hình cho dự báo khớp và 820 quan sát API/web tương đương. [Lượt worker/deploy](https://github.com/TranThanhPhu39/dashboard_crypto/actions/runs/39532364758) và [monitor trên runner mới/deploy](https://github.com/TranThanhPhu39/dashboard_crypto/actions/runs/39532852477) thành công. Dashboard live đã kiểm tra desktop/mobile, bộ chọn, CSV, reset, hash artifact và metadata checkpoint; không có lỗi JavaScript. Hai task Windows đã được xác minh disabled. Có thể tắt máy cá nhân.
+
 ## Luồng chạy
 
 `worker.yml` chạy pipeline mỗi giờ phút **15 UTC** và giám sát phút **45 UTC**. Việt Nam lệch UTC đúng 7 giờ nên phút trong giờ không đổi. `push/merge main` chạy pipeline với mã nguồn mới. Có thể dùng **Run workflow → run/monitor** để chạy thủ công. Lịch GitHub có thể trễ hoặc bỏ lượt khi tải cao; tất cả receipt, forecast và cutoff sử dụng đồng hồ thực của runner. Không tạo dự báo hồi tố.
@@ -17,6 +21,8 @@ Mỗi lượt khôi phục bootstrap và checkpoint gần nhất, xác minh hash
 Kiểm tra thực tế ngày 21/10: đường web download cũ timeout/reset trên cả Ubuntu, Windows và macOS hosted runners, trong khi máy cá nhân truy cập được. Đường API `https://api.stlouisfed.org/fred/series/observations` truy cập được trên cả ba nền tảng. Worker dùng secret **`FRED_API_KEY`** do chủ repo tự tạo tại [FRED API keys](https://fredaccount.stlouisfed.org/apikeys) và lưu trong [Actions secrets](https://github.com/TranThanhPhu39/dashboard_crypto/settings/secrets/actions). Không đưa key vào Git hoặc chat.
 
 Adapter `src/data/github_fred_api.py` giữ nguyên 13 lượt dữ liệu FRED/ALFRED trong tổng 17 nguồn, cùng series, cửa sổ 180 ngày, `units=lin`, và `realtime_start=realtime_end` đúng từng information-day vintage. Raw JSON nhận từ API được archive nguyên bytes, không chứa khóa. CSV/ZIP trong thư mục `normalized/` là **view đã chuẩn hóa**, được ghi rõ vai trò; không gọi chúng là response web nguyên bản. Manifest liên kết raw hash, view hash, tham số công khai, thời điểm nhận/thời điểm view sẵn sàng và code snapshot của adapter. Trước khi đọc feature, raw/view được đối chiếu nội dung, không chỉ kiểm tra hash. Nguồn fit/feature/parser đã khóa không sửa.
+
+Monitor chỉ kiểm tra trạng thái và render artifact đã có, không cần gọi FRED hoặc cài transport API. Lỗi key/collector của pipeline đi qua wrapper retry/log/health; việc giám sát không phụ thuộc việc tải feed thành công.
 
 Preflight còn đối chiếu API với các web vintage đã archive nếu có cùng ngày, và đối chiếu VIX trên phần ngày giao nhau. Đây là kiểm tra tương đương đầu vào khi chuyển host, không phải đánh giá forecast skill. Windows giữ collector cũ khi không có cờ transport GitHub; lịch sử và receipt cũ không bị chuyển đổi hoặc ghi đè.
 
@@ -52,6 +58,16 @@ py -3.11 tools/setup_github_worker.py run
 Các bước thiết lập dùng Git Credential Manager đã đăng nhập chủ repo; credential chỉ ở bộ nhớ. Không đưa token/mật khẩu vào lệnh hoặc file Git. Khởi tạo bootstrap và tạo secret cần sự đồng ý riêng của chủ dữ liệu; không chạy `initialize` để thay bootstrap hiện đang vận hành.
 
 Sau bàn giao, máy cá nhân có thể tắt. Bản data/model tại máy cá nhân giữ lại làm bản dự phòng tại thời điểm bàn giao; ledger mới tích lũy trên GitHub. Không bật lại Windows để chạy từ bản cũ: phải tắt worker GitHub, đợi job đang chạy kết thúc, khôi phục checkpoint mới nhất, rồi mới `Resume` Windows. Chỉ có một host được phép ghi ledger.
+
+Workspace hiện có thể đồng bộ checkpoint GitHub thành bản **chỉ đọc** bằng:
+
+```powershell
+py -3.11 -m pip install --target .verification/worker-deps -r requirements-worker-admin.txt
+py -3.11 tools/setup_github_worker.py sync-state
+py -3.11 run_release.py validate
+```
+
+`sync-state` kiểm tra hai task Windows disabled, bảo toàn mọi evidence bất biến, rồi chỉ khôi phục overlay đã commit trên GitHub. Không ghi ngược state lên server và không tải lại bootstrap hơn 1 GB khi full base cục bộ đã có. Cấu hình sở hữu Windows được giữ tại `outputs/automation_20261020/installation_windows_before_github.json`; metadata canonical phản ánh host GitHub. `Status/Pause` Windows ghi riêng `scheduler_status_windows.json`. Các entry point worker cục bộ bị chặn khi GitHub đang là chủ ledger; `build/validate` vẫn dùng được. Chuyển quyền về Windows phải là một lần bàn giao riêng từ checkpoint mới nhất, không chỉ bật lại task.
 
 ## Theo dõi và cập nhật code
 

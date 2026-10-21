@@ -9,6 +9,11 @@ def main():
     a=p.parse_args();install()
     if a.refresh_capture and a.stage!='operate':p.error('--refresh-capture requires operate')
     if a.stage=='operate':
+        from src.automation_runtime import assert_writer_allowed,HostedAuthorityError
+        try:
+            assert_writer_allowed()
+        except HostedAuthorityError as exc:
+            p.exit(78,str(exc)+'\n')
         from src.evaluation import prospective_operations as op
         if os.environ.get('GITHUB_ACTIONS')=='true' and os.environ.get('TOPIC09_FRED_TRANSPORT')=='official-api':
             from src.data.github_fred_api import install as install_api_transport

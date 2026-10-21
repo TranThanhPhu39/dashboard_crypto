@@ -2,11 +2,11 @@
 
 Repository GitHub: [TranThanhPhu39/dashboard_crypto](https://github.com/TranThanhPhu39/dashboard_crypto). Bản clone chứa mã nguồn, dashboard nhúng dữ liệu hiển thị và một số báo cáo snapshot; raw data, models, ledger và bộ bằng chứng đầy đủ được chuyển riêng. Xem [phạm vi repository](docs/GITHUB_REPOSITORY.vi.md) và [hướng dẫn GitHub/server](docs/DEPLOYMENT_GITHUB_SERVER.vi.md) trước khi chạy pipeline trên máy mới. Lịch Windows trên máy nghiên cứu không được cài lại tự động khi clone.
 
-[Hướng dẫn VPS Linux/Docker](docs/VPS_LINUX_DOCKER.vi.md): bản Compose phục vụ dashboard snapshot qua Nginx; worker thu thập/dự báo Linux và CI/CD triển khai là phần cấu hình riêng.
+[Hướng dẫn VPS Linux/Docker](docs/VPS_LINUX_DOCKER.vi.md): bản Compose phục vụ dashboard snapshot qua Nginx. Worker hiện được vận hành bằng GitHub Actions theo hướng dẫn bên dưới.
 
-[Dashboard GitHub Pages](https://tranthanhphu39.github.io/dashboard_crypto/dashboard/) · [Worker GitHub Actions + Pages](docs/GITHUB_ACTIONS_WORKER.vi.md). Worker Ubuntu khôi phục dữ liệu/mô hình/checkpoint mã hóa, vận hành thiết kế đã khóa và deploy dashboard sau khi lưu trạng thái bền vững. Pipeline dự kiến mỗi giờ phút 15, giám sát phút 45; push/merge `main` chạy với source mới. Chỉ bàn giao khỏi Windows sau khi preflight và kiểm tra end-to-end thành công. Xem workflow để biết trạng thái thực tế; không cần commit raw data/ledger lên nhánh mã nguồn.
+[Dashboard GitHub Pages](https://tranthanhphu39.github.io/dashboard_crypto/dashboard/) · [Worker GitHub Actions + Pages](docs/GITHUB_ACTIONS_WORKER.vi.md). **Đã bàn giao sang GitHub ngày 21/10/2026**: worker Ubuntu thu dữ liệu qua API, lưu checkpoint mã hóa và tự deploy Pages; máy cá nhân có thể tắt. Pipeline mỗi giờ phút 15, giám sát phút 45 (lịch GitHub có thể trễ); push/merge `main` chạy với source mới. Preflight đạt 17 nguồn, 40 mô hình tương đương và 820 quan sát API/web khớp; worker, monitor và Pages đã chạy thành công. Hai task Windows tạm dừng; workspace là bản mirror chỉ đọc của checkpoint GitHub. Xem workflow để biết trạng thái mới nhất; raw data/ledger không được commit vào nhánh mã nguồn.
 
-[Tạo server Oracle Always Free](docs/ORACLE_ALWAYS_FREE.vi.md): hướng dẫn chuẩn bị máy ARM64, SSH và các bước bàn giao worker. Windows tiếp tục vận hành đến khi server được kiểm chứng và tiếp quản.
+[Tạo server Oracle Always Free](docs/ORACLE_ALWAYS_FREE.vi.md): phương án VPS tùy chọn. Hệ thống hiện dùng GitHub Actions, không yêu cầu tạo Oracle/VPS.
 
 Bộ dữ liệu nghiên cứu tải ngày **16/10/2026**, mẫu theo ngày UTC **01/01/2014–15/10/2026**. Chỉ dùng ngày đã kết thúc. Không kéo dài dữ liệu đến cuối năm 2026 khi chưa có quan sát. Mô hình và báo cáo được triển khai theo thiết kế đã thống nhất dưới đây.
 

@@ -57,6 +57,16 @@ class AlreadyRunningError(RuntimeError):
     pass
 
 
+class HostedAuthorityError(RuntimeError):
+    pass
+
+
+def assert_writer_allowed(folder=None):
+    installation=read_json(Path(folder or OUT)/'installation.json', {})
+    if installation.get('provider')=='github-actions' and os.environ.get('GITHUB_ACTIONS')!='true':
+        raise HostedAuthorityError('GitHub owns the live ledger. This local copy is read-only; pause and transfer ownership before running a local worker.')
+
+
 @contextmanager
 def process_lock(path):
     """OS lock is released automatically on exit/crash; never delete live locks."""
@@ -307,6 +317,7 @@ def operate_frozen(op, refresh_capture=False, at=None):
 
 
 def run_pipeline():
+    assert_writer_allowed()
     OUT.mkdir(parents=True,exist_ok=True);cfg=read_json(CONFIG)
     installation=read_json(OUT/'installation.json', {})
     executable=(installation.get('python_executable') or str(Path(sys.executable).with_name('python.exe'))) if os.name=='nt' else sys.executable
@@ -373,6 +384,13 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('stage',choices=['run','monitor','status','test-notification'])
     args=parser.parse_args()
+    if args.stage in ['run','monitor','test-notification']:
+        try:
+            assert_writer_allowed()
+        except HostedAuthorityError as exc:
+            if sys.stderr:
+                print(str(exc),file=sys.stderr)
+            return 78
     if args.stage=='run':
         try:
             return run_pipeline()

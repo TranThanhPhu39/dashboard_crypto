@@ -19,6 +19,14 @@ function Save-JsonAtomic([string]$File,[object]$Value) {
 $installationFile=Join-Path $outputDir 'installation.json'
 $installation=$null
 if (Test-Path -LiteralPath $installationFile) { $installation=Get-Content -LiteralPath $installationFile -Raw -Encoding UTF8 | ConvertFrom-Json }
+$statusFileName='scheduler_status.json'
+if ($installation -and $installation.provider -eq 'github-actions') {
+    $installationFile=Join-Path $outputDir 'installation_windows_before_github.json'
+    if (-not (Test-Path -LiteralPath $installationFile)) { throw 'Windows ownership backup missing; refusing to guess task identity.' }
+    $installation=Get-Content -LiteralPath $installationFile -Raw -Encoding UTF8 | ConvertFrom-Json
+    $statusFileName='scheduler_status_windows.json'
+    if ($Action -notin @('Status','Plan','Pause','Uninstall')) { throw 'GitHub owns the live ledger. Pause GitHub and transfer its latest checkpoint/ownership before resuming Windows.' }
+}
 $runner=Join-Path $projectRoot 'run_automation.py'
 if (-not $PythonExecutable -and $installation) { $PythonExecutable=$installation.python_executable }
 if (-not $PythonExecutable -and $Action -in @('Plan','Install')) {
@@ -116,5 +124,5 @@ foreach ($item in @(@{Name=$cfg.pipeline_task;Stage='run';Role='pipeline'},@{Nam
 }
 $verified=$rows.Count -eq 2 -and @($rows | Where-Object { -not $_.enabled -or -not $_.action_matches }).Count -eq 0
 $status=[ordered]@{checked_at_utc=[DateTimeOffset]::UtcNow.ToString('o');verified=[bool]$verified;tasks=@($rows);timezone=(Get-TimeZone).Id}
-Save-JsonAtomic (Join-Path $outputDir 'scheduler_status.json') $status
+Save-JsonAtomic (Join-Path $outputDir $statusFileName) $status
 $status | ConvertTo-Json -Depth 10
