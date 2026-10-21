@@ -12,6 +12,14 @@ Mỗi lượt khôi phục bootstrap và checkpoint gần nhất, xác minh hash
 
 `preflight` kiểm tra 40 mô hình bằng dự báo lịch sử đã lưu và thử collector thật ở namespace riêng. Nó không ghi forecast, không chấm skill, không nhận quyền sở hữu ledger và không deploy dashboard.
 
+## Kết nối FRED/ALFRED chính thức
+
+Kiểm tra thực tế ngày 21/10: đường web download cũ timeout/reset trên cả Ubuntu, Windows và macOS hosted runners, trong khi máy cá nhân truy cập được. Đường API `https://api.stlouisfed.org/fred/series/observations` truy cập được trên cả ba nền tảng. Worker dùng secret **`FRED_API_KEY`** do chủ repo tự tạo tại [FRED API keys](https://fredaccount.stlouisfed.org/apikeys) và lưu trong [Actions secrets](https://github.com/TranThanhPhu39/dashboard_crypto/settings/secrets/actions). Không đưa key vào Git hoặc chat.
+
+Adapter `src/data/github_fred_api.py` giữ nguyên 13 lượt dữ liệu FRED/ALFRED trong tổng 17 nguồn, cùng series, cửa sổ 180 ngày, `units=lin`, và `realtime_start=realtime_end` đúng từng information-day vintage. Raw JSON nhận từ API được archive nguyên bytes, không chứa khóa. CSV/ZIP trong thư mục `normalized/` là **view đã chuẩn hóa**, được ghi rõ vai trò; không gọi chúng là response web nguyên bản. Manifest liên kết raw hash, view hash, tham số công khai, thời điểm nhận/thời điểm view sẵn sàng và code snapshot của adapter. Trước khi đọc feature, raw/view được đối chiếu nội dung, không chỉ kiểm tra hash. Nguồn fit/feature/parser đã khóa không sửa.
+
+Preflight còn đối chiếu API với các web vintage đã archive nếu có cùng ngày, và đối chiếu VIX trên phần ngày giao nhau. Đây là kiểm tra tương đương đầu vào khi chuyển host, không phải đánh giá forecast skill. Windows giữ collector cũ khi không có cờ transport GitHub; lịch sử và receipt cũ không bị chuyển đổi hoặc ghi đè.
+
 ## Dữ liệu và trạng thái bền vững
 
 - **GitHub Releases:** bootstrap và các gói thay đổi được mã hóa AES-256-GCM bằng khóa 32 byte. Mỗi phần dưới 48 MiB plaintext, có SHA-256 cho ciphertext, archive và từng file. Release trạng thái tách theo ngày để tránh giới hạn số asset trên một release.

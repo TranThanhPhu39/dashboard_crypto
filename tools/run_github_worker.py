@@ -40,6 +40,9 @@ def prepare_host():
         installed_at_utc=installed, github_installed_at_utc=installed, python_executable=sys.executable,
         desktop_notifications=False, password_stored=False, repository=REPOSITORY,
         workflow='worker.yml', run_id=os.environ['GITHUB_RUN_ID']))
+    if os.environ.get('TOPIC09_FRED_TRANSPORT') == 'official-api':
+        from src.data.github_fred_api import install as install_api_transport
+        install_api_transport()
 
 
 def model_smoke():
@@ -98,9 +101,16 @@ def preflight():
             op.snapshots.RAW, op.snapshots.OUT = old_raw, old_out
     capture = json.loads(manifest.read_text(encoding='utf-8'))
     sources = capture['sources']
+    comparisons=[]
+    if os.environ.get('TOPIC09_FRED_TRANSPORT') == 'official-api' and all(r['status']=='ok' for r in sources):
+        from src.data.github_fred_api import compare_archived
+        with op.bound():
+            history=op.legacy.records()
+        comparisons=compare_archived(sources,history,ROOT)
     result = dict(checked_at_utc=auto.now_utc().isoformat(), mode='preflight',
                   frozen_models_verified=models, sources_ok=sum(r['status']=='ok' for r in sources),
                   sources_total=len(sources), forecasts_created=0, models_refit=0,
+                  api_website_comparisons=comparisons,
                   failures=[{'source': r.get('series_id') or Path(r.get('file','unknown')).name,
                              'error': r.get('error')} for r in sources if r['status']!='ok'])
     print(json.dumps(result), flush=True)

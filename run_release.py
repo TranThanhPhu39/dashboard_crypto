@@ -1,5 +1,5 @@
 """Maintained submission entry point; never refits or scores early."""
-import argparse
+import argparse,os
 from src.evaluation.release_preservation import install,validate
 
 def main():
@@ -10,6 +10,9 @@ def main():
     if a.refresh_capture and a.stage!='operate':p.error('--refresh-capture requires operate')
     if a.stage=='operate':
         from src.evaluation import prospective_operations as op
+        if os.environ.get('GITHUB_ACTIONS')=='true' and os.environ.get('TOPIC09_FRED_TRANSPORT')=='official-api':
+            from src.data.github_fred_api import install as install_api_transport
+            install_api_transport()
         from src.automation_runtime import process_lock,AlreadyRunningError,OUT as AUTO,operate_frozen
         try:
             with process_lock(AUTO/'operate.lock'):
