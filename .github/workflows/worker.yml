@@ -46,7 +46,6 @@ jobs:
       OPENBLAS_NUM_THREADS: '2'
       MKL_NUM_THREADS: '2'
       TOPIC09_WORKER_ENABLED: ${{ vars.TOPIC09_WORKER_ENABLED }}
-      TOPIC09_FRED_TRANSPORT: official-api
     steps:
       - name: Check out source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -104,6 +103,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           WORKER_MODE: ${{ steps.mode.outputs.value }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          TOPIC09_FRED_TRANSPORT: official-api
         run: python tools/run_github_worker.py "$WORKER_MODE"
       - name: Verify interactive dashboard
         if: steps.operation.outcome == 'success'
