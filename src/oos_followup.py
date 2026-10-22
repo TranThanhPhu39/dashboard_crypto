@@ -117,7 +117,7 @@ Protocol hiện tại chạy từ **{protocol['start_utc']}** tới trước **{
 
 ## Trạng thái thực tế
 
-Lần thử gần nhất: {attempt_text}. Ledger có **{live['prediction_files']} forecast commits, {live['prediction_rows']} dự báo mô hình và {live['label_files']} label files**. Dùng **{obj['prospective']['frozen_latency_artifacts']} latency artifacts đã khóa**; không triển khai 640 nested artifacts thay thế. Chưa chấm performance trước fixed endpoint, không suy ra skill từ tình trạng collector.
+Lần thử gần nhất: {attempt_text}. Ledger có **{live['prediction_files']} tệp dự báo, {live['prediction_rows']} dòng dự báo mô hình/benchmark và {live['label_files']} tệp nhãn** trên **{live['origin_count']} origin khác nhau**. Số dòng không phải số ngày kiểm định độc lập. Dùng **{obj['prospective']['frozen_latency_artifacts']} latency artifacts đã khóa**; không triển khai 640 nested artifacts thay thế. Chưa chấm performance trước fixed endpoint, không suy ra skill từ tình trạng collector.
 
 Lịch eligibility/receipt/logging nằm trong [readiness calendar](../evidence_20261019/prospective_operations/readiness_calendar.csv); đây là điều kiện vận hành, không phải dự báo đã tồn tại. Nhật ký ghi cả lần thiếu inputs; không backdate hoặc bù dự báo sau outcome. {automation_note} [Giám sát, cảnh báo và log](../../automation_20261020/health.html).
 
@@ -131,7 +131,7 @@ Lịch eligibility/receipt/logging nằm trong [readiness calendar](../evidence_
 py -3.11 run_release.py operate
 ```
 
-Lệnh trên chạy thủ công một lần; lịch Windows gọi `run_automation.py run` để có log/retry/health và làm mới báo cáo/dashboard. Capture mới được yêu cầu sau4 giờ hoặc khi nguồn lỗi, giữ riêng bytes từng lần để có thể phục hồi từ snapshot thiếu nội dung. Sau origin cuối chỉ nhận nhãn và giữ evaluation gate cũ. Chỉ cần chạy `build` nếu muốn làm mới giao diện từ artifacts có sẵn mà không vận hành collector.
+Lệnh trên dành cho host đang giữ quyền ghi ledger; bản sao trong máy được chặn chạy worker khi GitHub giữ quyền ghi. {automation_note} Capture mới được yêu cầu sau4 giờ hoặc khi nguồn lỗi, giữ riêng bytes từng lần để có thể phục hồi từ snapshot thiếu nội dung. Sau origin cuối chỉ nhận nhãn và giữ evaluation gate cũ. Chỉ cần chạy `build` nếu muốn làm mới giao diện từ artifacts có sẵn mà không vận hành collector.
 
 Nếu cần đổi thời hạn đánh giá, phải thống nhất protocol mới trước outcomes liên quan và ghi rõ ảnh hưởng tới protocol cũ. Vài ngày tới hạn nộp có thể kiểm tra vận hành, nhưng chưa đủ cơ sở hứa xác nhận lợi ích dự báo. Việc nộp báo cáo và việc tích lũy bằng chứng OOS độc lập là hai công việc có thể kết thúc ở hai thời điểm khác nhau.
 '''

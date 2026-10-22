@@ -25,12 +25,15 @@ def live_status():
     from src.automation_runtime import automation_summary
     folder=ROOT/'data/prospective/evidence_20261019'
     files=list((folder/'predictions').glob('*.json'))
+    forecasts=[json.loads(p.read_text(encoding='utf-8')) for p in files]
+    origins=sorted({pd.Timestamp(f['origin_utc']).isoformat() for f in forecasts})
     protocol=json.loads((folder/'protocol.json').read_text(encoding='utf-8'))
     last=BASE/'evidence_20261019/prospective_operations/last_run.json'
     stamp=json.loads(last.read_text(encoding='utf-8'))['at_utc'] if last.exists() else None
     automation=automation_summary()
     evaluation=json.loads((BASE/'evidence_20261019/prospective/prospective_evaluation.json').read_text(encoding='utf-8'))
-    return dict(prediction_files=len(files),prediction_rows=sum(len(json.loads(p.read_text(encoding='utf-8'))['predictions']) for p in files),
+    return dict(prediction_files=len(files),prediction_rows=sum(len(f['predictions']) for f in forecasts),
+        origin_count=len(origins),first_origin_utc=origins[0] if origins else None,last_origin_utc=origins[-1] if origins else None,
         label_files=len(list((folder/'labels').glob('*.json'))),fixed_end=protocol['end_utc_exclusive'],
         last_run_local=pd.Timestamp(stamp).tz_convert('Asia/Ho_Chi_Minh').isoformat() if stamp else 'chưa có',
         performance=evaluation['status'],performance_claim=False,scheduler_installed=automation['installed'],automation=automation)
@@ -66,6 +69,16 @@ def build():
     oos_followup=build_followup(status,now)
     from src.automation_runtime import automation_description
     automation_note=automation_description(status['automation'])
+    origin_note='Chưa có origin đã ghi dự báo trong ledger.'
+    if status['origin_count']:
+        label_delay=json.loads((ROOT/'config/submission_20261025.json').read_text(encoding='utf-8'))['label_assumed_delay_days']
+        first_label=(pd.Timestamp(status['first_origin_utc'])+pd.Timedelta(days=label_delay)).tz_convert('Asia/Ho_Chi_Minh').isoformat()
+        origin_range=(status['first_origin_utc'] if status['origin_count']==1 else
+                      f"từ {status['first_origin_utc']} đến {status['last_origin_utc']}")
+        origin_note=(f"Ledger có {status['origin_count']} mốc dự báo (origin): {origin_range}. "
+                     f"Số dòng dự báo bao gồm nhiều tài sản, target, mô hình và benchmark; không phải số ngày kiểm định độc lập. "
+                     f"Theo timing đã khóa, nhãn cho origin đầu tiên có thể bắt đầu khả dụng từ {first_label}, còn phụ thuộc dữ liệu thực nhận. "
+                     "Mốc khả dụng nhãn không thay thời điểm chấm theo protocol.")
     summary=f'FOMC: thành phần chính sách gắn với phản ứng intraday âm, dưới các giả định nhận dạng. Khác biệt chế độ có {int((regimes.qvalue_bh<.05).sum())}/256 kiểm định đạt BH với HAC, {int((regimes.qvalue_hc3_bh<.05).sum())}/256 với HC3. Dự báo daily: macro cải thiện 3/32 so sánh ở mẫu D3 gốc; ba mẫu matched đều 0/32. Mỗi scenario gộp có 0/40 mô hình vượt benchmark sau BH. RV thắng benchmark ở {rvwins}/120 so sánh, nhưng macro chỉ cải thiện {rvmacro}/32. Chưa xác nhận quan hệ nhân quả vô điều kiện hoặc khả năng dự báo tương lai.'
     latest=dict(generatedUtc=now.isoformat(),generatedLocal=local,summary=summary,live=status,ablation=records(ablation),benchmarks=records(bench),sensitivity=records(sensitivity),
         metrics=records(metrics),samples=records(samples),fomc=records(ranges),regimes=records(regimes),rvAblation=records(rvab),rvBenchmarks=records(rvbench),rvMetrics=records(rvmetrics),pit=records(features),revision=records(revision),pooled=records(counts))
@@ -101,14 +114,17 @@ def build():
     (ROOT/'dashboard/index.html').write_text(template,encoding='utf-8')
     save_json(OUT/'dashboard_payload.json',dict(base=base,latest=latest))
     requirement=pd.DataFrame([
-        ['Data / pipeline','Đã có','USD mẫu dài; Binance USDT đối chiếu/RV riêng; broad USD, baseline không MOVE.'],
-        ['VAR / recursive restrictions','Đã có, có hạn chế','BTC/ETH cùng hệ, IRF/order sensitivity; residual mean/variance diagnostics chưa đạt toàn bộ.'],
-        ['LP / rolling / quantile / regimes','Đã có','Ngày lịch1–30, pre/post2020 và stress; CI pointwise, uncertainty và subgroup limits được công bố.'],
-        ['ML risk forecast','Đã có','Elastic Net, histogram boosting; benchmarks và matched macro ablations; HAR/RV là nhánh riêng.'],
-        ['Whole-feed PIT','Chưa chứng nhận đầy đủ','ALFRED date-level vintage; crypto/market và nhãn vẫn có giả định delivery/revision lịch sử.'],
-        ['Untouched OOS cho thiết kế cuối','Chưa hoàn thành','Lịch sử đã tham gia phát triển; ledger prospective và endpoint riêng được theo dõi, không gắn tính hợp lệ với ngày nộp.'],
-        ['Causal transmission vô điều kiện','Chưa xác lập','FOMC mạnh hơn daily association nhưng cần sign/exclusion assumptions; không thay identification bằng ML.'],
-        ['Báo cáo / dashboard / repository','Đã hợp nhất','Bản tổng hợp này và dashboard chính dùng cùng nguồn; snapshots/ZIP cũ giữ nguyên.'],
+        ['1. Research question nhất quán với model','Đã đáp ứng','RQ1–5 gắn với dynamic responses, pre/post2020, stress và incremental macro forecasting.'],
+        ['2. Data dictionary và source log','Đã có','USD mẫu dài, macro/public sources, ALFRED vintage; raw receipts và SHA-256. Broad USD được ghi đúng tên.'],
+        ['3. Script tải và chuẩn hóa có thể chạy lại','Đã có','Pipeline và cấu trúc src/config; tái lập đúng kết quả cần dependencies và snapshot đã bàn giao.'],
+        ['4. Không có look-ahead bias/data leakage','Đã kiểm tra, còn giả định lịch sử','353/353 kiểm tra timing/reconstruction đạt; chưa phát hiện vi phạm trong phạm vi audit. Historical delivery/revisions của một số market/crypto feeds và nhãn chưa xác minh đầy đủ.'],
+        ['5. Econometric/statistical benchmark','Đã có','Joint BTC/ETH VAR, IRF/order sensitivity và forecast benchmarks. Chẩn đoán phần dư chưa đạt toàn bộ được công bố.'],
+        ['6. Ít nhất một model nâng cao','Đã có','LP với regime interactions, quantile, rolling; Elastic Net và histogram boosting. HAR/RV là nhánh riêng.'],
+        ['7. Untouched out-of-sample test','Chưa hoàn thành đánh giá',f"Đã triển khai ledger prospective: {status['prediction_files']} tệp, {status['prediction_rows']} dòng dự báo, {status['label_files']} tệp nhãn. Lịch sử đã tham gia phát triển; không đổi nhãn thành untouched."],
+        ['8. Robustness/sensitivity analysis','Đã có','Pre/post 2020, stress/calm, timing/vintage, matched samples, nested backtest và FOMC identification checks.'],
+        ['9. README hướng dẫn chạy','Đã có','Entry points, dependencies, snapshot/provenance và hướng dẫn worker GitHub Actions.'],
+        ['10. Dashboard/app có thể demo','Đã đáp ứng','VIX/Broad USD/2Y/10Y/Monetary; BTC/ETH; ngày lịch 1–30; Full/Calm/Stress; response, CI, rolling và historical analogues.'],
+        ['11. Báo cáo học thuật và ý nghĩa kinh tế','Đã có','Bảng/hình, kết quả RQ1–5, benchmark/ablation và phạm vi suy luận; không chỉ báo model metrics.'],
     ],columns=['Yêu cầu','Trạng thái','Phạm vi'])
     feature_table=features[['feature','source','transformation','verification']]
     timing_table=pd.DataFrame([
@@ -214,17 +230,25 @@ Dashboard → **Dự báo rủi ro → Phát lại dự báo trên dữ liệu q
 
 15 feature definitions,28.026 macro-lineage rows,353/353 checks đối chiếu raw ALFRED spells và calendar transforms đạt. Không phát hiện vi phạm observation/vintage date trong phạm vi metadata được audit; không chứng nhận mọi feed có đầy đủ historical receipt/revision evidence. Targets/nhãn cũng là retrospective Coin Metrics snapshot; D+2 là giả định availability. D4 delay không sửa được unknown revisions hoặc biến kết quả thành causal identification.
 
-**Ngày nộp và thời hạn đánh giá OOS là hai mốc khác nhau.** Ngày25/10/2026 quyết định nội dung có thể đưa vào bản nộp; không làm một backtest trở nên hợp lệ hoặc không hợp lệ. Mốc chốt nội bộ24/10 18:00 VN là lựa chọn lập kế hoạch. Theo timing hiện tại, origin23/10 chỉ có thể đủ nhãn sớm nhất25/10 07:00 VN; readiness upper bound là0 origin tại mốc nội bộ và tối đa1 origin trước hết ngày nộp, còn phụ thuộc actual receipts. Đây không phải forecasts đã được log hoặc số quan sát đủ để xác nhận skill. [Phân tích lịch trước hạn](../submission_20261025/report.html).
+**Ngày nộp và thời hạn đánh giá OOS là hai mốc khác nhau.** Ngày25/10/2026 quyết định nội dung có thể đưa vào bản nộp; không làm một backtest trở nên hợp lệ hoặc không hợp lệ. Mốc chốt nội bộ24/10 18:00 VN là lựa chọn lập kế hoạch. Theo timing hiện tại, origin23/10 chỉ có thể đủ nhãn sớm nhất25/10 07:00 VN; readiness upper bound là0 origin tại mốc nội bộ và tối đa1 origin trước hết ngày nộp, còn phụ thuộc actual receipts. Đây là phân tích lịch khả dụng nhãn, không phải số forecast commits hoặc bằng chứng xác nhận skill. Số dự báo đã ghi thực tế được thống kê riêng bên dưới. [Phân tích lịch trước hạn](../submission_20261025/report.html).
 
 **Hướng xử lý đã áp dụng:** giữ historical as-of nested evaluation làm kết quả nghiên cứu lịch sử, báo toàn bộ benchmark/ablation và matched sensitivity; đánh giá độc lập tiếp tục ở nhánh prospective. [Gillet/Chicago Fed (2024)](https://www.chicagofed.org/publications/economic-perspectives/2024/7) cũng phân biệt backtest ALFRED lịch sử với true OOS; [Cawley–Talbot (2010)](https://www.jmlr.org/papers/v11/cawley10a.html) giải thích vai trò đánh giá cả bước chọn mô hình. Những phương pháp này hỗ trợ chất lượng historical evaluation, không hồi phục holdout đã tham gia phát triển thiết kế.
 
 Reality Check/SPA xử lý một số dạng data snooping; SPA gốc có giới hạn với recursive expanding estimation nên chưa được thêm máy móc vào annual expanding backtest. Xem [White (2000)](https://users.ssc.wisc.edu/~behansen/718/White2000.pdf), [Hansen (2005)](https://doi.org/10.1198/073500105000000063) và [review áp dụng cho repo](../../../paper/untouched_oos_followup_20261020.md). Chưa xác lập được holdout lịch sử độc lập; **mục untouched OOS cho cấu hình cuối chưa hoàn thành**. Đánh giá mới cần forecasts trước outcomes hoặc một tập thực sự chưa tham gia phát triển.
 
-Trạng thái lúc {local}: **{status['prediction_files']} forecast commits, {status['label_files']} labels**; evaluation status **{status['performance']}**. Lần vận hành gần nhất {status['last_run_local']}; capture có {oos_followup['prospective']['latest_capture']['sources_ok']}/{oos_followup['prospective']['latest_capture']['sources_total']} nguồn thành công. Protocol hiện có giữ nguyên đến {status['fixed_end']}; một năm là thời lượng đã chọn, không phải yêu cầu khoa học phổ quát. Đổi lịch chấm cần một protocol được thống nhất trước outcomes liên quan. {automation_note} [Giám sát tự động](../../automation_20261020/health.html), [kế hoạch và trạng thái OOS](oos_followup.html), [lịch chạy theo giờ Việt Nam](next_operations.csv), [provenance của cập nhật](oos_followup.json).
+Trạng thái khi tạo báo cáo lúc {local}: **{status['prediction_files']} tệp dự báo, {status['prediction_rows']} dòng dự báo mô hình/benchmark và {status['label_files']} tệp nhãn**; evaluation status **{status['performance']}**. Lần vận hành gần nhất {status['last_run_local']}; capture bắt đầu {oos_followup['prospective']['latest_capture']['capture_started_utc']}, có {oos_followup['prospective']['latest_capture']['sources_ok']}/{oos_followup['prospective']['latest_capture']['sources_total']} nguồn thành công. Trạng thái giám sát **{status['automation']['health_status']}**, {status['automation']['active_alerts']} cảnh báo; kiểm tra lúc {status['automation']['health_checked_at_utc']}. Báo cáo này là snapshot theo các mốc trên, không tự cập nhật khi chỉ mở HTML.
+
+{origin_note}
+
+Protocol hiện có giữ nguyên đến {status['fixed_end']}; một năm là thời lượng đã chọn, không phải yêu cầu khoa học phổ quát. Đổi lịch chấm cần một protocol được thống nhất trước outcomes liên quan. {automation_note} [Giám sát tự động](../../automation_20261020/health.html), [kế hoạch và trạng thái OOS](oos_followup.html), [lịch chạy theo giờ Việt Nam](next_operations.csv), [provenance của cập nhật](oos_followup.json).
 
 ## 9. Đối chiếu yêu cầu và giới hạn kết luận
 
+Bảng dưới đối chiếu đúng 11 mục bàn giao tối thiểu của Blueprint 09. Có 9 mục đã có sản phẩm và bằng chứng kiểm chứng tương ứng; hai mục PIT/leakage và untouched OOS chưa đủ cơ sở đánh dấu hoàn thành đầy đủ. Phần code/dashboard và phân tích lịch sử đã có; việc tích lũy bằng chứng độc lập vẫn tiếp tục.
+
 {md(requirement)}
+
+Đề không bắt buộc đồng thời XGBoost, LightGBM, TVP-VAR, Markov hoặc MOVE. Baseline không MOVE và broad USD giữ theo phạm vi đã thống nhất. Structural/event-study extensions có điều kiện; causal identification vô điều kiện không phải một mục bàn giao bắt buộc riêng. FOMC policy/information results vẫn phải đọc cùng sign/exclusion assumptions; không thay economic identification bằng ML.
 
 Kết quả null, sự nhạy với sample/inference và VAR diagnostics không tự là lỗi code hoặc dữ liệu. Bài trả lời câu hỏi nghiên cứu với bằng chứng hiện có, không cần có hiệu ứng dương/cải thiện dự báo mới được ghi nhận. Chưa tuyên bố institutionalization là nguyên nhân của thay đổi hệ số, global shocks được nhận dạng ngoại sinh cho mọi biến, hoặc skill tương lai đã được xác nhận.
 
@@ -243,7 +267,7 @@ node tests/preview_release.cjs
 py -3.11 run_release.py package
 ```
 
-`build/validate/all` không refit. `operate` chạy collector/forecast bằng actual clock theo protocol hiện có, rồi làm mới và kiểm chứng báo cáo/dashboard. Tác vụ Windows gọi operational wrapper, có khóa chống chạy trùng, retry, log và watchdog; thu thập mới tối đa sau mỗi4 giờ hoặc khi nguồn lỗi. Retry không backdate hoặc nới cutoff. Ngoài cửa sổ origin, wrapper chỉ tiếp tục nhãn và original evaluation gate. Không dùng các lệnh legacy `all/train/fit` trên artifact checkout đã freeze. Supplement cần full base repo/dependencies; snapshot raw và hash là căn cứ tái lập, fresh download có thể khác do revisions.
+`build/validate/all` không refit. `operate` chỉ chạy trên host đang giữ quyền ghi ledger, dùng actual clock theo protocol hiện có, rồi làm mới và kiểm chứng báo cáo/dashboard. {automation_note} Operational wrapper có khóa chống chạy trùng, retry, log và watchdog; thu thập mới tối đa sau mỗi4 giờ hoặc khi nguồn lỗi. Bản sao trong máy chỉ đọc khi GitHub giữ quyền ghi. Retry không backdate hoặc nới cutoff. Ngoài cửa sổ origin, wrapper chỉ tiếp tục nhãn và original evaluation gate. Không dùng các lệnh legacy `all/train/fit` trên artifact checkout đã freeze. Supplement cần full base repo/dependencies; snapshot raw và hash là căn cứ tái lập, fresh download có thể khác do revisions.
 
 ## 11. Tài liệu và phụ lục
 
