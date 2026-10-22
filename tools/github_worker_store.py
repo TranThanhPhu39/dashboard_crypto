@@ -33,6 +33,11 @@ OPS = 'outputs/research/evidence_20261019/prospective_operations/'
 LIVE_OUT = 'outputs/research/evidence_20261019/prospective/'
 RAW = 'data/raw/evidence_20261019/live/'
 LIVE = 'data/prospective/evidence_20261019/'
+# This reader is maintained in Git, separately from the frozen source report.
+# It is presentation code, not a receipt or an encrypted runtime artifact.
+GIT_PRESENTATION_FILES = frozenset({
+    'outputs/research/evidence_20261019/report_view.html',
+})
 
 
 def utc():
@@ -118,7 +123,9 @@ def inventory(root=ROOT):
             if path.is_symlink():
                 raise ValueError('Symlink in runtime tree')
             if path.is_file() and not path.name.endswith(('.lock', '.tmp')):
-                names.add(path.relative_to(root).as_posix())
+                name = path.relative_to(root).as_posix()
+                if name not in GIT_PRESENTATION_FILES:
+                    names.add(name)
     names.update(p.name for p in root.glob('topic09*.zip'))
     names.update(['dashboard/index.html', 'paper/README.md'])
     return {name: file_sha(safe_path(root, name)) for name in sorted(names)}

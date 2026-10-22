@@ -97,6 +97,33 @@ class DurableWorkerTests(unittest.TestCase):
             store.persist(self.api, self.key, self.config, context, self.root)
         self.assertEqual(self.api.current['generation'], 0)
 
+    def test_report_reader_stays_in_git_while_runtime_receipts_are_persisted(self):
+        context = self.restore()
+        reader = 'outputs/research/evidence_20261019/report_view.html'
+        store.atomic(self.root/reader, b'<p>Versioned presentation, not worker state</p>')
+        receipt = store.RAW+'capture/source.csv'
+        forecast = store.LIVE+'predictions/2026-10-23_btc.json'
+        store.atomic(self.root/receipt, b'original receipt')
+        store.atomic(self.root/forecast, b'ex ante forecast')
+        result = store.persist(self.api, self.key, self.config, context, self.root)
+        self.assertEqual(result['generation'], 1)
+        self.assertNotIn(reader, store.inventory(self.root))
+        self.assertEqual((self.root/reader).read_bytes(), b'<p>Versioned presentation, not worker state</p>')
+        fresh = Path(self.temporary.name)/'runner-with-reader-fix'
+        restored = self.restore(fresh)
+        self.assertNotIn(reader, restored['catalog']['files'])
+        self.assertFalse((fresh/reader).exists())
+        self.assertEqual((fresh/receipt).read_bytes(), b'original receipt')
+        self.assertEqual((fresh/forecast).read_bytes(), b'ex ante forecast')
+
+    def test_unexpected_report_beside_reader_is_still_rejected(self):
+        context = self.restore()
+        name = 'outputs/research/evidence_20261019/unexpected_report.html'
+        store.atomic(self.root/name, b'not allowlisted')
+        with self.assertRaisesRegex(ValueError, 'Unexpected new runtime file'):
+            store.persist(self.api, self.key, self.config, context, self.root)
+        self.assertEqual(self.api.current['generation'], 0)
+
     def test_loss_of_existing_files_cannot_reset_ledger(self):
         context = self.restore()
         (self.root/'models/frozen.joblib').unlink()
