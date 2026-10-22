@@ -28,3 +28,9 @@ jobs:
         run: python tools/export_public_dashboard.py --dashboard-only
       - name: Validate public snapshot
         run: python tools/check_public_dashboard.py --dashboard-only
+      - name: Verify dashboard boot, lazy replay and glossary
+        run: |
+          python -m unittest discover -s tests -p test_dashboard_experience.py
+          node tests/validate_experience.cjs
+          node tests/validate_studio.cjs
+          node tests/validate_release_dashboard.cjs

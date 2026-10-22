@@ -57,4 +57,5 @@ def workspace(html):
     html=re.sub(r'<main>.*?</main>', '<main><span id="workspaceTitle" class="sr-only">Truyền dẫn</span>'+ordered+'<footer>Dữ liệu UTC đến 15/10/2026 · Macro–Crypto Finance Lab · <a href="../outputs/research/release_20261025/report.html">Phương pháp và báo cáo</a></footer></main>',html,count=1,flags=re.S)
     html=html.replace('</style>',(ROOT/'dashboard/workspace.css').read_text(encoding='utf-8')+'\n</style>',1)
     html=html.replace('</script>',(ROOT/'dashboard/workspace.js').read_text(encoding='utf-8')+'\n</script>',1)
-    return html
+    from src.dashboard_design import redesign
+    return redesign(html)

@@ -1,3 +1,18 @@
+let historyLoadPromise = null;
+function ensureHistoricalOos(){
+ if(HISTORICAL.series && HISTORICAL.folds)return Promise.resolve(HISTORICAL);
+ if(historyLoadPromise)return historyLoadPromise;
+ historyLoadPromise=(async()=>{
+  if(typeof DecompressionStream==='undefined')throw new Error('Trình duyệt này chưa hỗ trợ dữ liệu nén. Hãy mở bằng Chrome hoặc Edge phiên bản mới.');
+  const raw=Uint8Array.from(atob(HISTORY_ARCHIVE_GZIP_B64),c=>c.charCodeAt(0));
+  const text=await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  const loaded=JSON.parse(text);
+  if(!loaded.series||!loaded.folds||loaded.audit.data_sha256!==HISTORICAL.audit.data_sha256)throw new Error('Dữ liệu phát lại không khớp bản nghiên cứu. Hãy tải lại gói dashboard.');
+  Object.assign(HISTORICAL,loaded);
+  return HISTORICAL;
+ })().catch(error=>{historyLoadPromise=null;throw error;});
+ return historyLoadPromise;
+}
 const historyPairs=[['long_own','long_macro'],['common_own','common_macro'],['common_macro','common_usd'],['common_own','common_usd']];
 const historyColumns={elastic_net:2,gradient_boosting:3,historical_mean:4,natural_benchmark:5};
 const historyVariantNames={long_own:'Chỉ crypto',long_macro:'Có vĩ mô',common_own:'Chỉ crypto',common_macro:'Có vĩ mô',common_usd:'Có vĩ mô & USD'};
@@ -19,6 +34,7 @@ function historicalRows(){
   const lookup=new Map(left.map(r=>[r[0],r])),col=historyColumns[s.model],benchmark=s.target==='return'?'historical_mean':'natural_benchmark';
   const rows=right.map(r=>{const base=lookup.get(r[0]);if(!base||base[1]!==r[1])throw Error('Historical origins/targets are not paired');
    return {date:r[0],actual:r[1],base:base[col],added:r[col],benchmark:r[historyColumns[benchmark]],year:r[6]};});
+  if(historyCache.size>=24)historyCache.delete(historyCache.keys().next().value);
   historyCache.set(cacheKey,rows);
  }
  const start=el('historyStart').value,end=el('historyEnd').value;
@@ -53,6 +69,7 @@ function renderHistoryPoint(rows=historicalRows()){
  el('historyModelHashes').textContent=`Model ${s.model} · fold ${row.year} · Base SHA-256: ${base.model_sha256[s.model]} · Added SHA-256: ${added.model_sha256[s.model]}`;
 }
 function renderHistoricalOos(){
+ if(!HISTORICAL.series)return;
  const s=historySelection(),start=el('historyStart').value,end=el('historyEnd').value,rows=historicalRows(),oracle=s.scenario==='matched_latest_d3';
  const empty=!start||!end||start>end||!rows.length;
  el('exportHistoricalOos').disabled=empty;el('historyDay').disabled=empty;

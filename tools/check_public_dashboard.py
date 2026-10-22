@@ -39,7 +39,7 @@ def main():
     metadata = json.loads((public/'build_info.json').read_text(encoding='utf-8'))
     require(metadata['publication_mode'] == ('dashboard_only' if args.dashboard_only else 'research_snapshot'),
             'Wrong publication scope')
-    expected = set(files) | {'index.html', 'build_info.json'}
+    expected = set(files) | {'index.html', 'build_info.json', 'dashboard/status.json'}
     actual = set()
     for path in public.rglob('*'):
         require(not path.is_symlink(), 'Symlink in public output')
@@ -49,6 +49,16 @@ def main():
             actual.add(path.relative_to(public).as_posix())
     require(actual == expected, 'Missing or unexpected public files')
     require(set(metadata['files_sha256']) == set(files), 'Manifest differs from file allowlist')
+    status_bytes = (public/'dashboard/status.json').read_bytes()
+    require(metadata.get('derived_files_sha256') == {'dashboard/status.json': hashlib.sha256(status_bytes).hexdigest()}, 'Public status hash mismatch')
+    import sys
+    sys.path.insert(0, str(ROOT))
+    from src.dashboard_experience import public_status, capture_status
+    status = json.loads(status_bytes)
+    wanted_status = public_status((ROOT/'dashboard/index.html').read_text(encoding='utf-8'))
+    wanted_status.update(published_at_utc=metadata['exported_at_utc'], source_commit=metadata['source_commit'])
+    wanted_status['capture'] = capture_status(ROOT)
+    require(status == wanted_status, 'Public status differs from snapshot')
     for relative, digest in metadata['files_sha256'].items():
         require(Path(relative).parts[0] not in {'data', 'models', '.git', 'src', 'config', 'tools', 'tests'},
                 'Non-public directory in artifact')

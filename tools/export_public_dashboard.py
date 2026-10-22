@@ -83,7 +83,7 @@ def main():
     files = ('dashboard/index.html',) if args.dashboard_only else FILES
     if public.is_symlink() or not public.resolve().is_relative_to(ROOT):
         raise ValueError('Public directory must be a real directory within this repository')
-    allowed = set(files) | {'index.html', 'build_info.json'}
+    allowed = set(files) | {'index.html', 'build_info.json', 'dashboard/status.json'}
     if public.exists():
         for path in public.rglob('*'):
             if path.is_symlink() or not path.resolve().is_relative_to(public.resolve()):
@@ -109,6 +109,16 @@ def main():
         'source_files_sha256': source_hashes,
         'files_sha256': {name: hashlib.sha256(data).hexdigest() for name, data in contents.items()},
     }
+    # Only allowlisted public metadata: no models, raw receipts, keys or ledger.
+    import sys
+    sys.path.insert(0, str(ROOT))
+    from src.dashboard_experience import public_status, capture_status
+    status = public_status(contents['dashboard/index.html'].decode('utf-8'))
+    status['published_at_utc'] = metadata['exported_at_utc']
+    status['source_commit'] = metadata['source_commit']
+    status['capture'] = capture_status(ROOT)
+    status_bytes = (json.dumps(status, ensure_ascii=False, indent=2) + '\n').encode()
+    metadata['derived_files_sha256'] = {'dashboard/status.json': hashlib.sha256(status_bytes).hexdigest()}
     if args.worker:
         if not args.dashboard_only or os.environ.get('GITHUB_ACTIONS') != 'true':
             raise ValueError('Worker export requires dashboard-only mode on GitHub Actions')
@@ -126,6 +136,7 @@ def main():
         if relative != 'dashboard/index.html':
             write_public(relative, data, public)
     write_public('build_info.json', (json.dumps(metadata, ensure_ascii=False, indent=2) + '\n').encode(), public)
+    write_public('dashboard/status.json', status_bytes, public)
     write_public('index.html', b'<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=dashboard/"><a href="dashboard/">Dashboard</a>', public)
     write_public('dashboard/index.html', contents['dashboard/index.html'], public)
     print(json.dumps({'exported_files': len(files), 'directory': str(public),

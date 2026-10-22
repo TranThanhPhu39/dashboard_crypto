@@ -1,6 +1,11 @@
 const fs=require('fs'),path=require('path'),vm=require('vm');
 const root=path.resolve(__dirname,'..'),out=path.join(root,'outputs/research/release_20261025');
-const source=fs.readFileSync(path.join(root,'dashboard/index.html'),'utf8'),code=source.match(/<script>([\s\S]*?)<\/script>/)[1];
+const source=fs.readFileSync(path.join(root,'dashboard/index.html'),'utf8');
+let code=source.match(/<script>([\s\S]*?)<\/script>/)[1];
+// Browser loads the identical frozen payload on first opening Forecast.
+// Decode it here so every scientific view is still checked synchronously.
+const compressed=code.match(/const HISTORY_ARCHIVE_GZIP_B64="([A-Za-z0-9+/=]+)";/);
+if(compressed){const text=require('zlib').gunzipSync(Buffer.from(compressed[1],'base64')).toString('utf8');code=code.replace(/const HISTORICAL=.*?;\s*const HISTORY_ARCHIVE_GZIP_B64="[A-Za-z0-9+/=]+";/s,'const HISTORICAL='+text+';');}
 class Element{constructor(value=''){this.value=value;this.innerHTML='';this.textContent='';this.children=[];this.attributes={};this.hidden=false;}addEventListener(){}removeEventListener(){}appendChild(x){this.children.push(x);}setAttribute(k,v){this.attributes[k]=String(v);}getAttribute(k){return this.attributes[k];}}
 const defaults={asset:'btc',shock:'vix_change',regime:'full',horizon:'1',qAsset:'btc',qRegime:'full',qShock:'vix_change',varAsset:'btc',varRegime:'full',varYield:'us2y',varShock:'vix_change',varOrder:'macro_first',target:'squared_return',forecastModel:'elastic_net',forecastPair:'0',iAsset:'btc',iVariant:'common_usd',rollAsset:'btc',rollShock:'vix_change',fAsset:'btc',fScenario:'native_asof_d3',fScope:'pooled',eAsset:'BTC',eOutcome:'intraday',rvAsset:'BTC',rvSampling:'5',rvHorizon:'1'};
 const elements={};for(const m of source.matchAll(/id="([^"]+)"/g)){if(elements[m[1]])throw Error('Duplicate id');elements[m[1]]=new Element(defaults[m[1]]||'');}
@@ -8,7 +13,7 @@ const context=vm.createContext({document:{getElementById:id=>{if(!elements[id])t
 const historicalSource=JSON.parse(fs.readFileSync(path.join(root,'dashboard/historical_oos_data.json'),'utf8'));
 if(JSON.stringify(run('HISTORICAL.series'))!==JSON.stringify(historicalSource.series)||JSON.stringify(run('HISTORICAL.folds'))!==JSON.stringify(historicalSource.folds))throw Error('Embedded historical predictions/timing differ from source');
 if(elements.responses.hidden||elements.rolling.hidden||!elements.overview.hidden||!elements.pit.hidden)throw Error('Wrong default workspace');
-for(const group of ['transmission','forecast','fomc','advanced','methods']){
+for(const group of ['transmission','forecast','fomc','advanced','methods','operations']){
  run(`showWorkspace('${group}')`);
  for(const [key,ids] of Object.entries(run('WORKSPACE_GROUPS')))for(const id of ids)if(elements[id].hidden!==(key!==group))throw Error('Incorrect workspace visibility');
  if(elements['tab-'+group].getAttribute('aria-pressed')!=='true')throw Error('Tab accessibility state missing');
@@ -62,4 +67,4 @@ for(const a of ['BTC','ETH'])for(const s of ['5','15'])for(const h of ['1','7'])
 valid('pitTable','liveStatus','releaseSummary');
 run('resetResponse()');if(elements.asset.value!=='btc'||elements.shock.value!=='vix_change'||elements.regime.value!=='full'||elements.horizon.value!=='1')throw Error('Reset failed');
 for(const m of source.matchAll(/(?:href|src)="([^"]+)"/g)){const link=m[1];if(link.startsWith('http')||link.startsWith('#')||link.startsWith('data:'))continue;if(!fs.existsSync(path.resolve(root,'dashboard',link)))throw Error('Broken '+link);}
-const result={response_views_1_to_30_days:views,csv_estimates_checked:views,workspace_tabs:5,reset_verified:true,quantile_views:quantile,joint_VAR_views:irf,nested_forecast_views:forecasts,historical_replay_views:forecasts,historical_csv_values_checked:true,custom_date_and_annual_refit_verified:true,single_day_and_empty_range_verified:true,fomc_views:fomc,rv_views:rv,importance_views:importance,rolling_views:rolling,all_finite:true,local_links_verified:true};fs.writeFileSync(path.join(out,'dashboard_validation.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));
+const result={response_views_1_to_30_days:views,csv_estimates_checked:views,workspace_tabs:6,reset_verified:true,quantile_views:quantile,joint_VAR_views:irf,nested_forecast_views:forecasts,historical_replay_views:forecasts,historical_csv_values_checked:true,custom_date_and_annual_refit_verified:true,single_day_and_empty_range_verified:true,fomc_views:fomc,rv_views:rv,importance_views:importance,rolling_views:rolling,all_finite:true,local_links_verified:true};fs.writeFileSync(path.join(out,'dashboard_validation.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));

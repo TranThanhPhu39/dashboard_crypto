@@ -110,7 +110,10 @@ jobs:
         run: python tools/run_github_worker.py "$WORKER_MODE"
       - name: Verify interactive dashboard
         if: steps.operation.outcome == 'success'
-        run: node tests/validate_release_dashboard.cjs
+        run: |
+          node tests/validate_release_dashboard.cjs
+          node tests/validate_experience.cjs
+          node tests/validate_studio.cjs
       - name: Persist receipts and ledger before publication
         id: persist
         if: always() && steps.restore.outcome == 'success' && steps.mode.outputs.value != 'preflight'
