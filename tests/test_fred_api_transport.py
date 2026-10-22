@@ -105,6 +105,25 @@ class APITransportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'predates'):
             api.verify_record(record, self.root)
 
+    def test_http_200_maintenance_html_is_archived_without_creating_inputs(self):
+        body = b'<html><title>Site Maintenance | St. Louis Fed</title>undergoing proactive maintenance</html>'
+        response = Mock(status_code=200, content=body, headers={'Content-Type':'text/html'})
+        with patch('requests.get', return_value=response):
+            record = api.api_one(self.folder, 'DGS2', '2026-10-01', '2026-10-20', '2026-10-20', root=self.root, key=self.key)
+        self.assertEqual(record['status'], 'failed')
+        self.assertEqual(record['error_code'], 'PROVIDER_MAINTENANCE')
+        self.assertEqual((self.root/record['raw_file']).read_bytes(), body)
+        self.assertFalse((self.root/record['file']).exists())
+        self.assertNotIn('available_at_utc', record)
+        self.assertNotIn(self.key, json.dumps(record))
+
+    def test_unrelated_html_or_schema_error_is_not_treated_as_maintenance(self):
+        response = Mock(status_code=200, content=b'<html>Login or proxy error</html>', headers={})
+        with patch('requests.get', return_value=response):
+            record = api.api_one(self.folder, 'DGS2', '2026-10-01', '2026-10-20', '2026-10-20', root=self.root, key=self.key)
+        self.assertEqual(record['status'], 'failed')
+        self.assertNotEqual(record['error_code'], 'PROVIDER_MAINTENANCE')
+
 
 if __name__ == '__main__':
     unittest.main()

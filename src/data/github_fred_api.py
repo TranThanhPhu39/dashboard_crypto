@@ -17,6 +17,16 @@ VERSION = 'official_fred_api_v1'
 _installed = False
 
 
+class ProviderMaintenance(RuntimeError):
+    """An explicit St. Louis Fed maintenance page, including HTTP 200 pages."""
+
+
+def maintenance_response(body):
+    text = body[:16384].lower()
+    return (b'site maintenance' in text and b'st. louis fed' in text and
+            (b'proactive maintenance' in text or b'undergoing maintenance' in text))
+
+
 def public_parameters(sid, start, end, asof=None):
     result = dict(series_id=sid, file_type='json', observation_start=start,
                   observation_end=end, sort_order='asc', units='lin', output_type=1, limit=100000)
@@ -89,7 +99,10 @@ def api_one(folder, sid, start, end, asof=None, root=None, key=None):
             stream.write(body)
         record.update(raw_file=raw.relative_to(root).as_posix(), raw_sha256=digest(raw), raw_bytes=len(body),
             raw_received_at_utc=received.isoformat(), http_status=response.status_code,
-            http_date=response.headers.get('Date'), last_modified=response.headers.get('Last-Modified'))
+            http_date=response.headers.get('Date'), last_modified=response.headers.get('Last-Modified'),
+            response_content_type=response.headers.get('Content-Type'))
+        if response.status_code in (200, 503) and maintenance_response(body):
+            raise ProviderMaintenance()
         if response.status_code != 200:
             raise RuntimeError('API HTTP ' + str(response.status_code))
         payload = json.loads(body)
@@ -114,8 +127,11 @@ def api_one(folder, sid, start, end, asof=None, root=None, key=None):
     except Exception as error:
         # requests exceptions contain the prepared URL, including api_key.
         # Never serialize their message, traceback or response URL.
-        record.update(status='failed', error=type(error).__name__ + '; API transport failed; inspect HTTP status and secret configuration',
-                      finished_utc=now_utc().isoformat())
+        record.update(status='failed', error_code='PROVIDER_MAINTENANCE' if isinstance(error, ProviderMaintenance) else type(error).__name__,
+            error=('St. Louis Fed returned an explicit maintenance page; raw response retained; retry next scheduled capture'
+                   if isinstance(error, ProviderMaintenance) else
+                   type(error).__name__ + '; API transport failed; inspect archived HTTP status and response format'),
+            finished_utc=now_utc().isoformat())
     return record
 
 

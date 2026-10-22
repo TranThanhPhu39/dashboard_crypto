@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -118,6 +119,64 @@ def preflight():
     command('run_release.py', 'validate')
 
 
+def redact(value):
+    text = str(value)
+    for name in ('FRED_API_KEY', 'GH_TOKEN', 'TOPIC09_STATE_KEY'):
+        secret = os.environ.get(name)
+        if secret:
+            text = text.replace(secret, '[redacted]')
+    return re.sub(r'(?i)(api_key=)[^&\s\"\']+', r'\1[redacted]', text)
+
+
+def report_operation(mode, exit_code=0, root=ROOT):
+    """Make the actual source/health cause visible, including subprocess failures."""
+    from src.automation_runtime import read_json, atomic_json, now_utc
+    from src.source_health import capture_status, assess
+    root = Path(root)
+    folder = root/'outputs/automation_20261020'
+    state = read_json(folder/'state.json', {})
+    health = read_json(folder/'health.json', {})
+    capture = capture_status(root)
+    outcome = assess(state, health, capture, exit_code)
+    ledger = root/'data/prospective/evidence_20261019'
+    forecasts = list((ledger/'predictions').glob('*.json'))
+    record = dict(checked_at_utc=now_utc().isoformat(), mode=mode, **outcome,
+        pipeline_status=state.get('status'), last_success_utc=state.get('last_success_utc'),
+        capture=capture, prediction_files=len(forecasts),
+        prediction_rows=sum(len(read_json(p)['predictions']) for p in forecasts),
+        label_files=len(list((ledger/'labels').glob('*.json'))),
+        error=redact(state.get('error', '')), performance_evaluated=False)
+    atomic_json(folder/'operation_status.json', record)
+    print(json.dumps(record, ensure_ascii=False), flush=True)
+    if record['status'] != 'succeeded':
+        level = 'error' if record['status'] == 'failed' else 'warning'
+        message = (f"{mode}: {record['status']}; sources {capture['sources_ok']}/{capture['sources_total']}; "
+                   f"blocking={','.join(record['blocking_issues']) or 'none'}; "
+                   f"{record['error'] or 'see archived source receipts and health issues'}")
+        message = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+        print(f'::{level} title=Topic09 operational status::{message}', flush=True)
+        name = state.get('log')
+        log = (root/name).resolve() if name else None
+        if log and log.is_relative_to(root.resolve()) and log.is_file():
+            lines = log.read_text(encoding='utf-8', errors='replace').splitlines()[-150:]
+            selected = [line for line in lines if any(word in line.lower()
+                        for word in ('traceback', 'error', 'failed', 'assertion', 'exception'))]
+            for line in selected[-25:]:
+                print('pipeline log: '+redact(line)[:600], flush=True)
+    if os.environ.get('GITHUB_STEP_SUMMARY'):
+        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as stream:
+            stream.write(f"\n### Topic09 {mode}: {record['status']}\n\n"
+                f"Pipeline state: `{record['pipeline_status']}`. "
+                f"Latest archived capture: **{capture['sources_ok']}/{capture['sources_total']}** sources. "
+                f"Committed forecasts: {record['prediction_files']} files / {record['prediction_rows']} rows. "
+                f"Labels: {record['label_files']}. No performance scoring.\n\n")
+            for row in capture['failures']:
+                stream.write(f"- {row['source']}: `{row['code']}`, HTTP {row['http_status']}, {row['raw_bytes']} archived bytes.\n")
+            if record['error']:
+                stream.write('\n'+record['error']+'\n')
+    return record
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('stage', choices=['restore', 'preflight', 'run', 'monitor', 'persist', 'heartbeat'])
@@ -172,13 +231,15 @@ def main():
     from src import automation_runtime as auto
     if args.stage == 'run':
         result = auto.run_pipeline()
+        report = report_operation(args.stage, result)
         if result or auto.read_json(auto.OUT/'state.json')['status'] != 'finished_schedule':
-            raise SystemExit(result)
+            raise SystemExit(result or int(report['status'] == 'failed'))
     auto.refresh_scheduler_status()
     health = auto.monitor(refresh=False)
     command('run_release.py', 'build')
     command('run_release.py', 'validate')
-    if health['status'] != 'healthy':
+    report = report_operation(args.stage)
+    if report['status'] == 'failed':
         raise SystemExit(1)
 
 

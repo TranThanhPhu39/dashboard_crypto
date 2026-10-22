@@ -182,9 +182,11 @@ def health_issues(now, cfg, installation, scheduler, state, readiness=()):
             add('monitor_task_failed', 'Tác vụ giám sát có mã lỗi Windows; kiểm tra log monitor và Task Scheduler.')
     if state.get('status')=='failed':
         add('pipeline_failed', 'Pipeline lỗi sau các lần thử; xem log: '+str(state.get('log', '')))
+    if state.get('status')=='deferred_source_maintenance':
+        add('source_maintenance', 'Capture mới nhất nhận trang bảo trì FRED; đã lưu phản hồi lỗi. Chờ nguồn phục hồi, giữ nguyên receipt cutoff và các dự báo đã commit.')
     last = state.get('last_success_utc') or installation.get('installed_at_utc')
     if state.get('status')!='finished_schedule' and last and now-timestamp(last)>timedelta(minutes=cfg['stale_after_minutes']):
-        add('missed_runs', 'Quá thời gian dự kiến chưa có lần pipeline thành công; kiểm tra máy, tài khoản, mạng và Task Scheduler.')
+        add('missed_runs', 'Quá thời gian dự kiến chưa có lần pipeline thu đủ dữ liệu; kiểm tra nguồn và GitHub Actions.' if installation.get('provider')=='github-actions' else 'Quá thời gian dự kiến chưa có lần pipeline thành công; kiểm tra máy, tài khoản, mạng và Task Scheduler.')
     if state.get('status')=='running' and now-timestamp(state['started_at_utc'])>timedelta(minutes=cfg['task_execution_limit_minutes']):
         add('pipeline_hung', 'Lần chạy đang vượt giới hạn thời gian; watchdog sẽ giữ cảnh báo cho tới khi phục hồi.')
     installed = timestamp(installation['installed_at_utc']) if installation.get('installed_at_utc') else now
@@ -343,11 +345,28 @@ def run_pipeline():
                     if needs_refresh(now_utc(),cfg):
                         command.append('--refresh-capture')
                     run_child(command,log,cfg['subprocess_timeout_seconds'])
+                    attempt_status=read_json(ROOT/'outputs/research/evidence_20261019/prospective/prospective_status.json')
                     if not capture_complete():
+                        from src.source_health import capture_status
+                        source_status=capture_status(ROOT)
+                        if source_status['maintenance_only']:
+                            state.update(status='deferred_source_maintenance',finished_at_utc=now_utc().isoformat(),
+                                last_success_utc=previous.get('last_success_utc'),sources_ok=source_status['sources_ok'],
+                                source_status=source_status,forecast_statuses=[row['status'] for row in attempt_status['attempts']],
+                                forecasts_logged=attempt_status['total_predictions'],
+                                forecasts_existing=attempt_status.get('existing_predictions',0))
+                            if 'error' in state:
+                                state['last_error']=state.pop('error')
+                            atomic_json(OUT/'state.json',state)
+                            monitor(refresh=False)
+                            with process_lock(OUT/'operate.lock'):
+                                run_child([executable,str(ROOT/'run_release.py'),'build'],log,cfg['subprocess_timeout_seconds'])
+                            with (OUT/'runs.jsonl').open('a',encoding='utf-8') as stream:
+                                stream.write(json.dumps(state,ensure_ascii=False)+'\n')
+                            return 0
                         raise RuntimeError('Not all 17 sources succeeded; retry with a new immutable capture')
                     # Input ineligibility is not a software failure. No future
                     # outcomes or scores are read by this operational wrapper.
-                    attempt_status=read_json(ROOT/'outputs/research/evidence_20261019/prospective/prospective_status.json')
                     state.update(status='succeeded',finished_at_utc=now_utc().isoformat(),
                                  last_success_utc=now_utc().isoformat(),
                                  forecast_statuses=[row['status'] for row in attempt_status['attempts']],

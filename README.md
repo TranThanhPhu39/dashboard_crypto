@@ -8,6 +8,8 @@ Repository GitHub: [TranThanhPhu39/dashboard_crypto](https://github.com/TranThan
 
 [Tạo server Oracle Always Free](docs/ORACLE_ALWAYS_FREE.vi.md): phương án VPS tùy chọn. Hệ thống hiện dùng GitHub Actions, không yêu cầu tạo Oracle/VPS.
 
+Khi FRED trả trang bảo trì HTTP 200, worker lưu phản hồi lỗi và báo `deferred_source_maintenance`/warning; không coi HTML là dữ liệu và không đổi receipt cutoff. Xem Step Summary để phân biệt thu đủ 17/17 nguồn với trạng thái chờ nguồn phục hồi. Lỗi code, integrity hoặc cấu hình vẫn làm Actions fail. [Chi tiết bảo trì và chẩn đoán](docs/GITHUB_ACTIONS_WORKER.vi.md).
+
 Bộ dữ liệu nghiên cứu tải ngày **16/10/2026**, mẫu theo ngày UTC **01/01/2014–15/10/2026**. Chỉ dùng ngày đã kết thúc. Không kéo dài dữ liệu đến cuối năm 2026 khi chưa có quan sát. Mô hình và báo cáo được triển khai theo thiết kế đã thống nhất dưới đây.
 
 ## Bản tổng hợp nộp 25/10/2026 — entry point hiện tại
