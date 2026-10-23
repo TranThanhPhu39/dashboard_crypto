@@ -4,9 +4,11 @@ function ensureHistoricalOos(){
  if(historyLoadPromise)return historyLoadPromise;
  historyLoadPromise=(async()=>{
   if(typeof DecompressionStream==='undefined')throw new Error('Trình duyệt này chưa hỗ trợ dữ liệu nén. Hãy mở bằng Chrome hoặc Edge phiên bản mới.');
-  const compressed=typeof fetch==='function'
-   ? await fetch('data:application/gzip;base64,'+HISTORY_ARCHIVE_GZIP_B64)
+  const compressed=typeof HISTORY_ARCHIVE_URL!=='undefined'
+   ? await fetch(HISTORY_ARCHIVE_URL)
+   : typeof fetch==='function' ? await fetch('data:application/gzip;base64,'+HISTORY_ARCHIVE_GZIP_B64)
    : new Response(new Blob([Uint8Array.from(atob(HISTORY_ARCHIVE_GZIP_B64),c=>c.charCodeAt(0))]));
+  if(!compressed.ok)throw Error('Chưa tải được dữ liệu phát lại (HTTP '+compressed.status+'). Hãy thử lại.');
   const text=await new Response(compressed.body.pipeThrough(new DecompressionStream('gzip'))).text();
   const loaded=JSON.parse(text);
   if(!loaded.series||!loaded.folds||loaded.audit.data_sha256!==HISTORICAL.audit.data_sha256)throw new Error('Dữ liệu phát lại không khớp bản nghiên cứu. Hãy tải lại gói dashboard.');
@@ -105,6 +107,7 @@ function historicalOosCsv(){
 }
 function initializeHistoricalOos(){
  resetHistoricalRange();
+ el('exportHistoricalOos').disabled=!HISTORICAL.series;
  el('historyAuditBadge').textContent=`Đã kiểm chứng ${HISTORICAL.audit.artifacts_replayed} mô hình`;
  el('historyAuditDetail').textContent=`Đã tính lại ${HISTORICAL.audit.learned_predictions_checked} dự báo từ artifacts và ${HISTORICAL.audit.benchmark_predictions_checked} benchmark predictions; đối chiếu với CSV đã khóa, kiểm tra fold chronology và train-only scaling. Không huấn luyện lại model. SHA-256 bộ hiển thị: ${HISTORICAL.audit.data_sha256}.`;
  for(const id of ['historyStart','historyEnd'])el(id).addEventListener('change',renderHistoricalOos);

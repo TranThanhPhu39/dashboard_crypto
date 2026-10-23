@@ -6,7 +6,7 @@ const interval=(a,b)=>`[${latestNumber(a)}; ${latestNumber(b)}]`;
 const selectedForecast=()=>({asset:el('fAsset').value,target:el('target').value,model:el('forecastModel').value,scenario:el('fScenario').value,scope:el('fScope').value});
 const matches=(r,s)=>Object.entries(s).every(([key,value])=>String(r[key])===String(value));
 function renderForecast(){
- if(typeof window!=='undefined'&&!HISTORICAL.series){if(typeof loadForecastWorkspace==='function')loadForecastWorkspace();return;}
+ if(typeof window!=='undefined'&&!HISTORICAL.series&&typeof loadForecastWorkspace==='function')loadForecastWorkspace();
  const s=selectedForecast(),pairs=[['long_own','long_macro'],['common_own','common_macro'],['common_macro','common_usd'],['common_own','common_usd']],pair=pairs[Number(el('forecastPair').value||0)];
  const rows=LATEST.ablation.filter(r=>matches(r,s)&&r.base===pair[0]&&r.added===pair[1]);
  el('forecastTable').innerHTML=table(['Cấu hình gốc → thêm thông tin','Số ngày','Chênh lệch sai số','Khoảng tin cậy 95%','p','q (BH)'],rows.map(r=>[`${humanVariant(r.base)} → ${humanVariant(r.added)}`,r.n,latestNumber(r.mean_loss_new_minus_base),interval(r.ci_low,r.ci_high),prob(r.pvalue),prob(r.qvalue_bh)]));
@@ -15,7 +15,7 @@ function renderForecast(){
  const t=LATEST.sensitivity.filter(r=>matches(r,{asset:s.asset,target:s.target,model:s.model,scope:s.scope})&&r.variant===pair[1]);
  el('sensitivityTable').innerHTML=table(['Cấu hình / thay đổi','Số ngày','Chênh lệch sai số','Khoảng tin cậy 95%','q (BH)'],t.map(r=>[`${r.variant} / ${r.comparison}`,r.n,latestNumber(r.mean_loss_new_minus_base),interval(r.ci_low,r.ci_high),prob(r.qvalue_bh)]));
  el('forecastContext').textContent=`${scenarioNames[s.scenario]} · ${s.scope==='pooled'?'Gộp 2023–2026':s.scope} · ${s.target==='return'?'MSE return':'QLIKE squared return'} · ${rows.length?rows[0].n:'N/A'} paired origins. Native và matched có mẫu khác nhau; chỉ diễn giải timing/vintage qua các paired sensitivity đã ghép cả train/validation/test.`;
- renderImportance();renderHistoricalOos();
+ renderImportance();if(HISTORICAL.series)renderHistoricalOos();
 }
 function renderFOMC(){
  const asset=el('eAsset').value,outcome=el('eOutcome').value;

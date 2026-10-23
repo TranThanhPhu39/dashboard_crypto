@@ -81,15 +81,6 @@ def main():
     args = parser.parse_args()
     public = PUBLIC_PAGES if args.dashboard_only else PUBLIC
     files = ('dashboard/index.html',) if args.dashboard_only else FILES
-    if public.is_symlink() or not public.resolve().is_relative_to(ROOT):
-        raise ValueError('Public directory must be a real directory within this repository')
-    allowed = set(files) | {'index.html', 'build_info.json', 'dashboard/status.json'}
-    if public.exists():
-        for path in public.rglob('*'):
-            if path.is_symlink() or not path.resolve().is_relative_to(public.resolve()):
-                raise ValueError('Unexpected symlink in public directory')
-            if path.is_file() and path.relative_to(public).as_posix() not in allowed:
-                raise ValueError('Unknown file in public directory; inspect it before publishing')
     contents = {}
     source_hashes = {}
     for relative in files:
@@ -99,6 +90,18 @@ def main():
         raw = source.read_bytes()
         source_hashes[relative] = hashlib.sha256(raw).hexdigest()
         contents[relative] = dashboard_only_bytes(raw) if args.dashboard_only else raw
+    if args.dashboard_only:
+        from dashboard_web_package import package_dashboard
+        contents=package_dashboard(contents['dashboard/index.html'])
+    if public.is_symlink() or not public.resolve().is_relative_to(ROOT):
+        raise ValueError('Public directory must be a real directory within this repository')
+    allowed = set(contents) | {'index.html', 'build_info.json', 'dashboard/status.json'}
+    if public.exists():
+        for path in public.rglob('*'):
+            if path.is_symlink() or not path.resolve().is_relative_to(public.resolve()):
+                raise ValueError('Unexpected symlink in public directory')
+            if path.is_file() and path.relative_to(public).as_posix() not in allowed:
+                raise ValueError('Unknown file in public directory; inspect it before publishing')
     state = git_value('status', '--porcelain', '--untracked-files=no')
     metadata = {
         'exported_at_utc': datetime.now(timezone.utc).isoformat(),
@@ -113,7 +116,7 @@ def main():
     import sys
     sys.path.insert(0, str(ROOT))
     from src.dashboard_experience import public_status, capture_status
-    status = public_status(contents['dashboard/index.html'].decode('utf-8'))
+    status = public_status((ROOT/'dashboard/index.html').read_text(encoding='utf-8'))
     status['published_at_utc'] = metadata['exported_at_utc']
     status['source_commit'] = metadata['source_commit']
     status['capture'] = capture_status(ROOT)
@@ -131,7 +134,7 @@ def main():
         metadata['worker'] = {**persisted, 'run_url': 'https://github.com/' + os.environ['GITHUB_REPOSITORY'] +
             '/actions/runs/' + os.environ['GITHUB_RUN_ID'], 'runtime_modified_paths': changed}
         metadata['scope'] = 'Runtime dashboard from frozen artifacts; durable encrypted checkpoint committed before publication'
-    # Publish the self-contained dashboard last; other files are optional detail pages.
+    # Publish the web shell last, after its exact lazy replay asset is available.
     for relative, data in contents.items():
         if relative != 'dashboard/index.html':
             write_public(relative, data, public)

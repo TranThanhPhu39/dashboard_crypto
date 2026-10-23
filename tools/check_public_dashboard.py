@@ -36,10 +36,14 @@ def main():
     args = parser.parse_args()
     public = PUBLIC_PAGES if args.dashboard_only else PUBLIC
     files = ('dashboard/index.html',) if args.dashboard_only else FILES
+    from dashboard_web_package import package_dashboard,unpack_program,SCRIPT
+    wanted_files={name:(ROOT/name).read_bytes() for name in files}
+    if args.dashboard_only:
+        wanted_files=package_dashboard(dashboard_only_bytes(wanted_files['dashboard/index.html']))
     metadata = json.loads((public/'build_info.json').read_text(encoding='utf-8'))
     require(metadata['publication_mode'] == ('dashboard_only' if args.dashboard_only else 'research_snapshot'),
             'Wrong publication scope')
-    expected = set(files) | {'index.html', 'build_info.json', 'dashboard/status.json'}
+    expected = set(wanted_files) | {'index.html', 'build_info.json', 'dashboard/status.json'}
     actual = set()
     for path in public.rglob('*'):
         require(not path.is_symlink(), 'Symlink in public output')
@@ -48,7 +52,7 @@ def main():
             require(path.stat().st_nlink == 1, 'Hard link in public output')
             actual.add(path.relative_to(public).as_posix())
     require(actual == expected, 'Missing or unexpected public files')
-    require(set(metadata['files_sha256']) == set(files), 'Manifest differs from file allowlist')
+    require(set(metadata['files_sha256']) == set(wanted_files), 'Manifest differs from file allowlist')
     status_bytes = (public/'dashboard/status.json').read_bytes()
     require(metadata.get('derived_files_sha256') == {'dashboard/status.json': hashlib.sha256(status_bytes).hexdigest()}, 'Public status hash mismatch')
     import sys
@@ -64,15 +68,14 @@ def main():
                 'Non-public directory in artifact')
         data = (public/relative).read_bytes()
         require(hashlib.sha256(data).hexdigest() == digest, 'Public hash mismatch: '+relative)
-        source = (ROOT/relative).read_bytes()
-        require(hashlib.sha256(source).hexdigest() == metadata['source_files_sha256'][relative], 'Source hash mismatch')
-        wanted = dashboard_only_bytes(source) if args.dashboard_only else source
-        require(data == wanted, 'Snapshot source mismatch: '+relative)
-        if args.dashboard_only:
-            for tag in (b'script', b'style'):
-                pattern = b'<'+tag+rb'\b[^>]*>(.*?)</'+tag+rb'\s*>'
-                require(re.findall(pattern, data, re.IGNORECASE | re.DOTALL) ==
-                        re.findall(pattern, source, re.IGNORECASE | re.DOTALL), 'Dashboard code/data changed')
+        require(data == wanted_files[relative], 'Snapshot source mismatch: '+relative)
+    require(set(metadata['source_files_sha256'])==set(files),'Source manifest differs from allowlist')
+    for name in files:
+        require(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==metadata['source_files_sha256'][name], 'Source hash mismatch: '+name)
+    if args.dashboard_only:
+        packed=(public/'dashboard/index.html').read_bytes()
+        require(unpack_program(packed,wanted_files)==SCRIPT.search((ROOT/'dashboard/index.html').read_bytes().decode('utf-8'))[1], 'Recovered dashboard program/data changed')
+        require(re.findall(rb'<style\b[^>]*>(.*?)</style\s*>',packed,re.S)==re.findall(rb'<style\b[^>]*>(.*?)</style\s*>',(ROOT/'dashboard/index.html').read_bytes(),re.S),'Dashboard styles changed')
     if os.environ.get('GITHUB_SHA'):
         require(metadata['source_commit'] == os.environ['GITHUB_SHA'], 'Wrong source commit')
         if metadata.get('worker'):

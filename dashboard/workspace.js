@@ -11,6 +11,7 @@ async function loadForecastWorkspace(){
  if(loading)loading.hidden=false;
  if(error)error.hidden=true;
  try{
+  renderForecast();renderRV();
   await ensureHistoricalOos();
   if(loading)loading.hidden=true;
   if(el('forecast').hidden)return;

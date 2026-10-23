@@ -116,9 +116,11 @@ function ensureHistoricalOos(){
  if(historyLoadPromise)return historyLoadPromise;
  historyLoadPromise=(async()=>{
   if(typeof DecompressionStream==='undefined')throw new Error('Trình duyệt này chưa hỗ trợ dữ liệu nén. Hãy mở bằng Chrome hoặc Edge phiên bản mới.');
-  const compressed=typeof fetch==='function'
-   ? await fetch('data:application/gzip;base64,'+HISTORY_ARCHIVE_GZIP_B64)
+  const compressed=typeof HISTORY_ARCHIVE_URL!=='undefined'
+   ? await fetch(HISTORY_ARCHIVE_URL)
+   : typeof fetch==='function' ? await fetch('data:application/gzip;base64,'+HISTORY_ARCHIVE_GZIP_B64)
    : new Response(new Blob([Uint8Array.from(atob(HISTORY_ARCHIVE_GZIP_B64),c=>c.charCodeAt(0))]));
+  if(!compressed.ok)throw Error('Chưa tải được dữ liệu phát lại (HTTP '+compressed.status+'). Hãy thử lại.');
   const text=await new Response(compressed.body.pipeThrough(new DecompressionStream('gzip'))).text();
   const loaded=JSON.parse(text);
   if(!loaded.series||!loaded.folds||loaded.audit.data_sha256!==HISTORICAL.audit.data_sha256)throw new Error('Dữ liệu phát lại không khớp bản nghiên cứu. Hãy tải lại gói dashboard.');
@@ -217,6 +219,7 @@ function historicalOosCsv(){
 }
 function initializeHistoricalOos(){
  resetHistoricalRange();
+ el('exportHistoricalOos').disabled=!HISTORICAL.series;
  el('historyAuditBadge').textContent=`Đã kiểm chứng ${HISTORICAL.audit.artifacts_replayed} mô hình`;
  el('historyAuditDetail').textContent=`Đã tính lại ${HISTORICAL.audit.learned_predictions_checked} dự báo từ artifacts và ${HISTORICAL.audit.benchmark_predictions_checked} benchmark predictions; đối chiếu với CSV đã khóa, kiểm tra fold chronology và train-only scaling. Không huấn luyện lại model. SHA-256 bộ hiển thị: ${HISTORICAL.audit.data_sha256}.`;
  for(const id of ['historyStart','historyEnd'])el(id).addEventListener('change',renderHistoricalOos);
@@ -235,7 +238,7 @@ const interval=(a,b)=>`[${latestNumber(a)}; ${latestNumber(b)}]`;
 const selectedForecast=()=>({asset:el('fAsset').value,target:el('target').value,model:el('forecastModel').value,scenario:el('fScenario').value,scope:el('fScope').value});
 const matches=(r,s)=>Object.entries(s).every(([key,value])=>String(r[key])===String(value));
 function renderForecast(){
- if(typeof window!=='undefined'&&!HISTORICAL.series){if(typeof loadForecastWorkspace==='function')loadForecastWorkspace();return;}
+ if(typeof window!=='undefined'&&!HISTORICAL.series&&typeof loadForecastWorkspace==='function')loadForecastWorkspace();
  const s=selectedForecast(),pairs=[['long_own','long_macro'],['common_own','common_macro'],['common_macro','common_usd'],['common_own','common_usd']],pair=pairs[Number(el('forecastPair').value||0)];
  const rows=LATEST.ablation.filter(r=>matches(r,s)&&r.base===pair[0]&&r.added===pair[1]);
  el('forecastTable').innerHTML=table(['Cấu hình gốc → thêm thông tin','Số ngày','Chênh lệch sai số','Khoảng tin cậy 95%','p','q (BH)'],rows.map(r=>[`${humanVariant(r.base)} → ${humanVariant(r.added)}`,r.n,latestNumber(r.mean_loss_new_minus_base),interval(r.ci_low,r.ci_high),prob(r.pvalue),prob(r.qvalue_bh)]));
@@ -244,7 +247,7 @@ function renderForecast(){
  const t=LATEST.sensitivity.filter(r=>matches(r,{asset:s.asset,target:s.target,model:s.model,scope:s.scope})&&r.variant===pair[1]);
  el('sensitivityTable').innerHTML=table(['Cấu hình / thay đổi','Số ngày','Chênh lệch sai số','Khoảng tin cậy 95%','q (BH)'],t.map(r=>[`${r.variant} / ${r.comparison}`,r.n,latestNumber(r.mean_loss_new_minus_base),interval(r.ci_low,r.ci_high),prob(r.qvalue_bh)]));
  el('forecastContext').textContent=`${scenarioNames[s.scenario]} · ${s.scope==='pooled'?'Gộp 2023–2026':s.scope} · ${s.target==='return'?'MSE return':'QLIKE squared return'} · ${rows.length?rows[0].n:'N/A'} paired origins. Native và matched có mẫu khác nhau; chỉ diễn giải timing/vintage qua các paired sensitivity đã ghép cả train/validation/test.`;
- renderImportance();renderHistoricalOos();
+ renderImportance();if(HISTORICAL.series)renderHistoricalOos();
 }
 function renderFOMC(){
  const asset=el('eAsset').value,outcome=el('eOutcome').value;
@@ -289,6 +292,7 @@ async function loadForecastWorkspace(){
  if(loading)loading.hidden=false;
  if(error)error.hidden=true;
  try{
+  renderForecast();renderRV();
   await ensureHistoricalOos();
   if(loading)loading.hidden=true;
   if(el('forecast').hidden)return;
