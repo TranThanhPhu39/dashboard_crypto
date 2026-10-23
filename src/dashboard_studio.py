@@ -10,6 +10,7 @@ PAGES = [('transmission', 'Truyền dẫn', 'wave'), ('forecast', 'Dự báo r�
 
 def studio(html):
     from src.dashboard_design import icon
+    html = re.sub(r'<style id="orbit-aurora">.*?</style>', '', html, flags=re.S)
     html = re.sub(r'<!-- ORBIT STUDIO [A-Z_]+ START -->.*?<!-- ORBIT STUDIO [A-Z_]+ END -->', '', html, flags=re.S)
     def button(key, label, symbol, mobile=False):
         if mobile:
@@ -24,6 +25,8 @@ def studio(html):
     header = '<header class="app-header"><div class="topbar-path"><button type="button" id="openNavigation" class="icon-button" aria-label="Mở menu">'+icon('layers')+'</button><span class="topbar-label">Nghiên cứu</span><span class="path-divider">/</span><strong id="designBreadcrumb">Truyền dẫn</strong></div><div class="topbar-actions"><span class="topbar-date">Dữ liệu đến 15/10/2026</span><button type="button" id="openGlossary" class="glossary-trigger" aria-label="Tìm kiếm và lệnh · Ctrl K"><span aria-hidden="true">⌕</span><span>Tìm kiếm &amp; lệnh</span><kbd>Ctrl K</kbd></button><button type="button" id="themeToggle" class="icon-button" aria-label="Đổi giao diện sáng tối">'+icon('sun')+'</button><button type="button" id="topExport" class="top-export" aria-label="Tải CSV của workspace">'+icon('download')+'<span>Tải CSV</span></button></div></header>'
     header=header.replace('<span class="topbar-date">Dữ liệu đến 15/10/2026</span>','<button type="button" class="topbar-date" data-goto="operations" aria-label="Xem ngày chốt mẫu nghiên cứu và dữ liệu mới"><span>Mẫu ước lượng: 15/10/2026</span><small id="latestDataBadge">Thu dữ liệu: đang đọc</small></button>')
     html = re.sub(r'<header\b[^>]*>.*?</header>', header, html, count=1, flags=re.S)
+    # Place the horizontal navigation before the compact action/breadcrumb bar.
+    html = html.replace(nav, '', 1).replace(header, nav + header, 1)
     hero = '<!-- ORBIT HERO START --><div class="workspace-hero"><div class="hero-eyebrow" id="designEyebrow">MACRO × CRYPTO / RESEARCH EXPLORER</div><h1 id="designTitle">Từ vĩ mô đến crypto<span>.</span></h1><p id="designDescription">Một thay đổi kinh tế. Hai tài sản. 30 ngày phản ứng.</p><div id="designMetrics" hidden><span id="designSample"></span><span id="designSampleMeta"></span></div></div><!-- ORBIT HERO END -->'
     html = re.sub(r'<!-- ORBIT HERO START -->.*?<!-- ORBIT HERO END -->', hero, html, flags=re.S)
     html = re.sub(r'<!-- ORBIT EXPERIENCE GUIDE START -->.*?<!-- ORBIT EXPERIENCE GUIDE END -->', '', html, flags=re.S)
@@ -81,4 +84,6 @@ def studio(html):
     for tag in ['<header class="app-header"', '<nav class="workspace-nav"']:
         html = html.replace(tag, tag.replace(' ', ' data-orbit-inert="true" inert ', 1), 1)
     from src.dashboard_fomc import enhance as enhance_fomc
+    css = (ROOT/'dashboard/aurora.css').read_text(encoding='utf-8')
+    html = html.replace('</head>', '<style id="orbit-aurora">'+css+'</style></head>', 1)
     return enhance_fomc(html)

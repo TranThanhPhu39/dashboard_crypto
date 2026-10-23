@@ -98,6 +98,15 @@ async function screenshot(name) {
     for(let i=0;i<60;i++){if(await evaluate("document.readyState==='complete' && Boolean(document.getElementById('liveStatus').textContent)"))break;await delay(100);}
     const dashboardDesktop=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
     const startsWithEstimator=await evaluate("!document.getElementById('responses').hidden && document.getElementById('overview').hidden && document.getElementById('pit').hidden");
+    const auroraLayoutWorks=await evaluate("document.documentElement.dataset.theme==='dark'&&document.querySelectorAll('#orbit-aurora').length===1&&getComputedStyle(document.querySelector('.workspace-nav')).flexDirection==='row'&&document.querySelector('.workspace-nav').getBoundingClientRect().top<document.querySelector('.app-header').getBoundingClientRect().top");
+    await evaluate("document.getElementById('themeToggle').click()");
+    await delay(180);
+    const lightThemeWorks=await evaluate("document.documentElement.dataset.theme==='light'&&localStorage.getItem('orbit-theme-aurora')==='light'");
+    await screenshot('dashboard_aurora_light_desktop.png');
+    await evaluate("document.getElementById('themeToggle').click()");
+    await call('Emulation.setDeviceMetricsOverride',{width:1024,height:1000,deviceScaleFactor:1,mobile:false});
+    const tabletLayoutWorks=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    await call('Emulation.setDeviceMetricsOverride',{width:1280,height:1000,deviceScaleFactor:1,mobile:false});
     await evaluate("document.getElementById('tab-fomc').click();window.scrollTo(0,0)");
     const fomcAggregateWorks=await evaluate("document.getElementById('designTitle').textContent==='Phản ứng quanh FOMC.'&&document.getElementById('fomcSampleDescription').textContent.includes('75')&&document.getElementById('fomcAggregateChart').querySelectorAll('circle').length===30&&document.getElementById('fomcAggregateChart').querySelector('.fomc-ci-band')!==null&&document.getElementById('fomcEventListTable').children.length===0");
     await screenshot('dashboard_fomc_aggregate_desktop.png');
@@ -186,6 +195,13 @@ async function screenshot(name) {
     await evaluate('window.scrollTo(0,0)');
     const dashboardMobile=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
     await screenshot('dashboard_mobile.png');
+    await evaluate("document.getElementById('openFilters').click()");
+    const mobileFiltersWork=await evaluate("document.getElementById('filterSheet').open&&document.getElementById('filterSheet').contains(document.getElementById('responseControls'))");
+    await screenshot('dashboard_aurora_mobile_filters.png');
+    await evaluate("document.getElementById('applyMobileFilters').click()");
+    await evaluate('new Promise(resolve=>requestAnimationFrame(resolve))');
+    await evaluate("document.getElementById('openNavigation').click()");
+    const mobileMenuWorks=await evaluate("(()=>{const d=document.getElementById('navDrawer');if(!d.open)return false;d.querySelector('[data-goto=fomc]').click();return !d.open&&!document.getElementById('fomc').hidden&&document.documentElement.scrollWidth<=innerWidth+1})()");
     const result = {browser:'Chrome',desktop_width:1280,mobile_width:390,
       desktop_no_horizontal_overflow:desktop,mobile_no_horizontal_overflow:mobile,
       oos_desktop_no_overflow:oosDesktop,oos_mobile_no_overflow:oosMobile,oos_local_links_verified:oosLinks.length,
@@ -194,6 +210,8 @@ async function screenshot(name) {
       historical_dates_work:historicalDatesWork,historical_csv_download_matches:historicalCsvWorks,historical_desktop_no_overflow:historicalDesktop,historical_mobile_no_overflow:historicalMobile,
       local_links_verified:local.length,horizon_reuses_curve:horizonReusesCurve,lazy_detail_tables_verified:lazyTablesWork,live_data_tables_verified:liveDataWorks,live_desktop_no_overflow:liveDesktop,live_mobile_no_overflow:liveMobile,uncaught_errors:errors.length};
     Object.assign(result,{fomc_aggregate_verified:fomcAggregateWorks,fomc_event_selection_verified:fomcEventsWork,fomc_event_csv_verified:fomcCsvWorks,fomc_event_list_verified:fomcListWorks,fomc_mobile_no_overflow:fomcMobile});
+    Object.assign(result,{aurora_horizontal_navigation_verified:auroraLayoutWorks,light_theme_verified:lightThemeWorks,tablet_no_overflow:tabletLayoutWorks,mobile_filters_verified:mobileFiltersWork,mobile_navigation_verified:mobileMenuWorks});
+    if(!auroraLayoutWorks||!lightThemeWorks||!tabletLayoutWorks||!mobileFiltersWork||!mobileMenuWorks)throw Error('Aurora UI checks failed: '+JSON.stringify(result));
     if(!fomcAggregateWorks||!fomcEventsWork||!fomcCsvWorks||!fomcListWorks||!fomcMobile)throw Error('FOMC UI checks failed: '+JSON.stringify(result));
     fs.writeFileSync(path.join(out,'browser_validation.json'),JSON.stringify(result,null,2));
     if (!desktop || !mobile || !oosDesktop || !oosMobile || !automationDesktop || !automationMobile || !dashboardDesktop || !dashboardMobile || !startsWithEstimator || !noWarningOnMain || !tabButtonsWork || !selectionWorks || !resetWorks || !csvDownloadWorks || !historicalDatesWork || !historicalCsvWorks || !historicalDesktop || !historicalMobile || !horizonReusesCurve || !lazyTablesWork || !liveDataWorks || !liveDesktop || !liveMobile || errors.length) throw Error(JSON.stringify(result));

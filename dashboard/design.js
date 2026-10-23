@@ -49,9 +49,9 @@ function orbitStartStudio(){
  const seriesFor=row=>analogueSeries.get([row.asset,row.shock,row.regime,row.date_utc].join('|'))||[];
  function toast(message){clearTimeout(toastTimer);$('orbitToast').textContent=message;$('orbitToast').hidden=false;toastTimer=setTimeout(()=>$('orbitToast').hidden=true,2800);}
  window.orbitToast=toast;
- function setTheme(theme){root.dataset.theme=theme;$('themeToggle').setAttribute('aria-pressed',String(theme==='light'));$('themeToggle').setAttribute('aria-label',theme==='dark'?'Chuyển sang giao diện sáng':'Chuyển sang giao diện tối');try{localStorage.setItem('orbit-theme',theme);}catch(_){}}
- let savedTheme=null;try{savedTheme=localStorage.getItem('orbit-theme');if(localStorage.getItem('orbit-nav-collapsed')==='true')root.dataset.navCollapsed='true';}catch(_){}
- setTheme(savedTheme==='light'||savedTheme==='dark'?savedTheme:matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');
+ function setTheme(theme){root.dataset.theme=theme;$('themeToggle').setAttribute('aria-pressed',String(theme==='light'));$('themeToggle').setAttribute('aria-label',theme==='dark'?'Chuyển sang giao diện sáng':'Chuyển sang giao diện tối');try{localStorage.setItem('orbit-theme-aurora',theme);}catch(_){}}
+ let savedTheme=null;try{savedTheme=localStorage.getItem('orbit-theme-aurora');}catch(_){}
+ setTheme(savedTheme==='light'?'light':'dark');
  window.orbitToggleTheme=()=>{setTheme(root.dataset.theme==='dark'?'light':'dark');};
  $('themeToggle').addEventListener('click',window.orbitToggleTheme);
  // The active button paints its own background; no synchronous page layout.
