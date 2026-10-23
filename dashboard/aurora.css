@@ -1,11 +1,11 @@
-/* Aurora presentation: static CSS scenery, no remote assets or blur layers. */
+/* Aurora Glass: offline geographic scenery, translucent surfaces, bounded blur. */
 :root {
   color-scheme: dark;
   --bg: #0d071b;
-  --sidebar: #1a102e;
-  --surface: #241a3c;
-  --surface-raised: #34234f;
-  --surface-soft: #180f2b;
+  --sidebar: #1a102e70;
+  --surface: #241a3c70;
+  --surface-raised: #302443f0;
+  --surface-soft: #10142750;
   --border: #50386c;
   --border-soft: #3b2953;
   --text: #f8f2ff;
@@ -13,7 +13,7 @@
   --subtle: #b8a4d1;
   --accent: #32f0bb;
   --accent-text: #64ffd4;
-  --accent-wash: #154839;
+  --accent-wash: #154839a8;
   --mint: #38f0c0;
   --lavender: #d59bff;
   --peach: #ffbd9d;
@@ -25,9 +25,9 @@
   --stress: #ffbd9d;
   --ci: #38f0c0;
   --warning: #f5d18e;
-  --result-bg: #103c35;
+  --result-bg: #103c3578;
   --result-border: #23876e;
-  --shadow: 0 12px 32px #03081130;
+  --shadow: 0 16px 40px #03081140;
   --shadow-overlay: 0 24px 70px #03081170;
   --radius-lg: 22px;
   --header-height: 64px;
@@ -37,20 +37,28 @@
   --sidebar-gap: 18px;
   --chrome-top: 24px;
   --sticky-cutoff: 100px;
-  --map-land: #674586;
-  --map-coast: #ad84d4;
-  --map-dots: #dbb8f5;
-  --map-link: #4bdfbe;
-  --map-node: #1b102e;
-  --map-secondary: #b688ee;
+  --map-coast: #9cf3ff;
+  --map-link: #51dfff;
+  --map-node: #071b32e6;
+  --map-secondary: #bca6ff;
+  --land-highlight: #57e4f4;
+  --land-mid: #176c9f;
+  --land-depth: #07213d;
+  --ocean-glow: #064b82;
+  --glass-edge: #ffffff38;
+  --glass-highlight: #ffffff18;
+  --glass-shade: #06132248;
+  --glass-blur: 6px;
+  --crypto-bitcoin: #ffd18b;
+  --crypto-ethereum: #c6b4ff;
 }
 :root[data-theme=light] {
   color-scheme: light;
   --bg: #eee5fa;
-  --sidebar: #e8dcf8;
-  --surface: #fffcff;
-  --surface-raised: #e4d3f7;
-  --surface-soft: #f3ebfc;
+  --sidebar: #f4edff8a;
+  --surface: #fffcff85;
+  --surface-raised: #faf4fff0;
+  --surface-soft: #f3f4ff55;
   --border: #c7ace5;
   --border-soft: #dfccef;
   --text: #2a1242;
@@ -58,7 +66,7 @@
   --subtle: #70518c;
   --accent: #7038c2;
   --accent-text: #6126af;
-  --accent-wash: #e4d1fc;
+  --accent-wash: #e4d1fca8;
   --mint: #007a70;
   --lavender: #9044cf;
   --peach: #a9502c;
@@ -70,16 +78,23 @@
   --stress: #a9502c;
   --ci: #007a70;
   --warning: #81510c;
-  --result-bg: #ebdbff;
+  --result-bg: #ebdbff8a;
   --result-border: #b78bdf;
   --shadow: 0 12px 32px #16343d0a;
   --shadow-overlay: 0 24px 70px #16343d25;
-  --map-land: #d2b8e9;
-  --map-coast: #9871bc;
-  --map-dots: #9566b9;
-  --map-link: #168a7e;
-  --map-node: #fffcff;
-  --map-secondary: #925bc7;
+  --map-coast: #f2fdff;
+  --map-link: #117fbb;
+  --map-node: #e3f5ffed;
+  --map-secondary: #7760ac;
+  --land-highlight: #a7e2f0;
+  --land-mid: #75b4d1;
+  --land-depth: #477baf;
+  --ocean-glow: #82c5ea;
+  --glass-edge: #ffffffbf;
+  --glass-highlight: #ffffff8a;
+  --glass-shade: #aeacd518;
+  --crypto-bitcoin: #a66416;
+  --crypto-ethereum: #6c3eb8;
 }
 html { scroll-padding-top: var(--sticky-cutoff); background: var(--bg); }
 body {
@@ -107,25 +122,37 @@ body::before {
     radial-gradient(ellipse at 100% 5%, #c49aef90, transparent 48%), var(--bg);
 }
 .global-crypto-backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; contain: strict; }
-svg.global-map-canvas { position: absolute; width: max(1480px, 110vw); height: auto; top: 48px; left: 50%; transform: translateX(-50%); opacity: .15; }
-.world-graticule { fill: none; stroke: var(--map-coast); stroke-width: .65; opacity: .45; }
-.world-land { fill: var(--map-land); stroke: var(--map-coast); stroke-width: 1; stroke-linejoin: round; }
-.world-land path { fill: url(#orbitMapDots); }
-.world-dot { fill: var(--map-dots); opacity: .7; }
-.world-links { fill: none; stroke: var(--map-link); stroke-width: 1.4; stroke-linecap: round; }
-.world-links-secondary { stroke: var(--map-secondary); stroke-width: .9; opacity: .6; stroke-dasharray: 4 7; }
-.world-nodes { fill: var(--map-link); stroke: var(--map-node); stroke-width: 2; }
-.world-node-rings { fill: none; stroke: var(--map-link); opacity: .45; }
-.world-coin { fill: var(--map-node); stroke: var(--map-link); stroke-width: 1.5; }
+svg.global-map-canvas { position: absolute; width: max(1440px, 100vw); height: auto; top: max(10px, calc((100dvh - 900px) / 3)); left: 50%; transform: translateX(-50%); opacity: .78; }
+.land-highlight { stop-color: var(--land-highlight); }
+.land-mid { stop-color: var(--land-mid); }
+.land-depth { stop-color: var(--land-depth); }
+.ocean-center { stop-color: var(--ocean-glow); stop-opacity: .55; }
+.world-ocean { fill: url(#orbitOceanHalo); }
+.world-land { fill: url(#orbitLandDepth); stroke: var(--map-coast); stroke-width: .8; stroke-linejoin: round; }
+.world-coast-aura { fill: none; stroke: var(--map-link); stroke-width: 4; stroke-linejoin: round; opacity: .15; }
+.world-triangles { fill: none; stroke: var(--map-coast); stroke-width: .6; opacity: .21; }
+.world-links { fill: none; stroke: var(--map-link); stroke-width: .9; stroke-linecap: round; opacity: .62; }
+.world-node-halo { fill: url(#orbitNodeGlow); }
+.world-node-ring { fill: none; stroke: var(--map-link); stroke-width: .8; opacity: .6; }
+.world-node-core { fill: #e0fcff; }
+.world-coin { fill: var(--map-node); stroke: var(--crypto-bitcoin); stroke-width: 1.8; }
+.world-coin .coin-halo { fill: url(#orbitNodeGlow); stroke: none; opacity: .45; }
 .world-coin .coin-inner { fill: none; opacity: .35; }
-.world-coin .coin-mark { fill: none; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
-.world-ethereum { stroke: var(--map-secondary); }
-.ethereum-upper { fill: var(--map-secondary); stroke: none; }
-.ethereum-lower { fill: var(--map-secondary); stroke: none; opacity: .6; }
-.world-blocks { stroke: var(--map-secondary); stroke-width: 1.4; fill: var(--map-node); }
-svg.hero-world-map { position: absolute; z-index: -1; right: 0; top: -4px; width: 48%; height: 160px; opacity: .85; pointer-events: none; mask-image: linear-gradient(90deg, transparent, #000 20%, #000); }
-[data-theme=light] svg.global-map-canvas { opacity: .22; }
-[data-theme=light] svg.hero-world-map { opacity: .95; }
+.bitcoin-mark { fill: none; stroke: var(--crypto-bitcoin); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+.world-ethereum { stroke: var(--crypto-ethereum); }
+.ethereum-upper { fill: var(--crypto-ethereum); stroke: none; }
+.ethereum-lower { fill: var(--crypto-ethereum); stroke: none; opacity: .6; }
+svg .crypto-label { fill: var(--crypto-bitcoin); stroke: none; text-anchor: middle; font: 600 13px var(--font-numbers); letter-spacing: 2px; }
+svg .world-ethereum .crypto-label { fill: var(--crypto-ethereum); }
+.world-chain { stroke: var(--map-secondary); stroke-width: 1.4; fill: var(--map-node); }
+[data-theme=light] svg.global-map-canvas { opacity: .58; }
+.hero-crypto-badges { position: absolute; top: 13px; right: 8px; display: flex; gap: 13px; pointer-events: none; }
+.hero-crypto-token { display: flex; align-items: center; gap: 8px; padding: 10px 15px 10px 8px; border: 1px solid var(--glass-edge); border-radius: 100px; background: linear-gradient(140deg, var(--glass-highlight), var(--surface)); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 30px var(--glass-shade); }
+.hero-crypto-token svg { width: 38px; height: 38px; flex: 0 0 38px; }
+.hero-crypto-token b { display: block; font-size: 15px; letter-spacing: 1px; }
+.hero-crypto-token small { display: block; font-size: 7px; letter-spacing: 1.4px; margin-top: 3px; color: var(--muted); }
+.token-bitcoin { color: var(--crypto-bitcoin); }
+.token-ethereum { color: var(--crypto-ethereum); }
 :root[data-nav-collapsed=true] { --sidebar-width: 80px; }
 .workspace-nav, :root[data-nav-collapsed=true] .workspace-nav {
   position: fixed;
@@ -137,10 +164,11 @@ svg.hero-world-map { position: absolute; z-index: -1; right: 0; top: -4px; width
   align-items: stretch;
   gap: 0;
   padding: 24px 14px 18px;
-  background: linear-gradient(165deg, var(--surface), var(--sidebar));
-  border: 1px solid var(--border);
+  background: linear-gradient(165deg, var(--glass-highlight), transparent 38%), var(--sidebar);
+  border: 1px solid var(--glass-edge);
   border-radius: 20px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow), inset 0 1px 0 var(--glass-highlight), inset -1px -1px 0 var(--glass-shade);
+  backdrop-filter: blur(12px) saturate(1.2);
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -188,13 +216,14 @@ svg.hero-world-map { position: absolute; z-index: -1; right: 0; top: -4px; width
   box-shadow: inset 0 1px 0 #ffffff08;
 }
 .app-header {
-  backdrop-filter: none;
+  backdrop-filter: blur(12px) saturate(1.2);
   top: var(--chrome-top);
   margin: 0 0 0 calc(var(--sidebar-width) + var(--sidebar-gap));
   height: var(--header-height);
   padding: 0 22px;
-  background: var(--sidebar);
-  border: 1px solid var(--border-soft);
+  background: linear-gradient(120deg, var(--glass-highlight), transparent 50%), var(--sidebar);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--shadow);
   border-radius: 16px;
   gap: 16px;
 }
@@ -205,31 +234,33 @@ svg.hero-world-map { position: absolute; z-index: -1; right: 0; top: -4px; width
 #openNavigation { display: inline-flex; }
 .theme-toggle { width: auto; gap: 7px; padding-inline: 11px; }
 #themeModeLabel { font-size: 11px; font-weight: 600; }
-.bottom-nav { backdrop-filter: none; }
+.bottom-nav { backdrop-filter: blur(10px); }
 .glossary-trigger, .icon-button { background: var(--surface); border-radius: 10px; }
 .top-export { background: var(--accent); color: var(--bg); border-radius: 10px; padding-inline: 16px; }
 main { margin: 0 0 0 calc(var(--sidebar-width) + var(--sidebar-gap)); padding: 28px 0 8px; gap: 22px; }
 .workspace-hero { position: relative; isolation: isolate; overflow: hidden; min-height: 142px; padding: 3px 5px 4px; }
 .hero-eyebrow { color: var(--accent-text); font-size: 10px; letter-spacing: 2px; }
 .workspace-hero h1 { font-size: 35px; font-weight: 650; letter-spacing: -1.2px; }
-.workspace-hero p { color: var(--muted); max-width: 850px; }
+.workspace-hero p { color: var(--muted); max-width: min(850px, 72%); }
+.workspace-hero h1, .workspace-hero p, .hero-eyebrow { text-shadow: 0 2px 16px var(--bg); }
 .panel {
-  background: linear-gradient(145deg, var(--surface), var(--sidebar));
-  border-color: var(--border);
+  background: linear-gradient(145deg, var(--glass-highlight), transparent 35%), linear-gradient(145deg, var(--surface), var(--sidebar));
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  border-color: var(--glass-edge);
   border-radius: 22px;
-  box-shadow: var(--shadow), inset 0 1px 0 #ffffff06;
+  box-shadow: var(--shadow), inset 0 1px 0 var(--glass-highlight), inset 1px 0 0 var(--glass-highlight), inset -1px -1px 0 var(--glass-shade);
   padding: 26px;
 }
 .panel h2 { font-weight: 600; }
 .section-kicker, .reading-eyebrow { color: var(--accent-text); }
 .response-workspace { padding: 25px; }
-#controlHome { background: var(--surface); top: var(--sticky-cutoff); border-radius: 12px 12px 0 0; }
+#controlHome { background: var(--surface-soft); top: var(--sticky-cutoff); border-radius: 12px 12px 0 0; }
 .control-strip { padding: 8px 0 22px; gap: 20px; }
 .segmented, .horizon-presets, .fomc-mode { background: var(--surface-soft); border-color: var(--border); border-radius: 10px; }
 .segmented button[aria-pressed=true], .horizon-presets button[aria-pressed=true] { color: var(--accent-text); }
 .controls input, .controls select, select, input[type=date] { border-radius: 10px; background-color: var(--surface-soft); }
 .response-grid { grid-template-columns: minmax(0, 1fr) 264px; gap: 20px; }
-.response-plot { border-color: var(--border-soft); border-radius: 16px; padding: 20px 18px 14px; background: var(--surface-soft); }
+.response-plot { border-color: var(--glass-edge); border-radius: 16px; padding: 20px 18px 14px; background: var(--surface-soft); box-shadow: inset 0 1px 0 var(--glass-highlight); }
 .chart-toolbar>div>strong { font-size: 14px; color: var(--text); }
 svg .curve-line { stroke-width: 2.6; }
 svg .curve-btc { stroke: var(--btc); }
@@ -238,7 +269,7 @@ svg .plot-grid { stroke: var(--border-soft); opacity: .8; }
 .chart-legend { gap: 15px; padding-top: 12px; font-size: 11px; }
 .chart-legend .btc-key { color: var(--btc); }
 .chart-legend .eth-key { color: var(--eth); }
-.result { background: linear-gradient(155deg, var(--result-bg), var(--surface-soft)); border-color: var(--result-border); border-radius: 16px; padding: 24px 22px; }
+.result { background: linear-gradient(155deg, var(--result-bg), var(--surface-soft)); border-color: var(--glass-edge); border-radius: 16px; padding: 24px 22px; box-shadow: inset 0 1px 0 var(--glass-highlight); }
 .result .big { color: var(--accent-text); letter-spacing: -1.9px; }
 .result-kicker { color: var(--accent-text); }
 .action-primary { color: var(--bg); border-radius: 10px; }
@@ -248,7 +279,8 @@ svg .plot-grid { stroke: var(--border-soft); opacity: .8; }
 .status-grid article, .history-metrics>div, .fomc-card, .fomc-event-metrics article {
   background: linear-gradient(140deg, var(--surface-soft), var(--surface));
   border-radius: 14px;
-  border-color: var(--border);
+  border-color: var(--glass-edge);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
 .fomc-card:first-child, .history-metrics>div:first-child { background: linear-gradient(140deg, var(--result-bg), var(--surface)); }
 .fomc-card:nth-child(2) { border-color: color-mix(in srgb, var(--lavender) 30%, var(--border)); }
@@ -257,11 +289,11 @@ svg .plot-grid { stroke: var(--border-soft); opacity: .8; }
 .fomc-mode button, .history-legend button { border-radius: 9px; }
 .capture-strip, .reading-card:not(.insight-strip) { border-radius: 14px; }
 .evaluation-banner { border-radius: 12px; }
-.table-wrap { border-radius: 10px; }
-th { background: var(--surface-soft); }
+.table-wrap { border-radius: 10px; background: var(--surface-soft); border-color: var(--glass-edge); }
+th { background: var(--surface-raised); }
 .boot-screen { background: var(--bg); }
 .boot-screen strong { color: var(--text); }
-dialog { background: var(--surface); border-color: var(--border); border-radius: 20px; }
+dialog { background: var(--surface-raised); border-color: var(--glass-edge); border-radius: 20px; backdrop-filter: blur(10px); box-shadow: var(--shadow-overlay), inset 0 1px 0 var(--glass-highlight); }
 dialog::backdrop { background: #030813bd; backdrop-filter: none; }
 dialog[open] { animation: none; }
 .toast { background: var(--surface-raised); border-color: var(--border); color: var(--text); }
@@ -270,6 +302,10 @@ dialog[open] { animation: none; }
 .bento-panel:hover { transform: none; }
 .skip-link { left: var(--frame-edge); }
 @media (min-width:761px) and (max-width:1180px) {
+  .hero-crypto-badges { top: 90px; right: 0; gap: 8px; }
+  .hero-crypto-token { padding: 5px 9px 5px 4px; }
+  .hero-crypto-token svg { width: 26px; height: 26px; flex-basis: 26px; }
+  .hero-crypto-token small { display: none; }
   .topbar-date, .topbar-label, .path-divider, .glossary-trigger>span:not(:first-child), .glossary-trigger kbd, .top-export>span { display: none; }
   .glossary-trigger { width: 40px; padding: 0; justify-content: center; }
   .top-export { padding: 10px; }
@@ -290,9 +326,15 @@ dialog[open] { animation: none; }
   .top-export { padding: 10px; }
   main { margin: 0; padding: 22px 0 8px; gap: 18px; }
   .workspace-hero { min-height: 132px; padding: 0 3px 2px; }
-  svg.global-map-canvas { width: 1100px; top: 64px; opacity: .2; }
-  svg.hero-world-map { width: 330px; max-width: none; right: -100px; top: -2px; opacity: .18; }
-  [data-theme=light] svg.hero-world-map { opacity: .22; }
+  :root { --glass-blur: 3px; }
+  svg.global-map-canvas { width: 1080px; top: 72px; left: 52%; opacity: .6; }
+  [data-theme=light] svg.global-map-canvas { opacity: .48; }
+  .hero-crypto-badges { position: static; justify-content: flex-end; gap: 8px; margin: 15px 0 0; }
+  .hero-crypto-token { padding: 4px 10px 4px 4px; }
+  .hero-crypto-token svg { width: 25px; height: 25px; flex-basis: 25px; }
+  .hero-crypto-token b { font-size: 11px; }
+  .hero-crypto-token small { display: none; }
+  .workspace-hero p { max-width: 100%; }
   .workspace-hero h1 { font-size: 29px; }
   .workspace-hero p { font-size: 13px; }
   .panel, .response-workspace { padding: 17px; border-radius: 18px; }
@@ -310,13 +352,21 @@ dialog[open] { animation: none; }
   .fomc-mode button { font-size: 12px; }
   footer { margin-top: 12px; }
 }
+@supports not (backdrop-filter: blur(1px)) {
+  .workspace-nav, .app-header, .panel { background-color: color-mix(in srgb, var(--bg) 82%, transparent); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root { --sidebar:#1a102e; --surface:#241a3c; --surface-soft:#180f2b; --result-bg:#103c35; }
+  :root[data-theme=light] { --sidebar:#e8dcf8; --surface:#fffcff; --surface-soft:#f3ebfc; --result-bg:#ebdbff; }
+  .workspace-nav, .app-header, .panel, .bottom-nav, dialog { backdrop-filter: none; }
+}
 @media print {
   :root { --bg:#fff; --surface:#fff; --sidebar:#fff; --surface-soft:#fff; --surface-raised:#fff; --text:#111; --muted:#444; --subtle:#555; --border:#bbb; --border-soft:#ddd; --accent:#08775e; --accent-text:#08775e; --btc:#08775e; --eth:#7650b4; --ci:#08775e; --mint:#08775e; --result-bg:#fff; --result-border:#bbb; }
   body { padding: 0; }
-  body::before, .global-crypto-backdrop, svg.hero-world-map { display: none; }
+  body::before, .global-crypto-backdrop, .hero-crypto-badges { display: none; }
   .workspace-nav, :root[data-nav-collapsed=true] .workspace-nav, .app-header { display: none; }
   main { margin: 0; padding: 0; }
-  .panel, .result, .response-plot, .fomc-card { background: #fff; box-shadow: none; }
+  .panel, .result, .response-plot, .fomc-card { background: #fff; box-shadow: none; backdrop-filter: none; }
   #controlHome { position: static; }
   .response-grid { grid-template-columns: minmax(0,1fr) 230px; }
 }
