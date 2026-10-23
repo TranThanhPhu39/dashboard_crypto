@@ -12,6 +12,10 @@ def studio(html):
     from src.dashboard_design import icon
     html = re.sub(r'<style id="orbit-aurora">.*?</style>', '', html, flags=re.S)
     html = re.sub(r'<!-- ORBIT STUDIO [A-Z_]+ START -->.*?<!-- ORBIT STUDIO [A-Z_]+ END -->', '', html, flags=re.S)
+    # One inline vector scene, reused in the hero; no network, canvas loop or timers.
+    scenery = (ROOT/'dashboard/world-network.svg').read_text(encoding='utf-8').strip()
+    scenery = '<!-- ORBIT STUDIO SCENERY START --><div id="globalCryptoBackdrop" class="global-crypto-backdrop" aria-hidden="true" inert>'+scenery+'</div><!-- ORBIT STUDIO SCENERY END -->'
+    html = re.sub(r'(<body\b[^>]*>)', lambda match: match[1]+scenery, html, count=1)
     def button(key, label, symbol, mobile=False):
         if mobile:
             return f'<button type="button" data-goto="{key}">{icon(symbol)}<span>{label}</span></button>'
@@ -30,6 +34,8 @@ def studio(html):
     html = html.replace(nav, '', 1).replace(header, nav + header, 1)
     hero = '<!-- ORBIT HERO START --><div class="workspace-hero"><div class="hero-eyebrow" id="designEyebrow">MACRO × CRYPTO / RESEARCH EXPLORER</div><h1 id="designTitle">Từ vĩ mô đến crypto<span>.</span></h1><p id="designDescription">Một thay đổi kinh tế. Hai tài sản. 30 ngày phản ứng.</p><div id="designMetrics" hidden><span id="designSample"></span><span id="designSampleMeta"></span></div></div><!-- ORBIT HERO END -->'
     html = re.sub(r'<!-- ORBIT HERO START -->.*?<!-- ORBIT HERO END -->', hero, html, flags=re.S)
+    hero_map = '<svg class="hero-world-map" viewBox="0 0 1200 600" fill="none" aria-hidden="true" focusable="false"><use href="#orbitWorldMesh"/></svg>'
+    html = html.replace('<div class="workspace-hero">', '<div class="workspace-hero">'+hero_map, 1)
     html = re.sub(r'<!-- ORBIT EXPERIENCE GUIDE START -->.*?<!-- ORBIT EXPERIENCE GUIDE END -->', '', html, flags=re.S)
     html = re.sub(r'<div id="appFeedback"[^>]*></div>', '', html)
     html = html.replace('<span id="workspaceTitle"', '<div id="appFeedback" class="app-feedback" role="status" hidden></div><span id="workspaceTitle"',1)

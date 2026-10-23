@@ -98,6 +98,12 @@ h1,h2,h3,h4,strong{color:var(--text)}.topbar-path strong{color:var(--text)}.work
   --sidebar-gap: 18px;
   --chrome-top: 24px;
   --sticky-cutoff: 100px;
+  --map-land: #674586;
+  --map-coast: #ad84d4;
+  --map-dots: #dbb8f5;
+  --map-link: #4bdfbe;
+  --map-node: #1b102e;
+  --map-secondary: #b688ee;
 }
 :root[data-theme=light] {
   color-scheme: light;
@@ -129,6 +135,12 @@ h1,h2,h3,h4,strong{color:var(--text)}.topbar-path strong{color:var(--text)}.work
   --result-border: #b78bdf;
   --shadow: 0 12px 32px #16343d0a;
   --shadow-overlay: 0 24px 70px #16343d25;
+  --map-land: #d2b8e9;
+  --map-coast: #9871bc;
+  --map-dots: #9566b9;
+  --map-link: #168a7e;
+  --map-node: #fffcff;
+  --map-secondary: #925bc7;
 }
 html { scroll-padding-top: var(--sticky-cutoff); background: var(--bg); }
 body {
@@ -155,6 +167,26 @@ body::before {
   background: radial-gradient(ellipse at 0% 80%, #c1f1e375, transparent 48%),
     radial-gradient(ellipse at 100% 5%, #c49aef90, transparent 48%), var(--bg);
 }
+.global-crypto-backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; contain: strict; }
+svg.global-map-canvas { position: absolute; width: max(1480px, 110vw); height: auto; top: 48px; left: 50%; transform: translateX(-50%); opacity: .15; }
+.world-graticule { fill: none; stroke: var(--map-coast); stroke-width: .65; opacity: .45; }
+.world-land { fill: var(--map-land); stroke: var(--map-coast); stroke-width: 1; stroke-linejoin: round; }
+.world-land path { fill: url(#orbitMapDots); }
+.world-dot { fill: var(--map-dots); opacity: .7; }
+.world-links { fill: none; stroke: var(--map-link); stroke-width: 1.4; stroke-linecap: round; }
+.world-links-secondary { stroke: var(--map-secondary); stroke-width: .9; opacity: .6; stroke-dasharray: 4 7; }
+.world-nodes { fill: var(--map-link); stroke: var(--map-node); stroke-width: 2; }
+.world-node-rings { fill: none; stroke: var(--map-link); opacity: .45; }
+.world-coin { fill: var(--map-node); stroke: var(--map-link); stroke-width: 1.5; }
+.world-coin .coin-inner { fill: none; opacity: .35; }
+.world-coin .coin-mark { fill: none; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
+.world-ethereum { stroke: var(--map-secondary); }
+.ethereum-upper { fill: var(--map-secondary); stroke: none; }
+.ethereum-lower { fill: var(--map-secondary); stroke: none; opacity: .6; }
+.world-blocks { stroke: var(--map-secondary); stroke-width: 1.4; fill: var(--map-node); }
+svg.hero-world-map { position: absolute; z-index: -1; right: 0; top: -4px; width: 48%; height: 160px; opacity: .85; pointer-events: none; mask-image: linear-gradient(90deg, transparent, #000 20%, #000); }
+[data-theme=light] svg.global-map-canvas { opacity: .22; }
+[data-theme=light] svg.hero-world-map { opacity: .95; }
 :root[data-nav-collapsed=true] { --sidebar-width: 80px; }
 .workspace-nav, :root[data-nav-collapsed=true] .workspace-nav {
   position: fixed;
@@ -238,7 +270,7 @@ body::before {
 .glossary-trigger, .icon-button { background: var(--surface); border-radius: 10px; }
 .top-export { background: var(--accent); color: var(--bg); border-radius: 10px; padding-inline: 16px; }
 main { margin: 0 0 0 calc(var(--sidebar-width) + var(--sidebar-gap)); padding: 28px 0 8px; gap: 22px; }
-.workspace-hero { padding: 3px 5px 4px; }
+.workspace-hero { position: relative; isolation: isolate; overflow: hidden; min-height: 142px; padding: 3px 5px 4px; }
 .hero-eyebrow { color: var(--accent-text); font-size: 10px; letter-spacing: 2px; }
 .workspace-hero h1 { font-size: 35px; font-weight: 650; letter-spacing: -1.2px; }
 .workspace-hero p { color: var(--muted); max-width: 850px; }
@@ -318,7 +350,10 @@ dialog[open] { animation: none; }
   .theme-toggle { padding: 10px; }
   .top-export { padding: 10px; }
   main { margin: 0; padding: 22px 0 8px; gap: 18px; }
-  .workspace-hero { padding: 0 3px 2px; }
+  .workspace-hero { min-height: 132px; padding: 0 3px 2px; }
+  svg.global-map-canvas { width: 1100px; top: 64px; opacity: .2; }
+  svg.hero-world-map { width: 330px; max-width: none; right: -100px; top: -2px; opacity: .18; }
+  [data-theme=light] svg.hero-world-map { opacity: .22; }
   .workspace-hero h1 { font-size: 29px; }
   .workspace-hero p { font-size: 13px; }
   .panel, .response-workspace { padding: 17px; border-radius: 18px; }
@@ -339,15 +374,70 @@ dialog[open] { animation: none; }
 @media print {
   :root { --bg:#fff; --surface:#fff; --sidebar:#fff; --surface-soft:#fff; --surface-raised:#fff; --text:#111; --muted:#444; --subtle:#555; --border:#bbb; --border-soft:#ddd; --accent:#08775e; --accent-text:#08775e; --btc:#08775e; --eth:#7650b4; --ci:#08775e; --mint:#08775e; --result-bg:#fff; --result-border:#bbb; }
   body { padding: 0; }
-  body::before { display: none; }
+  body::before, .global-crypto-backdrop, svg.hero-world-map { display: none; }
   .workspace-nav, :root[data-nav-collapsed=true] .workspace-nav, .app-header { display: none; }
   main { margin: 0; padding: 0; }
   .panel, .result, .response-plot, .fomc-card { background: #fff; box-shadow: none; }
   #controlHome { position: static; }
   .response-grid { grid-template-columns: minmax(0,1fr) 230px; }
 }
-</style></head><body><!-- ORBIT EXPERIENCE BOOT START --><div id="bootStatus" class="boot-screen" role="status" aria-live="polite"><div><strong>orbit<span>.</span></strong><p>Đang mở không gian phân tích…</p><small>Chuẩn bị bộ lọc và dữ liệu lịch sử</small></div></div><!-- ORBIT EXPERIENCE BOOT END --><script data-orbit-guard>window.addEventListener('error',function(e){if(e.filename&&e.filename.indexOf('chrome-extension:')===0)return;var boot=document.getElementById('bootStatus');if(boot)boot.hidden=true;document.querySelectorAll('[data-orbit-inert]').forEach(function(n){n.removeAttribute('inert');});var b=document.getElementById('appFeedback');if(b){b.hidden=false;b.textContent='Một thành phần chưa mở được. Hãy tải lại trang; nếu vẫn lỗi, dùng Chrome/Edge mới và mở START_DASHBOARD.html.';b.setAttribute('role','alert');}});</script><noscript id="orbitNoScript"><style>.boot-screen{display:none}</style>Dashboard cần bật JavaScript để hiển thị biểu đồ và bộ lọc.</noscript><a class="skip-link" href="#mainContent">Đến nội dung chính</a><nav id="workspaceNavigation" class="workspace-nav" aria-label="Không gian nghiên cứu"><div class="sidebar-heading"><a class="brand" href="#transmission" aria-label="orbit. — Trang truyền dẫn"><svg class="ui-icon brand-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-35 12 12)"/><circle cx="12" cy="12" r="3"/><circle cx="20" cy="6.5" r="1.6" fill="currentColor" stroke="none"/></svg><span>orbit<span class="brand-dot">.</span><small>MACRO × CRYPTO</small></span></a><button type="button" id="collapseSidebar" class="sidebar-toggle" aria-label="Thu gọn menu" title="Thu gọn menu" aria-controls="workspaceNavigation" aria-expanded="true"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div><div class="nav-items"><i id="navActive" aria-hidden="true"></i><div class="nav-label">Phân tích</div><button type="button" id="tab-transmission" class="workspace-tab" aria-controls="responses rolling analoguePanel" aria-pressed="true" title="Truyền dẫn"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h4l3-7 5 14 3-7h5"/></svg><span>Truyền dẫn</span><kbd>1</kbd></button><button type="button" id="tab-fomc" class="workspace-tab" aria-controls="fomc" aria-pressed="false" title="FOMC"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8 9-5 9 5M4 9h16M6 10v7m6-7v7m6-7v7M3 20h18"/></svg><span>FOMC</span><kbd>3</kbd></button><button type="button" id="tab-advanced" class="workspace-tab" aria-controls="quantile joint" aria-pressed="false" title="Phân vị & VAR"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 5 9 4 9-4M3 17l9 4 9-4"/></svg><span>Phân vị & VAR</span><kbd>4</kbd></button><div class="nav-label">Kiểm chứng</div><button type="button" id="tab-forecast" class="workspace-tab" aria-controls="forecast rv" aria-pressed="false" title="Dự báo rủi ro"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16M8 15l4-5 4 3 5-8"/></svg><span>Dự báo rủi ro</span><kbd>2</kbd></button><button type="button" id="tab-operations" class="workspace-tab" aria-controls="operations" aria-pressed="false" title="Dữ liệu & OOS"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Dữ liệu & OOS</span><kbd>6</kbd></button><div class="nav-label">Tài liệu</div><button type="button" id="tab-methods" class="workspace-tab" aria-controls="overview pit methods" aria-pressed="false" title="Phương pháp & nguồn"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14"/></svg><span>Phương pháp & nguồn</span><kbd>5</kbd></button></div><div class="sidebar-bottom"><div class="sidebar-caption"><span class="status-dot"></span>Nghiên cứu, từng góc nhìn.</div><button type="button" id="learnMethods" class="sidebar-method">Cách đọc kết quả <svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button><span class="lab-signature">AURORA · VIOLET / 02</span></div><div id="sidebarResizer" class="sidebar-resizer" role="separator" tabindex="0" aria-label="Độ rộng menu. Kéo hoặc dùng phím trái, phải để điều chỉnh." title="Kéo để đổi độ rộng · nhấp đúp để đặt lại" aria-orientation="vertical" aria-controls="workspaceNavigation" aria-valuemin="224" aria-valuemax="340" aria-valuenow="252"></div><select id="mobileWorkspace" class="sr-only" aria-label="Workspace"><option value="transmission">Truyền dẫn</option><option value="forecast">Dự báo rủi ro</option><option value="fomc">FOMC</option><option value="advanced">Phân vị & VAR</option><option value="methods">Phương pháp & nguồn</option><option value="operations">Dữ liệu & OOS</option></select></nav><header data-orbit-inert="true" inert class="app-header"><div class="topbar-path"><button type="button" id="openNavigation" class="icon-button" aria-label="Mở menu"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 5 9 4 9-4M3 17l9 4 9-4"/></svg></button><span class="topbar-label">Nghiên cứu</span><span class="path-divider">/</span><strong id="designBreadcrumb">Truyền dẫn</strong></div><div class="topbar-actions"><button type="button" class="topbar-date" data-goto="operations" aria-label="Xem ngày chốt mẫu nghiên cứu và dữ liệu mới"><span>Mẫu ước lượng: 15/10/2026</span><small id="latestDataBadge">Thu dữ liệu: đang đọc</small></button><button type="button" id="openGlossary" class="glossary-trigger" aria-label="Tìm kiếm và lệnh · Ctrl K"><span aria-hidden="true">⌕</span><span>Tìm kiếm &amp; lệnh</span><kbd>Ctrl K</kbd></button><button type="button" id="themeToggle" class="icon-button theme-toggle" aria-label="Đổi giao diện sáng tối"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><span id="themeModeLabel">Tối</span></button><button type="button" id="topExport" class="top-export" aria-label="Tải CSV của workspace"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg><span>Tải CSV</span></button></div></header>
-<main data-orbit-inert="true" inert id="mainContent"><!-- ORBIT HERO START --><div class="workspace-hero"><div class="hero-eyebrow" id="designEyebrow">MACRO × CRYPTO / RESEARCH EXPLORER</div><h1 id="designTitle">Từ vĩ mô đến crypto<span>.</span></h1><p id="designDescription">Một thay đổi kinh tế. Hai tài sản. 30 ngày phản ứng.</p><div id="designMetrics" hidden><span id="designSample"></span><span id="designSampleMeta"></span></div></div><!-- ORBIT HERO END --><div id="appFeedback" class="app-feedback" role="status" hidden></div><span id="workspaceTitle" class="sr-only">Truyền dẫn</span><section data-workspace="transmission" class="panel response-workspace" id="responses">
+</style></head><body><!-- ORBIT STUDIO SCENERY START --><div id="globalCryptoBackdrop" class="global-crypto-backdrop" aria-hidden="true" inert><svg class="global-map-canvas" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" fill="none" focusable="false" aria-hidden="true">
+  <defs>
+    <pattern id="orbitMapDots" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" class="world-dot"/></pattern>
+    <g id="orbitWorldMesh">
+      <g class="world-graticule" stroke-dasharray="2 10">
+        <path d="M45 170H1155M45 290H1155M45 410H1155M215 60V535M405 60V535M595 60V535M785 60V535M975 60V535"/>
+        <ellipse cx="600" cy="298" rx="550" ry="240"/>
+      </g>
+      <!-- Stylized geography for decoration; these shapes are not research data. -->
+      <g class="world-land">
+        <path d="M74 145 99 117 142 110 159 90 196 99 220 78 265 87 291 103 320 102 341 124 329 145 350 164 332 183 298 188 282 218 255 227 250 251 232 246 215 225 204 201 180 191 156 168 127 162 107 176 83 167Z"/>
+        <path d="M248 249 269 256 280 273 303 279 317 292 307 304 287 296 276 281 256 275Z"/>
+        <path d="M313 306 344 300 378 318 401 342 399 370 382 389 379 419 365 437 358 468 337 503 322 516 318 483 303 451 298 420 281 395 276 363 286 336Z"/>
+        <path d="M365 77 397 53 429 62 447 88 427 109 408 134 382 124 371 104Z"/>
+        <path d="M530 133 541 113 554 106 563 119 553 135 561 149 546 157 532 151Z"/>
+        <path d="M564 156 580 137 577 117 595 95 610 102 606 132 594 151 617 155 632 141 657 143 663 166 652 179 627 180 616 195 599 190 592 202 577 189 558 184 551 170Z"/>
+        <path d="M569 210 595 200 620 207 637 226 653 248 660 281 680 302 673 327 655 352 642 383 619 404 601 395 592 368 574 343 570 314 550 296 537 272 543 244 553 223Z"/>
+        <path d="M654 135 676 112 712 106 735 89 770 98 792 88 824 104 850 102 880 122 916 119 940 138 978 132 1005 151 1050 152 1080 174 1104 197 1080 213 1056 206 1039 225 1014 233 1004 255 976 262 961 284 934 284 923 304 907 281 892 265 882 244 860 239 841 252 820 249 803 270 797 297 781 313 766 290 756 264 736 253 720 270 705 258 691 239 673 234 659 213 635 208 626 191 649 179 663 166Z"/>
+        <path d="M674 254 695 254 713 273 708 290 691 299 678 279Z"/>
+        <path d="M870 285 886 302 895 327 918 343 919 359 905 355 892 337 882 327 875 307Z"/>
+        <path d="M1019 245 1031 232 1038 217 1048 220 1043 240 1030 255 1021 267 1012 263Z"/>
+        <path d="M945 299 953 312 950 328 942 324Z"/>
+        <path d="M899 375 916 373 936 379 957 377 978 384 994 380 1005 391 986 399 964 392 944 394 921 385Z"/>
+        <path d="M999 411 1025 402 1048 414 1068 416 1084 440 1089 469 1073 484 1045 480 1028 490 1006 482 983 483 970 462 975 439Z"/>
+        <path d="M1125 477 1133 485 1125 504 1116 518 1109 514 1114 497Z"/>
+        <path d="M676 365 682 377 676 400 666 410 664 394Z"/>
+      </g>
+      <g class="world-links">
+        <path d="M176 213Q263 90 324 210M324 210Q434 75 566 183M176 213Q356 6 566 183M566 183Q578 162 605 180M605 180Q690 163 746 277M566 183Q796 8 1030 245M746 277Q814 260 886 333M886 333Q901 278 962 282M962 282Q1011 259 1030 245M1030 245Q1110 323 1050 449M886 333Q981 353 1050 449M324 210Q313 321 369 401M369 401Q478 353 600 306M600 306Q665 209 746 277M176 213Q423 493 886 333"/>
+      </g>
+      <g class="world-links world-links-secondary">
+        <path d="M324 210 605 180 962 282 886 333 746 277 566 183 600 306 369 401M605 180 1030 245M369 401Q733 565 1050 449"/>
+      </g>
+      <g class="world-nodes">
+        <circle cx="176" cy="213" r="5"/><circle cx="324" cy="210" r="5"/>
+        <circle cx="566" cy="183" r="5"/><circle cx="605" cy="180" r="4"/>
+        <circle cx="746" cy="277" r="4"/><circle cx="886" cy="333" r="5"/>
+        <circle cx="962" cy="282" r="5"/><circle cx="1030" cy="245" r="5"/>
+        <circle cx="1050" cy="449" r="5"/><circle cx="369" cy="401" r="4"/>
+        <circle cx="600" cy="306" r="4"/>
+      </g>
+      <g class="world-node-rings"><circle cx="324" cy="210" r="12"/><circle cx="566" cy="183" r="12"/><circle cx="886" cy="333" r="12"/><circle cx="1030" cy="245" r="12"/></g>
+      <g class="world-coin world-bitcoin" transform="translate(258 144)">
+        <circle r="29"/><circle r="23" class="coin-inner"/>
+        <path class="coin-mark" d="M-8-14V14M-12-12H2C13-12 13-1 2-1H-8M-8-1H4C16-1 16 12 4 12H-12M-3-18V-12M3-18V-12M-3 12V18M3 12V18"/>
+      </g>
+      <g class="world-coin world-ethereum" transform="translate(827 237)">
+        <circle r="29"/><circle r="23" class="coin-inner"/>
+        <path class="ethereum-upper" d="M0-18 11 0 0 7-11 0Z"/>
+        <path class="ethereum-lower" d="M-11 4 0 11 11 4 0 19Z"/>
+      </g>
+      <g class="world-blocks" transform="translate(963 156)"><path d="M-19 0H-7M7 0H19M0 19V7"/><rect x="-31" y="-7" width="12" height="14" rx="2"/><rect x="-7" y="-7" width="14" height="14" rx="2"/><rect x="19" y="-7" width="12" height="14" rx="2"/><rect x="-7" y="19" width="14" height="14" rx="2"/></g>
+    </g>
+  </defs>
+  <use href="#orbitWorldMesh"/>
+</svg></div><!-- ORBIT STUDIO SCENERY END --><!-- ORBIT EXPERIENCE BOOT START --><div id="bootStatus" class="boot-screen" role="status" aria-live="polite"><div><strong>orbit<span>.</span></strong><p>Đang mở không gian phân tích…</p><small>Chuẩn bị bộ lọc và dữ liệu lịch sử</small></div></div><!-- ORBIT EXPERIENCE BOOT END --><script data-orbit-guard>window.addEventListener('error',function(e){if(e.filename&&e.filename.indexOf('chrome-extension:')===0)return;var boot=document.getElementById('bootStatus');if(boot)boot.hidden=true;document.querySelectorAll('[data-orbit-inert]').forEach(function(n){n.removeAttribute('inert');});var b=document.getElementById('appFeedback');if(b){b.hidden=false;b.textContent='Một thành phần chưa mở được. Hãy tải lại trang; nếu vẫn lỗi, dùng Chrome/Edge mới và mở START_DASHBOARD.html.';b.setAttribute('role','alert');}});</script><noscript id="orbitNoScript"><style>.boot-screen{display:none}</style>Dashboard cần bật JavaScript để hiển thị biểu đồ và bộ lọc.</noscript><a class="skip-link" href="#mainContent">Đến nội dung chính</a><nav id="workspaceNavigation" class="workspace-nav" aria-label="Không gian nghiên cứu"><div class="sidebar-heading"><a class="brand" href="#transmission" aria-label="orbit. — Trang truyền dẫn"><svg class="ui-icon brand-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-35 12 12)"/><circle cx="12" cy="12" r="3"/><circle cx="20" cy="6.5" r="1.6" fill="currentColor" stroke="none"/></svg><span>orbit<span class="brand-dot">.</span><small>MACRO × CRYPTO</small></span></a><button type="button" id="collapseSidebar" class="sidebar-toggle" aria-label="Thu gọn menu" title="Thu gọn menu" aria-controls="workspaceNavigation" aria-expanded="true"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div><div class="nav-items"><i id="navActive" aria-hidden="true"></i><div class="nav-label">Phân tích</div><button type="button" id="tab-transmission" class="workspace-tab" aria-controls="responses rolling analoguePanel" aria-pressed="true" title="Truyền dẫn"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h4l3-7 5 14 3-7h5"/></svg><span>Truyền dẫn</span><kbd>1</kbd></button><button type="button" id="tab-fomc" class="workspace-tab" aria-controls="fomc" aria-pressed="false" title="FOMC"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8 9-5 9 5M4 9h16M6 10v7m6-7v7m6-7v7M3 20h18"/></svg><span>FOMC</span><kbd>3</kbd></button><button type="button" id="tab-advanced" class="workspace-tab" aria-controls="quantile joint" aria-pressed="false" title="Phân vị & VAR"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 5 9 4 9-4M3 17l9 4 9-4"/></svg><span>Phân vị & VAR</span><kbd>4</kbd></button><div class="nav-label">Kiểm chứng</div><button type="button" id="tab-forecast" class="workspace-tab" aria-controls="forecast rv" aria-pressed="false" title="Dự báo rủi ro"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16M8 15l4-5 4 3 5-8"/></svg><span>Dự báo rủi ro</span><kbd>2</kbd></button><button type="button" id="tab-operations" class="workspace-tab" aria-controls="operations" aria-pressed="false" title="Dữ liệu & OOS"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Dữ liệu & OOS</span><kbd>6</kbd></button><div class="nav-label">Tài liệu</div><button type="button" id="tab-methods" class="workspace-tab" aria-controls="overview pit methods" aria-pressed="false" title="Phương pháp & nguồn"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14"/></svg><span>Phương pháp & nguồn</span><kbd>5</kbd></button></div><div class="sidebar-bottom"><div class="sidebar-caption"><span class="status-dot"></span>Nghiên cứu, từng góc nhìn.</div><button type="button" id="learnMethods" class="sidebar-method">Cách đọc kết quả <svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button><span class="lab-signature">AURORA · VIOLET / 02</span></div><div id="sidebarResizer" class="sidebar-resizer" role="separator" tabindex="0" aria-label="Độ rộng menu. Kéo hoặc dùng phím trái, phải để điều chỉnh." title="Kéo để đổi độ rộng · nhấp đúp để đặt lại" aria-orientation="vertical" aria-controls="workspaceNavigation" aria-valuemin="224" aria-valuemax="340" aria-valuenow="252"></div><select id="mobileWorkspace" class="sr-only" aria-label="Workspace"><option value="transmission">Truyền dẫn</option><option value="forecast">Dự báo rủi ro</option><option value="fomc">FOMC</option><option value="advanced">Phân vị & VAR</option><option value="methods">Phương pháp & nguồn</option><option value="operations">Dữ liệu & OOS</option></select></nav><header data-orbit-inert="true" inert class="app-header"><div class="topbar-path"><button type="button" id="openNavigation" class="icon-button" aria-label="Mở menu"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 5 9 4 9-4M3 17l9 4 9-4"/></svg></button><span class="topbar-label">Nghiên cứu</span><span class="path-divider">/</span><strong id="designBreadcrumb">Truyền dẫn</strong></div><div class="topbar-actions"><button type="button" class="topbar-date" data-goto="operations" aria-label="Xem ngày chốt mẫu nghiên cứu và dữ liệu mới"><span>Mẫu ước lượng: 15/10/2026</span><small id="latestDataBadge">Thu dữ liệu: đang đọc</small></button><button type="button" id="openGlossary" class="glossary-trigger" aria-label="Tìm kiếm và lệnh · Ctrl K"><span aria-hidden="true">⌕</span><span>Tìm kiếm &amp; lệnh</span><kbd>Ctrl K</kbd></button><button type="button" id="themeToggle" class="icon-button theme-toggle" aria-label="Đổi giao diện sáng tối"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><span id="themeModeLabel">Tối</span></button><button type="button" id="topExport" class="top-export" aria-label="Tải CSV của workspace"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg><span>Tải CSV</span></button></div></header>
+<main data-orbit-inert="true" inert id="mainContent"><!-- ORBIT HERO START --><div class="workspace-hero"><svg class="hero-world-map" viewBox="0 0 1200 600" fill="none" aria-hidden="true" focusable="false"><use href="#orbitWorldMesh"/></svg><div class="hero-eyebrow" id="designEyebrow">MACRO × CRYPTO / RESEARCH EXPLORER</div><h1 id="designTitle">Từ vĩ mô đến crypto<span>.</span></h1><p id="designDescription">Một thay đổi kinh tế. Hai tài sản. 30 ngày phản ứng.</p><div id="designMetrics" hidden><span id="designSample"></span><span id="designSampleMeta"></span></div></div><!-- ORBIT HERO END --><div id="appFeedback" class="app-feedback" role="status" hidden></div><span id="workspaceTitle" class="sr-only">Truyền dẫn</span><section data-workspace="transmission" class="panel response-workspace" id="responses">
   <h2 class="sr-only">Khám phá phản ứng theo cú sốc</h2>
   <div class="mobile-filter-bar"><button type="button" id="openFilters"><span id="mobileFilterLabel">BTC · VIX +5 điểm</span><span>Điều chỉnh ↗</span></button></div>
   <div id="controlHome"><div class="controls control-strip" id="responseControls">
