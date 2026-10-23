@@ -62,70 +62,71 @@ h1,h2,h3,h4,strong{color:var(--text)}.topbar-path strong{color:var(--text)}.work
 </style><style id="orbit-aurora">/* Aurora presentation: static CSS scenery, no remote assets or blur layers. */
 :root {
   color-scheme: dark;
-  --bg: #0b1221;
-  --sidebar: #141e30;
-  --surface: #182335;
-  --surface-raised: #223149;
-  --surface-soft: #131e30;
-  --border: #324258;
-  --border-soft: #2a374b;
-  --text: #eff7fb;
-  --muted: #b0c1d1;
-  --subtle: #9bafc4;
-  --accent: #2ce8b9;
-  --accent-text: #63f4d1;
-  --accent-wash: #193e3c;
-  --mint: #42e6c6;
-  --lavender: #bd9bff;
+  --bg: #0d071b;
+  --sidebar: #1a102e;
+  --surface: #241a3c;
+  --surface-raised: #34234f;
+  --surface-soft: #180f2b;
+  --border: #50386c;
+  --border-soft: #3b2953;
+  --text: #f8f2ff;
+  --muted: #c7b8db;
+  --subtle: #b8a4d1;
+  --accent: #32f0bb;
+  --accent-text: #64ffd4;
+  --accent-wash: #154839;
+  --mint: #38f0c0;
+  --lavender: #d59bff;
   --peach: #ffbd9d;
-  --btc: #42e6c6;
-  --eth: #bd9bff;
+  --btc: #38f0c0;
+  --eth: #d59bff;
   --positive: #56edc7;
   --negative: #ffac99;
   --calm: #56edc7;
   --stress: #ffbd9d;
-  --ci: #42e6c6;
+  --ci: #38f0c0;
   --warning: #f5d18e;
-  --result-bg: #153531;
-  --result-border: #326354;
+  --result-bg: #103c35;
+  --result-border: #23876e;
   --shadow: 0 12px 32px #03081130;
   --shadow-overlay: 0 24px 70px #03081170;
   --radius-lg: 22px;
   --header-height: 64px;
-  --frame-edge: max(24px, calc((100vw - 1480px) / 2));
+  --frame-edge: max(20px, calc((100vw - 1560px) / 2));
+  --sidebar-expanded-width: 252px;
+  --sidebar-width: var(--sidebar-expanded-width);
+  --sidebar-gap: 18px;
   --chrome-top: 24px;
-  --chrome-nav: 72px;
-  --chrome-gap: 12px;
-  --sticky-cutoff: 184px;
+  --sticky-cutoff: 100px;
 }
 :root[data-theme=light] {
   color-scheme: light;
-  --bg: #edf4f7;
-  --sidebar: #f6fbfd;
-  --surface: #ffffff;
-  --surface-raised: #e7eff6;
-  --surface-soft: #f1f7fa;
-  --border: #c5d6df;
-  --border-soft: #d9e5eb;
-  --text: #152c3b;
-  --muted: #4d6476;
-  --subtle: #536b7e;
-  --accent: #08775e;
-  --accent-text: #06684f;
-  --accent-wash: #ddf3eb;
-  --mint: #08775e;
-  --lavender: #7650b4;
+  --bg: #eee5fa;
+  --sidebar: #e8dcf8;
+  --surface: #fffcff;
+  --surface-raised: #e4d3f7;
+  --surface-soft: #f3ebfc;
+  --border: #c7ace5;
+  --border-soft: #dfccef;
+  --text: #2a1242;
+  --muted: #674c80;
+  --subtle: #70518c;
+  --accent: #7038c2;
+  --accent-text: #6126af;
+  --accent-wash: #e4d1fc;
+  --mint: #007a70;
+  --lavender: #9044cf;
   --peach: #a9502c;
-  --btc: #08775e;
-  --eth: #7650b4;
+  --btc: #007a70;
+  --eth: #9044cf;
   --positive: #08775e;
   --negative: #ae4b33;
   --calm: #08775e;
   --stress: #a9502c;
-  --ci: #08775e;
+  --ci: #007a70;
   --warning: #81510c;
-  --result-bg: #edf8f3;
-  --result-border: #b7d9c9;
+  --result-bg: #ebdbff;
+  --result-border: #b78bdf;
   --shadow: 0 12px 32px #16343d0a;
   --shadow-overlay: 0 24px 70px #16343d25;
 }
@@ -143,52 +144,72 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 0% 85%, #06b88e36, transparent 48%),
-    radial-gradient(ellipse at 95% 14%, #a04dda30, transparent 42%),
-    radial-gradient(ellipse at 28% -8%, #14655b38, transparent 48%),
+    radial-gradient(ellipse at 0% 85%, #00d6a040, transparent 48%),
+    radial-gradient(ellipse at 95% 14%, #a236ff55, transparent 45%),
+    radial-gradient(ellipse at 28% -8%, #6b24b83c, transparent 48%),
     radial-gradient(circle at 20px 30px, #dce8ff35 .6px, transparent 1.2px) 0 0 / 143px 137px,
     radial-gradient(circle at 72px 88px, #c0e7f936 .7px, transparent 1.3px) 0 0 / 211px 181px,
     var(--bg);
 }
 [data-theme=light] body::before {
-  background: radial-gradient(ellipse at 0% 80%, #b8efdf70, transparent 48%),
-    radial-gradient(ellipse at 100% 5%, #ddd0fb75, transparent 48%), var(--bg);
+  background: radial-gradient(ellipse at 0% 80%, #c1f1e375, transparent 48%),
+    radial-gradient(ellipse at 100% 5%, #c49aef90, transparent 48%), var(--bg);
 }
+:root[data-nav-collapsed=true] { --sidebar-width: 80px; }
 .workspace-nav, :root[data-nav-collapsed=true] .workspace-nav {
-  position: sticky;
-  inset: auto;
-  top: var(--chrome-top);
-  height: var(--chrome-nav);
-  width: 100%;
+  position: fixed;
+  inset: var(--chrome-top) auto var(--chrome-top) var(--frame-edge);
+  height: calc(100dvh - 2 * var(--chrome-top));
+  width: var(--sidebar-width);
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 28px;
-  padding: 12px 24px;
-  background: linear-gradient(110deg, var(--surface), var(--sidebar));
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 24px 14px 18px;
+  background: linear-gradient(165deg, var(--surface), var(--sidebar));
   border: 1px solid var(--border);
   border-radius: 20px;
   box-shadow: var(--shadow);
-  overflow: visible;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
+.sidebar-heading { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 0 6px; margin-bottom: 18px; }
 .brand, :root[data-nav-collapsed=true] .brand { margin: 0; padding: 0; flex-shrink: 0; gap: 9px; }
-.brand>span, :root[data-nav-collapsed=true] .brand>span { display: block; font-size: 28px; letter-spacing: -1.4px; }
+.brand>span { display: block; font-size: 28px; letter-spacing: -1.4px; }
 .brand-symbol, :root[data-nav-collapsed=true] .brand-symbol { width: 29px; height: 29px; flex-basis: 29px; }
 .brand small { font-size: 7px; margin-top: 6px; letter-spacing: 1.7px; }
-.nav-items, :root[data-nav-collapsed=true] .nav-items { flex: 1; min-width: 0; flex-direction: row; justify-content: flex-end; gap: 5px; }
-.nav-label, .sidebar-bottom, .workspace-tab kbd { display: none; }
+.sidebar-toggle { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex: 0 0 32px; padding: 5px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface-soft); color: var(--accent-text); }
+.sidebar-toggle .ui-icon { width: 16px; height: 16px; flex-basis: 16px; transform: rotate(180deg); }
+.nav-items, :root[data-nav-collapsed=true] .nav-items { flex: 0 0 auto; min-width: 0; flex-direction: column; justify-content: flex-start; gap: 5px; }
+.nav-label { display: block; margin: 20px 12px 7px; font-size: 10px; color: var(--subtle); }
+.sidebar-bottom { display: block; margin-top: auto; padding: 24px 10px 0; }
+.sidebar-caption { margin-bottom: 12px; }
+.workspace-tab kbd { display: inline; font-size: 10px; opacity: .6; }
 .workspace-tab, :root[data-nav-collapsed=true] .workspace-tab {
-  width: auto;
+  width: 100%;
   min-width: 0;
   min-height: 44px;
-  padding: 10px 12px;
-  gap: 7px;
+  padding: 12px;
+  gap: 10px;
   border-radius: 10px;
-  justify-content: center;
-  font-size: 12px;
+  justify-content: flex-start;
+  font-size: 13px;
 }
-.workspace-tab>span, :root[data-nav-collapsed=true] .workspace-tab>span { display: inline; flex: initial; }
+.workspace-tab>span { display: block; flex: 1; }
 .workspace-tab .ui-icon { width: 17px; height: 17px; flex-basis: 17px; }
+:root[data-nav-collapsed=true] .workspace-nav { padding-inline: 12px; }
+:root[data-nav-collapsed=true] .sidebar-heading { flex-direction: column; gap: 14px; padding: 0; }
+:root[data-nav-collapsed=true] .sidebar-toggle .ui-icon { transform: none; }
+:root[data-nav-collapsed=true] .workspace-tab { justify-content: center; padding: 13px; }
+:root[data-nav-collapsed=true] .brand>span,
+:root[data-nav-collapsed=true] .workspace-tab>span,
+:root[data-nav-collapsed=true] .workspace-tab kbd,
+:root[data-nav-collapsed=true] .nav-label,
+:root[data-nav-collapsed=true] .sidebar-bottom,
+:root[data-nav-collapsed=true] .sidebar-resizer { display: none; }
+.sidebar-resizer { position: absolute; top: 0; right: 0; bottom: 0; width: 7px; cursor: col-resize; touch-action: none; border-radius: 0 20px 20px 0; }
+.sidebar-resizer:hover, .sidebar-resizer:focus-visible, [data-nav-resizing=true] .sidebar-resizer { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+[data-nav-resizing=true] body { cursor: col-resize; user-select: none; }
 .workspace-tab[aria-pressed=true] {
   background: var(--accent-wash);
   border-color: color-mix(in srgb, var(--accent) 36%, var(--border));
@@ -197,8 +218,8 @@ body::before {
 }
 .app-header {
   backdrop-filter: none;
-  top: calc(var(--chrome-top) + var(--chrome-nav) + var(--chrome-gap));
-  margin: var(--chrome-gap) 0 0;
+  top: var(--chrome-top);
+  margin: 0 0 0 calc(var(--sidebar-width) + var(--sidebar-gap));
   height: var(--header-height);
   padding: 0 22px;
   background: var(--sidebar);
@@ -207,10 +228,16 @@ body::before {
   gap: 16px;
 }
 .topbar-date { background: var(--surface-soft); border-radius: 9px; }
+.topbar-path { flex: 1; overflow: hidden; }
+.topbar-path strong { overflow: hidden; text-overflow: ellipsis; }
+.topbar-actions { flex-shrink: 0; }
+#openNavigation { display: inline-flex; }
+.theme-toggle { width: auto; gap: 7px; padding-inline: 11px; }
+#themeModeLabel { font-size: 11px; font-weight: 600; }
 .bottom-nav { backdrop-filter: none; }
 .glossary-trigger, .icon-button { background: var(--surface); border-radius: 10px; }
 .top-export { background: var(--accent); color: var(--bg); border-radius: 10px; padding-inline: 16px; }
-main { margin: 0; padding: 28px 0 8px; gap: 22px; }
+main { margin: 0 0 0 calc(var(--sidebar-width) + var(--sidebar-gap)); padding: 28px 0 8px; gap: 22px; }
 .workspace-hero { padding: 3px 5px 4px; }
 .hero-eyebrow { color: var(--accent-text); font-size: 10px; letter-spacing: 2px; }
 .workspace-hero h1 { font-size: 35px; font-weight: 650; letter-spacing: -1.2px; }
@@ -271,11 +298,12 @@ dialog[open] { animation: none; }
 .panel.bento-panel, .workspace-tab, .segmented button, .horizon-presets button { transition: none; }
 .bento-panel:hover { transform: none; }
 .skip-link { left: var(--frame-edge); }
-@media (min-width:761px) and (max-width:1120px) {
-  .workspace-nav, :root[data-nav-collapsed=true] .workspace-nav { padding-inline: 18px; gap: 18px; }
-  .nav-items, :root[data-nav-collapsed=true] .nav-items { overflow-x: auto; justify-content: flex-start; }
-  .workspace-tab, :root[data-nav-collapsed=true] .workspace-tab { flex-shrink: 0; padding-inline: 10px; }
-  .response-grid { grid-template-columns: minmax(0,1fr) 240px; }
+@media (min-width:761px) and (max-width:1180px) {
+  .topbar-date, .topbar-label, .path-divider, .glossary-trigger>span:not(:first-child), .glossary-trigger kbd, .top-export>span { display: none; }
+  .glossary-trigger { width: 40px; padding: 0; justify-content: center; }
+  .top-export { padding: 10px; }
+  .response-grid { grid-template-columns: minmax(0,1fr); }
+  .panel.bento-panel { grid-column: 1/-1; }
   .control-strip { gap: 12px; }
 }
 @media (max-width:760px) {
@@ -286,6 +314,8 @@ dialog[open] { animation: none; }
   .topbar-path { gap: 6px; }
   .topbar-label, .topbar-date { display: none; }
   .topbar-actions { gap: 5px; }
+  #themeModeLabel { display: none; }
+  .theme-toggle { padding: 10px; }
   .top-export { padding: 10px; }
   main { margin: 0; padding: 22px 0 8px; gap: 18px; }
   .workspace-hero { padding: 0 3px 2px; }
@@ -316,7 +346,7 @@ dialog[open] { animation: none; }
   #controlHome { position: static; }
   .response-grid { grid-template-columns: minmax(0,1fr) 230px; }
 }
-</style></head><body><!-- ORBIT EXPERIENCE BOOT START --><div id="bootStatus" class="boot-screen" role="status" aria-live="polite"><div><strong>orbit<span>.</span></strong><p>Đang mở không gian phân tích…</p><small>Chuẩn bị bộ lọc và dữ liệu lịch sử</small></div></div><!-- ORBIT EXPERIENCE BOOT END --><script data-orbit-guard>window.addEventListener('error',function(e){if(e.filename&&e.filename.indexOf('chrome-extension:')===0)return;var boot=document.getElementById('bootStatus');if(boot)boot.hidden=true;document.querySelectorAll('[data-orbit-inert]').forEach(function(n){n.removeAttribute('inert');});var b=document.getElementById('appFeedback');if(b){b.hidden=false;b.textContent='Một thành phần chưa mở được. Hãy tải lại trang; nếu vẫn lỗi, dùng Chrome/Edge mới và mở START_DASHBOARD.html.';b.setAttribute('role','alert');}});</script><noscript id="orbitNoScript"><style>.boot-screen{display:none}</style>Dashboard cần bật JavaScript để hiển thị biểu đồ và bộ lọc.</noscript><a class="skip-link" href="#mainContent">Đến nội dung chính</a><nav data-orbit-inert="true" inert class="workspace-nav" aria-label="Không gian nghiên cứu"><a class="brand" href="#transmission" aria-label="orbit. — Trang truyền dẫn"><svg class="ui-icon brand-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-35 12 12)"/><circle cx="12" cy="12" r="3"/><circle cx="20" cy="6.5" r="1.6" fill="currentColor" stroke="none"/></svg><span>orbit<span class="brand-dot">.</span><small>MACRO × CRYPTO</small></span></a><div class="nav-items"><i id="navActive" aria-hidden="true"></i><div class="nav-label">Phân tích</div><button type="button" id="tab-transmission" class="workspace-tab" aria-controls="responses rolling analoguePanel" aria-pressed="true" title="Truyền dẫn"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h4l3-7 5 14 3-7h5"/></svg><span>Truyền dẫn</span><kbd>1</kbd></button><button type="button" id="tab-fomc" class="workspace-tab" aria-controls="fomc" aria-pressed="false" title="FOMC"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8 9-5 9 5M4 9h16M6 10v7m6-7v7m6-7v7M3 20h18"/></svg><span>FOMC</span><kbd>3</kbd></button><button type="button" id="tab-advanced" class="workspace-tab" aria-controls="quantile joint" aria-pressed="false" title="Phân vị & VAR"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 5 9 4 9-4M3 17l9 4 9-4"/></svg><span>Phân vị & VAR</span><kbd>4</kbd></button><div class="nav-label">Kiểm chứng</div><button type="button" id="tab-forecast" class="workspace-tab" aria-controls="forecast rv" aria-pressed="false" title="Dự báo rủi ro"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16M8 15l4-5 4 3 5-8"/></svg><span>Dự báo rủi ro</span><kbd>2</kbd></button><button type="button" id="tab-operations" class="workspace-tab" aria-controls="operations" aria-pressed="false" title="Dữ liệu & OOS"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Dữ liệu & OOS</span><kbd>6</kbd></button><div class="nav-label">Tài liệu</div><button type="button" id="tab-methods" class="workspace-tab" aria-controls="overview pit methods" aria-pressed="false" title="Phương pháp & nguồn"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14"/></svg><span>Phương pháp & nguồn</span><kbd>5</kbd></button></div><div class="sidebar-bottom"><div class="sidebar-caption"><span class="status-dot"></span>Nghiên cứu, từng góc nhìn.</div><button type="button" id="learnMethods" class="sidebar-method">Cách đọc kết quả <svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button><button type="button" id="collapseSidebar" class="sidebar-collapse" aria-label="Thu gọn menu" aria-expanded="true"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 5 9 4 9-4M3 17l9 4 9-4"/></svg><span>Thu gọn menu</span></button><span class="lab-signature">ORBIT RESEARCH / 03</span></div><select id="mobileWorkspace" class="sr-only" aria-label="Workspace"><option value="transmission">Truyền dẫn</option><option value="forecast">Dự báo rủi ro</option><option value="fomc">FOMC</option><option value="advanced">Phân vị & VAR</option><option value="methods">Phương pháp & nguồn</option><option value="operations">Dữ liệu & OOS</option></select></nav><header data-orbit-inert="true" inert class="app-header"><div class="topbar-path"><button type="button" id="openNavigation" class="icon-button" aria-label="Mở menu"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 5 9 4 9-4M3 17l9 4 9-4"/></svg></button><span class="topbar-label">Nghiên cứu</span><span class="path-divider">/</span><strong id="designBreadcrumb">Truyền dẫn</strong></div><div class="topbar-actions"><button type="button" class="topbar-date" data-goto="operations" aria-label="Xem ngày chốt mẫu nghiên cứu và dữ liệu mới"><span>Mẫu ước lượng: 15/10/2026</span><small id="latestDataBadge">Thu dữ liệu: đang đọc</small></button><button type="button" id="openGlossary" class="glossary-trigger" aria-label="Tìm kiếm và lệnh · Ctrl K"><span aria-hidden="true">⌕</span><span>Tìm kiếm &amp; lệnh</span><kbd>Ctrl K</kbd></button><button type="button" id="themeToggle" class="icon-button" aria-label="Đổi giao diện sáng tối"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button><button type="button" id="topExport" class="top-export" aria-label="Tải CSV của workspace"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg><span>Tải CSV</span></button></div></header>
+</style></head><body><!-- ORBIT EXPERIENCE BOOT START --><div id="bootStatus" class="boot-screen" role="status" aria-live="polite"><div><strong>orbit<span>.</span></strong><p>Đang mở không gian phân tích…</p><small>Chuẩn bị bộ lọc và dữ liệu lịch sử</small></div></div><!-- ORBIT EXPERIENCE BOOT END --><script data-orbit-guard>window.addEventListener('error',function(e){if(e.filename&&e.filename.indexOf('chrome-extension:')===0)return;var boot=document.getElementById('bootStatus');if(boot)boot.hidden=true;document.querySelectorAll('[data-orbit-inert]').forEach(function(n){n.removeAttribute('inert');});var b=document.getElementById('appFeedback');if(b){b.hidden=false;b.textContent='Một thành phần chưa mở được. Hãy tải lại trang; nếu vẫn lỗi, dùng Chrome/Edge mới và mở START_DASHBOARD.html.';b.setAttribute('role','alert');}});</script><noscript id="orbitNoScript"><style>.boot-screen{display:none}</style>Dashboard cần bật JavaScript để hiển thị biểu đồ và bộ lọc.</noscript><a class="skip-link" href="#mainContent">Đến nội dung chính</a><nav id="workspaceNavigation" class="workspace-nav" aria-label="Không gian nghiên cứu"><div class="sidebar-heading"><a class="brand" href="#transmission" aria-label="orbit. — Trang truyền dẫn"><svg class="ui-icon brand-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-35 12 12)"/><circle cx="12" cy="12" r="3"/><circle cx="20" cy="6.5" r="1.6" fill="currentColor" stroke="none"/></svg><span>orbit<span class="brand-dot">.</span><small>MACRO × CRYPTO</small></span></a><button type="button" id="collapseSidebar" class="sidebar-toggle" aria-label="Thu gọn menu" title="Thu gọn menu" aria-controls="workspaceNavigation" aria-expanded="true"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div><div class="nav-items"><i id="navActive" aria-hidden="true"></i><div class="nav-label">Phân tích</div><button type="button" id="tab-transmission" class="workspace-tab" aria-controls="responses rolling analoguePanel" aria-pressed="true" title="Truyền dẫn"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h4l3-7 5 14 3-7h5"/></svg><span>Truyền dẫn</span><kbd>1</kbd></button><button type="button" id="tab-fomc" class="workspace-tab" aria-controls="fomc" aria-pressed="false" title="FOMC"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8 9-5 9 5M4 9h16M6 10v7m6-7v7m6-7v7M3 20h18"/></svg><span>FOMC</span><kbd>3</kbd></button><button type="button" id="tab-advanced" class="workspace-tab" aria-controls="quantile joint" aria-pressed="false" title="Phân vị & VAR"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 5 9 4 9-4M3 17l9 4 9-4"/></svg><span>Phân vị & VAR</span><kbd>4</kbd></button><div class="nav-label">Kiểm chứng</div><button type="button" id="tab-forecast" class="workspace-tab" aria-controls="forecast rv" aria-pressed="false" title="Dự báo rủi ro"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16M8 15l4-5 4 3 5-8"/></svg><span>Dự báo rủi ro</span><kbd>2</kbd></button><button type="button" id="tab-operations" class="workspace-tab" aria-controls="operations" aria-pressed="false" title="Dữ liệu & OOS"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Dữ liệu & OOS</span><kbd>6</kbd></button><div class="nav-label">Tài liệu</div><button type="button" id="tab-methods" class="workspace-tab" aria-controls="overview pit methods" aria-pressed="false" title="Phương pháp & nguồn"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14"/></svg><span>Phương pháp & nguồn</span><kbd>5</kbd></button></div><div class="sidebar-bottom"><div class="sidebar-caption"><span class="status-dot"></span>Nghiên cứu, từng góc nhìn.</div><button type="button" id="learnMethods" class="sidebar-method">Cách đọc kết quả <svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button><span class="lab-signature">AURORA · VIOLET / 02</span></div><div id="sidebarResizer" class="sidebar-resizer" role="separator" tabindex="0" aria-label="Độ rộng menu. Kéo hoặc dùng phím trái, phải để điều chỉnh." title="Kéo để đổi độ rộng · nhấp đúp để đặt lại" aria-orientation="vertical" aria-controls="workspaceNavigation" aria-valuemin="224" aria-valuemax="340" aria-valuenow="252"></div><select id="mobileWorkspace" class="sr-only" aria-label="Workspace"><option value="transmission">Truyền dẫn</option><option value="forecast">Dự báo rủi ro</option><option value="fomc">FOMC</option><option value="advanced">Phân vị & VAR</option><option value="methods">Phương pháp & nguồn</option><option value="operations">Dữ liệu & OOS</option></select></nav><header data-orbit-inert="true" inert class="app-header"><div class="topbar-path"><button type="button" id="openNavigation" class="icon-button" aria-label="Mở menu"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 5 9 4 9-4M3 17l9 4 9-4"/></svg></button><span class="topbar-label">Nghiên cứu</span><span class="path-divider">/</span><strong id="designBreadcrumb">Truyền dẫn</strong></div><div class="topbar-actions"><button type="button" class="topbar-date" data-goto="operations" aria-label="Xem ngày chốt mẫu nghiên cứu và dữ liệu mới"><span>Mẫu ước lượng: 15/10/2026</span><small id="latestDataBadge">Thu dữ liệu: đang đọc</small></button><button type="button" id="openGlossary" class="glossary-trigger" aria-label="Tìm kiếm và lệnh · Ctrl K"><span aria-hidden="true">⌕</span><span>Tìm kiếm &amp; lệnh</span><kbd>Ctrl K</kbd></button><button type="button" id="themeToggle" class="icon-button theme-toggle" aria-label="Đổi giao diện sáng tối"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><span id="themeModeLabel">Tối</span></button><button type="button" id="topExport" class="top-export" aria-label="Tải CSV của workspace"><svg class="ui-icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg><span>Tải CSV</span></button></div></header>
 <main data-orbit-inert="true" inert id="mainContent"><!-- ORBIT HERO START --><div class="workspace-hero"><div class="hero-eyebrow" id="designEyebrow">MACRO × CRYPTO / RESEARCH EXPLORER</div><h1 id="designTitle">Từ vĩ mô đến crypto<span>.</span></h1><p id="designDescription">Một thay đổi kinh tế. Hai tài sản. 30 ngày phản ứng.</p><div id="designMetrics" hidden><span id="designSample"></span><span id="designSampleMeta"></span></div></div><!-- ORBIT HERO END --><div id="appFeedback" class="app-feedback" role="status" hidden></div><span id="workspaceTitle" class="sr-only">Truyền dẫn</span><section data-workspace="transmission" class="panel response-workspace" id="responses">
   <h2 class="sr-only">Khám phá phản ứng theo cú sốc</h2>
   <div class="mobile-filter-bar"><button type="button" id="openFilters"><span id="mobileFilterLabel">BTC · VIX +5 điểm</span><span>Điều chỉnh ↗</span></button></div>
@@ -826,7 +856,7 @@ function orbitStartStudio(){
  const seriesFor=row=>analogueSeries.get([row.asset,row.shock,row.regime,row.date_utc].join('|'))||[];
  function toast(message){clearTimeout(toastTimer);$('orbitToast').textContent=message;$('orbitToast').hidden=false;toastTimer=setTimeout(()=>$('orbitToast').hidden=true,2800);}
  window.orbitToast=toast;
- function setTheme(theme){root.dataset.theme=theme;$('themeToggle').setAttribute('aria-pressed',String(theme==='light'));$('themeToggle').setAttribute('aria-label',theme==='dark'?'Chuyển sang giao diện sáng':'Chuyển sang giao diện tối');try{localStorage.setItem('orbit-theme-aurora',theme);}catch(_){}}
+ function setTheme(theme){root.dataset.theme=theme;$('themeToggle').setAttribute('aria-pressed',String(theme==='light'));const action=theme==='dark'?'Chuyển sang giao diện sáng':'Chuyển sang giao diện tối';$('themeToggle').setAttribute('aria-label',action);$('themeToggle').title=action;$('themeModeLabel').textContent=theme==='dark'?'Tối':'Sáng';try{localStorage.setItem('orbit-theme-aurora',theme);}catch(_){}}
  let savedTheme=null;try{savedTheme=localStorage.getItem('orbit-theme-aurora');}catch(_){}
  setTheme(savedTheme==='light'?'light':'dark');
  window.orbitToggleTheme=()=>{setTheme(root.dataset.theme==='dark'?'light':'dark');};
@@ -856,7 +886,18 @@ function orbitStartStudio(){
  for(const b of document.querySelectorAll('[data-goto]'))b.addEventListener('click',()=>go(b.dataset.goto));
  $('openNavigation').addEventListener('click',()=>{if(matchMedia('(max-width:760px)').matches)$('navDrawer').showModal();else $('collapseSidebar').click();});
  $('bottomMore').addEventListener('click',()=>$('navDrawer').showModal());
- $('collapseSidebar').addEventListener('click',()=>{const collapsed=root.dataset.navCollapsed!=='true';root.dataset.navCollapsed=String(collapsed);$('collapseSidebar').setAttribute('aria-expanded',String(!collapsed));$('collapseSidebar').setAttribute('aria-label',collapsed?'Mở rộng menu':'Thu gọn menu');try{localStorage.setItem('orbit-nav-collapsed',String(collapsed));}catch(_){}});
+ const resizer=$('sidebarResizer');let navWidth=252,savedCollapsed=false,resizePointer=null,resizeStart=0,resizeWidth=252,resizeX=0,navFrame=null;
+ try{const stored=localStorage.getItem('orbit-nav-width');if(stored!==null&&Number.isFinite(Number(stored)))navWidth=Math.max(224,Math.min(340,Number(stored)));savedCollapsed=localStorage.getItem('orbit-nav-collapsed')==='true';}catch(_){}
+ function setNavWidth(value,persist=false){navWidth=Math.max(224,Math.min(340,Math.round(value)));root.style.setProperty('--sidebar-expanded-width',navWidth+'px');resizer.setAttribute('aria-valuenow',String(navWidth));if(persist)try{localStorage.setItem('orbit-nav-width',String(navWidth));}catch(_){};}
+ function setNavCollapsed(collapsed,persist=true){root.dataset.navCollapsed=String(collapsed);const action=collapsed?'Mở rộng menu':'Thu gọn menu';$('collapseSidebar').setAttribute('aria-expanded',String(!collapsed));$('collapseSidebar').setAttribute('aria-label',action);$('collapseSidebar').title=action;resizer.tabIndex=collapsed?-1:0;if(persist)try{localStorage.setItem('orbit-nav-collapsed',String(collapsed));}catch(_){};}
+ setNavWidth(navWidth);setNavCollapsed(savedCollapsed,false);
+ $('collapseSidebar').addEventListener('click',()=>setNavCollapsed(root.dataset.navCollapsed!=='true'));
+ resizer.addEventListener('pointerdown',e=>{if(e.button!==0||root.dataset.navCollapsed==='true')return;e.preventDefault();resizePointer=e.pointerId;resizeStart=resizeX=e.clientX;resizeWidth=navWidth;root.dataset.navResizing='true';resizer.setPointerCapture(e.pointerId);});
+ resizer.addEventListener('pointermove',e=>{if(resizePointer!==e.pointerId)return;resizeX=e.clientX;if(navFrame!==null)cancelAnimationFrame(navFrame);navFrame=requestAnimationFrame(()=>{navFrame=null;setNavWidth(resizeWidth+resizeX-resizeStart);});});
+ function finishNavResize(e){if(resizePointer!==e.pointerId)return;resizePointer=null;if(navFrame!==null)cancelAnimationFrame(navFrame);navFrame=null;setNavWidth(resizeWidth+resizeX-resizeStart,true);delete root.dataset.navResizing;}
+ for(const event of ['pointerup','pointercancel','lostpointercapture'])resizer.addEventListener(event,finishNavResize);
+ resizer.addEventListener('dblclick',()=>setNavWidth(252,true));
+ resizer.addEventListener('keydown',e=>{const next={ArrowLeft:navWidth-16,ArrowRight:navWidth+16,Home:252,End:340}[e.key];if(next!==undefined){e.preventDefault();setNavWidth(next,true);}});
  $('learnMethods').addEventListener('click',()=>go('methods'));
  document.querySelector('.brand').addEventListener('click',e=>{e.preventDefault();go('transmission');});
  document.querySelector('.skip-link').addEventListener('click',e=>{e.preventDefault();$('mainContent').setAttribute('tabindex','-1');$('mainContent').focus();$('mainContent').scrollIntoView({block:'start',behavior:'instant'});});

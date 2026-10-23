@@ -98,10 +98,29 @@ async function screenshot(name) {
     for(let i=0;i<60;i++){if(await evaluate("document.readyState==='complete' && Boolean(document.getElementById('liveStatus').textContent)"))break;await delay(100);}
     const dashboardDesktop=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
     const startsWithEstimator=await evaluate("!document.getElementById('responses').hidden && document.getElementById('overview').hidden && document.getElementById('pit').hidden");
-    const auroraLayoutWorks=await evaluate("document.documentElement.dataset.theme==='dark'&&document.querySelectorAll('#orbit-aurora').length===1&&getComputedStyle(document.querySelector('.workspace-nav')).flexDirection==='row'&&document.querySelector('.workspace-nav').getBoundingClientRect().top<document.querySelector('.app-header').getBoundingClientRect().top");
+    const auroraLayoutWorks=await evaluate("document.documentElement.dataset.theme==='dark'&&document.querySelectorAll('#orbit-aurora').length===1&&getComputedStyle(document.querySelector('.workspace-nav')).flexDirection==='column'&&document.querySelector('.workspace-nav').getBoundingClientRect().right<document.querySelector('.app-header').getBoundingClientRect().left");
+    const expandedWidth=await evaluate("document.querySelector('.workspace-nav').getBoundingClientRect().width");
+    await evaluate("document.getElementById('collapseSidebar').click()");
+    const sidebarCollapseWorks=await evaluate("document.documentElement.dataset.navCollapsed==='true'&&document.querySelector('.workspace-nav').getBoundingClientRect().width===80&&document.getElementById('collapseSidebar').getAttribute('aria-expanded')==='false'&&localStorage.getItem('orbit-nav-collapsed')==='true'");
+    await screenshot('dashboard_sidebar_collapsed.png');
+    await evaluate("document.getElementById('openNavigation').click()");
+    const resizeBox=await evaluate("(()=>{const r=document.getElementById('sidebarResizer').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()");
+    await call('Input.dispatchMouseEvent',{type:'mousePressed',x:resizeBox.x,y:resizeBox.y,button:'left',buttons:1,clickCount:1});
+    await call('Input.dispatchMouseEvent',{type:'mouseMoved',x:resizeBox.x+40,y:resizeBox.y,button:'left',buttons:1});
+    await evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+    await call('Input.dispatchMouseEvent',{type:'mouseReleased',x:resizeBox.x+40,y:resizeBox.y,button:'left',buttons:0,clickCount:1});
+    const sidebarResizeWorks=await evaluate(`document.querySelector('.workspace-nav').getBoundingClientRect().width===${expandedWidth+40}&&Number(localStorage.getItem('orbit-nav-width'))===${expandedWidth+40}`);
+    if(!sidebarResizeWorks)console.log(JSON.stringify({resizeBox,actual:await evaluate("({width:document.querySelector('.workspace-nav').getBoundingClientRect().width,stored:localStorage.getItem('orbit-nav-width')})")}));
+    await screenshot('dashboard_sidebar_resized.png');
+    await evaluate("document.getElementById('collapseSidebar').click()");
+    const previousOrigin=await evaluate('performance.timeOrigin');
+    await call('Page.reload',{ignoreCache:true});
+    for(let i=0;i<100;i++){if(await evaluate(`performance.timeOrigin!==${previousOrigin}&&document.documentElement?.dataset?.orbitStudioReady==='true'`))break;await delay(100);}
+    const sidebarPersistenceWorks=await evaluate(`(()=>{if(document.documentElement.dataset.navCollapsed!=='true'||document.querySelector('.workspace-nav').getBoundingClientRect().width!==80)return false;document.getElementById('collapseSidebar').click();return document.querySelector('.workspace-nav').getBoundingClientRect().width===${expandedWidth+40}})()`);
+    await evaluate("document.getElementById('sidebarResizer').dispatchEvent(new KeyboardEvent('keydown',{key:'Home',bubbles:true}))");
     await evaluate("document.getElementById('themeToggle').click()");
     await delay(180);
-    const lightThemeWorks=await evaluate("document.documentElement.dataset.theme==='light'&&localStorage.getItem('orbit-theme-aurora')==='light'");
+    const lightThemeWorks=await evaluate("document.documentElement.dataset.theme==='light'&&localStorage.getItem('orbit-theme-aurora')==='light'&&document.getElementById('themeModeLabel').textContent==='Sáng'");
     await screenshot('dashboard_aurora_light_desktop.png');
     await evaluate("document.getElementById('themeToggle').click()");
     await call('Emulation.setDeviceMetricsOverride',{width:1024,height:1000,deviceScaleFactor:1,mobile:false});
@@ -210,8 +229,8 @@ async function screenshot(name) {
       historical_dates_work:historicalDatesWork,historical_csv_download_matches:historicalCsvWorks,historical_desktop_no_overflow:historicalDesktop,historical_mobile_no_overflow:historicalMobile,
       local_links_verified:local.length,horizon_reuses_curve:horizonReusesCurve,lazy_detail_tables_verified:lazyTablesWork,live_data_tables_verified:liveDataWorks,live_desktop_no_overflow:liveDesktop,live_mobile_no_overflow:liveMobile,uncaught_errors:errors.length};
     Object.assign(result,{fomc_aggregate_verified:fomcAggregateWorks,fomc_event_selection_verified:fomcEventsWork,fomc_event_csv_verified:fomcCsvWorks,fomc_event_list_verified:fomcListWorks,fomc_mobile_no_overflow:fomcMobile});
-    Object.assign(result,{aurora_horizontal_navigation_verified:auroraLayoutWorks,light_theme_verified:lightThemeWorks,tablet_no_overflow:tabletLayoutWorks,mobile_filters_verified:mobileFiltersWork,mobile_navigation_verified:mobileMenuWorks});
-    if(!auroraLayoutWorks||!lightThemeWorks||!tabletLayoutWorks||!mobileFiltersWork||!mobileMenuWorks)throw Error('Aurora UI checks failed: '+JSON.stringify(result));
+    Object.assign(result,{aurora_vertical_navigation_verified:auroraLayoutWorks,sidebar_collapse_verified:sidebarCollapseWorks,sidebar_drag_resize_verified:sidebarResizeWorks,sidebar_persistence_verified:sidebarPersistenceWorks,light_theme_verified:lightThemeWorks,tablet_no_overflow:tabletLayoutWorks,mobile_filters_verified:mobileFiltersWork,mobile_navigation_verified:mobileMenuWorks});
+    if(!auroraLayoutWorks||!sidebarCollapseWorks||!sidebarResizeWorks||!sidebarPersistenceWorks||!lightThemeWorks||!tabletLayoutWorks||!mobileFiltersWork||!mobileMenuWorks)throw Error('Aurora UI checks failed: '+JSON.stringify(result));
     if(!fomcAggregateWorks||!fomcEventsWork||!fomcCsvWorks||!fomcListWorks||!fomcMobile)throw Error('FOMC UI checks failed: '+JSON.stringify(result));
     fs.writeFileSync(path.join(out,'browser_validation.json'),JSON.stringify(result,null,2));
     if (!desktop || !mobile || !oosDesktop || !oosMobile || !automationDesktop || !automationMobile || !dashboardDesktop || !dashboardMobile || !startsWithEstimator || !noWarningOnMain || !tabButtonsWork || !selectionWorks || !resetWorks || !csvDownloadWorks || !historicalDatesWork || !historicalCsvWorks || !historicalDesktop || !historicalMobile || !horizonReusesCurve || !lazyTablesWork || !liveDataWorks || !liveDesktop || !liveMobile || errors.length) throw Error(JSON.stringify(result));
