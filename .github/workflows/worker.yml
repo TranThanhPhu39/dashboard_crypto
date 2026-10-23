@@ -82,6 +82,7 @@ jobs:
           python -m unittest discover -s tests -p test_source_health.py
           python -m unittest discover -s tests -p test_dashboard_web_package.py
           python -m unittest discover -s tests -p test_live_dashboard_data.py
+          python -m unittest discover -s tests -p test_dashboard_fomc.py
       - name: Cache encrypted bootstrap only
         uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
@@ -116,6 +117,7 @@ jobs:
           node tests/validate_release_dashboard.cjs
           node tests/validate_experience.cjs
           node tests/validate_studio.cjs
+          node tests/validate_fomc_ui.cjs
       - name: Persist receipts and ledger before publication
         id: persist
         if: always() && steps.restore.outcome == 'success' && steps.mode.outputs.value != 'preflight'

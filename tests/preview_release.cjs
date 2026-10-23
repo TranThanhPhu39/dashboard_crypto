@@ -98,6 +98,33 @@ async function screenshot(name) {
     for(let i=0;i<60;i++){if(await evaluate("document.readyState==='complete' && Boolean(document.getElementById('liveStatus').textContent)"))break;await delay(100);}
     const dashboardDesktop=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
     const startsWithEstimator=await evaluate("!document.getElementById('responses').hidden && document.getElementById('overview').hidden && document.getElementById('pit').hidden");
+    await evaluate("document.getElementById('tab-fomc').click();window.scrollTo(0,0)");
+    const fomcAggregateWorks=await evaluate("document.getElementById('designTitle').textContent==='Phản ứng quanh FOMC.'&&document.getElementById('fomcSampleDescription').textContent.includes('75')&&document.getElementById('fomcAggregateChart').querySelectorAll('circle').length===30&&document.getElementById('fomcAggregateChart').querySelector('.fomc-ci-band')!==null&&document.getElementById('fomcEventListTable').children.length===0");
+    await screenshot('dashboard_fomc_aggregate_desktop.png');
+    await evaluate("document.getElementById('fomcAggregateChart').scrollIntoView({block:'center'})");
+    await screenshot('dashboard_fomc_aggregate_chart.png');
+    await evaluate("document.getElementById('fomcEventTab').click()");
+    const fomcEventsWork=await evaluate("(()=>{const el=id=>document.getElementById(id);if(el('fomcEventDate').options.length!==75||!el('fomcNextEvent').disabled)return false;const latest=el('fomcEventDate').value;el('fomcPreviousEvent').click();if(el('fomcEventDate').value===latest)return false;el('fomcNextEvent').click();if(el('fomcEventDate').value!==latest)return false;for(const e of [FOMC_RESEARCH.events[0],FOMC_RESEARCH.events.find(r=>r.event_time_et.endsWith('-05:00')),FOMC_RESEARCH.events.at(-1)])for(const asset of ['BTC','ETH']){el('fomcEventDate').value=e.date;el('eAsset').value=asset;el('eAsset').dispatchEvent(new Event('change'));if(el('fomcStatementLink').href!==e.statement_url||el('fomcEventChart').querySelectorAll('circle').length!==31||window.orbitFomcEventCsvRows().find(r=>r.window==='intraday').actual_log_return_pct!==e.assets[asset].returns.intraday)return false;}return el('fomcEventPanel').hidden===false&&el('fomcAggregatePanel').hidden===true})()");
+    await screenshot('dashboard_fomc_event_desktop.png');
+    const fomcDownloadFolder=path.join(preview,'downloads','fomc-'+Date.now());fs.mkdirSync(fomcDownloadFolder,{recursive:true});
+    await call('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:fomcDownloadFolder});
+    await call('Runtime.evaluate',{expression:"document.getElementById('topExport').click()",userGesture:true});
+    const fomcFilename=await evaluate("'fomc_'+document.getElementById('fomcEventDate').value+'_eth_observations.csv'");
+    const fomcCsvFile=path.join(fomcDownloadFolder,fomcFilename);
+    for(let i=0;i<50&&!fs.existsSync(fomcCsvFile);i++)await delay(100);
+    if(!fs.existsSync(fomcCsvFile))throw Error('FOMC CSV download missing');
+    const fomcCsvWorks=fs.readFileSync(fomcCsvFile,'utf8').replace(/^\ufeff/,'').split('\r\n').length===64;
+    await evaluate("document.getElementById('fomcEventWindow').value='post';document.getElementById('fomcEventWindow').dispatchEvent(new Event('change'));document.getElementById('fomcEventList').open=true");
+    await evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+    const fomcListWorks=await evaluate("document.getElementById('fomcEventListTable').querySelectorAll('tbody tr').length===75&&document.getElementById('fomcEventChart').querySelectorAll('circle').length===31");
+    await call('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
+    await evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+    const fomcMobile=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    await evaluate('window.scrollTo(0,0)');
+    await screenshot('dashboard_fomc_event_mobile.png');
+    await evaluate("document.getElementById('fomcEventChart').scrollIntoView({block:'center'})");
+    await screenshot('dashboard_fomc_event_chart_mobile.png');
+    await call('Emulation.setDeviceMetricsOverride',{width:1280,height:1000,deviceScaleFactor:1,mobile:false});
     const liveDataWorks=await evaluate("(()=>{showWorkspace('operations');const status=window.orbitStatus||ORBIT_STATUS,observations=status.capture?.observations||[],forecasts=status.latest_forecasts||[],count=id=>document.getElementById(id).querySelectorAll('tbody tr').length;return count('liveObservationTable')===observations.length&&count('liveForecastTable')===forecasts.length&&document.querySelector('.topbar-date').textContent.includes('Mẫu ước lượng')&&Boolean(document.getElementById('latestDataBadge').textContent)})()");
     const liveDesktop=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
     await screenshot('dashboard_live_desktop.png');
@@ -166,6 +193,8 @@ async function screenshot(name) {
       dashboard_desktop_no_overflow:dashboardDesktop,dashboard_mobile_no_overflow:dashboardMobile,starts_with_estimator:startsWithEstimator,no_academic_warning_on_main:noWarningOnMain,workspace_buttons_work:tabButtonsWork,selection_controls_work:selectionWorks,reset_button_works:resetWorks,csv_download_matches_selected_curve:csvDownloadWorks,tables:counts.length,
       historical_dates_work:historicalDatesWork,historical_csv_download_matches:historicalCsvWorks,historical_desktop_no_overflow:historicalDesktop,historical_mobile_no_overflow:historicalMobile,
       local_links_verified:local.length,horizon_reuses_curve:horizonReusesCurve,lazy_detail_tables_verified:lazyTablesWork,live_data_tables_verified:liveDataWorks,live_desktop_no_overflow:liveDesktop,live_mobile_no_overflow:liveMobile,uncaught_errors:errors.length};
+    Object.assign(result,{fomc_aggregate_verified:fomcAggregateWorks,fomc_event_selection_verified:fomcEventsWork,fomc_event_csv_verified:fomcCsvWorks,fomc_event_list_verified:fomcListWorks,fomc_mobile_no_overflow:fomcMobile});
+    if(!fomcAggregateWorks||!fomcEventsWork||!fomcCsvWorks||!fomcListWorks||!fomcMobile)throw Error('FOMC UI checks failed: '+JSON.stringify(result));
     fs.writeFileSync(path.join(out,'browser_validation.json'),JSON.stringify(result,null,2));
     if (!desktop || !mobile || !oosDesktop || !oosMobile || !automationDesktop || !automationMobile || !dashboardDesktop || !dashboardMobile || !startsWithEstimator || !noWarningOnMain || !tabButtonsWork || !selectionWorks || !resetWorks || !csvDownloadWorks || !historicalDatesWork || !historicalCsvWorks || !historicalDesktop || !historicalMobile || !horizonReusesCurve || !lazyTablesWork || !liveDataWorks || !liveDesktop || !liveMobile || errors.length) throw Error(JSON.stringify(result));
     console.log(JSON.stringify(result,null,2));

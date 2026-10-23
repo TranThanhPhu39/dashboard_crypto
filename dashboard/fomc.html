@@ -1,0 +1,37 @@
+<section class="panel" id="fomc">
+  <div class="section-kicker">FOMC / NGHIÊN CỨU SỰ KIỆN</div>
+  <h2>Phản ứng BTC/ETH quanh thông báo FOMC</h2>
+  <p id="fomcSampleDescription">Đang đọc mẫu sự kiện đã lưu.</p>
+  <div class="fomc-mode" role="tablist" aria-label="Cách xem FOMC">
+    <button type="button" id="fomcAggregateTab" role="tab" aria-selected="true" aria-controls="fomcAggregatePanel">Tổng hợp nhiều cuộc họp</button>
+    <button type="button" id="fomcEventTab" role="tab" aria-selected="false" aria-controls="fomcEventPanel" tabindex="-1">Từng thông báo</button>
+  </div>
+  <div class="controls"><label>Tài sản<select id="eAsset"><option value="BTC">Bitcoin</option><option value="ETH">Ethereum</option></select></label></div>
+  <div id="fomcAggregatePanel" role="tabpanel" aria-labelledby="fomcAggregateTab">
+    <p class="fomc-reading"><strong>Ước lượng chung từ toàn bộ mẫu.</strong> Mỗi cuộc họp cung cấp một quan sát; các thẻ dưới đây là hệ số phản ứng với shock, không phải lợi suất thực tế của một cuộc họp cụ thể.</p>
+    <div class="controls"><label>Cửa sổ kết quả<select id="eOutcome"></select></label></div>
+    <div id="fomcSummary" class="fomc-summary"></div>
+    <p class="compact-meta">Hai thẻ thể hiện miền hệ số qua các phép tách shock hợp lệ, trên +10 bps thành phần PC1. Miền này khác khoảng tin cậy 95%; dấu ∞ chỉ giới hạn hệ số không hữu hạn dưới chuẩn hóa này.</p>
+    <div class="fomc-chart-heading"><div><h3>Đường phản ứng sau 1–30 ngày</h3><p class="compact-meta">Ước lượng tham chiếu và khoảng tin cậy bootstrap đã lưu.</p></div><label>Thành phần shock<select id="fomcAggregateShock"><option value="policy">Chính sách</option><option value="information">Thông tin kinh tế</option></select></label></div>
+    <svg id="fomcAggregateChart" class="fomc-plot" viewBox="0 0 720 290" role="img" aria-label="Phản ứng FOMC theo ngày và CI bootstrap"></svg>
+    <p id="fomcAggregateCaption" class="compact-meta"></p>
+    <p class="compact-meta">Ngày 1–h tính từ ngày kế tiếp thông báo theo lịch UTC, không gồm ngày công bố. CI bootstrap tại phép tách tham chiếu (median rotation) không bao phủ toàn miền nhận dạng. Diễn giải tác động phụ thuộc giả định nhận dạng.</p>
+    <details class="research-details"><summary>Ước lượng tham chiếu và CI của cửa sổ đang chọn</summary><div id="fomcReferenceTable" class="table-wrap"></div></details>
+    <details class="research-details"><summary>Bảng miền nhận dạng và định nghĩa</summary><div id="fomcTable" class="table-wrap"></div></details>
+    <details class="research-details"><summary>Khác biệt trước/sau 2020 và bình thường/căng thẳng</summary><p>Hai cách suy luận HAC và HC3 dùng cùng đặc tả; đọc cả cỡ mẫu và q-value trước khi kết luận khác biệt.</p><div id="regimeTable" class="table-wrap"></div></details>
+  </div>
+  <div id="fomcEventPanel" role="tabpanel" aria-labelledby="fomcEventTab" hidden>
+    <div class="controls fomc-event-controls"><label>Thông báo FOMC trong mẫu<select id="fomcEventDate"></select></label><div class="fomc-event-navigation"><button type="button" id="fomcPreviousEvent" class="action-secondary">← Cuộc họp trước</button><button type="button" id="fomcNextEvent" class="action-secondary">Cuộc họp sau →</button></div></div>
+    <div class="fomc-event-heading"><div><span class="section-kicker">THÔNG BÁO CHÍNH SÁCH THEO LỊCH</span><h3 id="fomcEventTitle"></h3><p id="fomcEventTime" class="compact-meta"></p></div><a id="fomcStatementLink" target="_blank" rel="noopener noreferrer">Đọc thông báo gốc của Fed ↗</a></div>
+    <p class="fomc-reading"><strong>Diễn biến thực tế của một sự kiện.</strong> Các lợi suất dưới đây mô tả giá quan sát quanh ngày được chọn; những tin khác cũng có thể tác động đến giá trong cửa sổ này.</p>
+    <div id="fomcEventShocks" class="fomc-shocks"></div>
+    <p class="compact-meta">Shock là phần bất ngờ trong kỳ vọng lãi suất được tách theo dữ liệu tác giả, đơn vị bps của PC1; khác mức thay đổi lãi suất mục tiêu Fed công bố.</p>
+    <div id="fomcEventReturns" class="fomc-event-metrics"></div>
+    <div class="fomc-chart-heading"><h3 id="fomcEventChartTitle">Diễn biến giá quanh thông báo</h3><label>Cửa sổ biểu đồ<select id="fomcEventWindow"><option value="intraday">−10 đến +20 phút</option><option value="post">1–30 ngày tiếp theo</option></select></label></div>
+    <svg id="fomcEventChart" class="fomc-plot" viewBox="0 0 720 290" role="img" aria-label="Lợi suất thực tế của sự kiện FOMC đã chọn"></svg>
+    <p id="fomcEventCaption" class="compact-meta"></p>
+    <button type="button" id="exportFomcEvent" class="action-secondary">Tải CSV sự kiện đang chọn</button>
+    <details class="research-details"><summary>Bảng lợi suất của sự kiện đang chọn</summary><div id="fomcEventTable" class="table-wrap"></div></details>
+  </div>
+  <details class="research-details" id="fomcEventList"><summary id="fomcEventListSummary">Danh sách các thông báo trong mẫu</summary><p class="compact-meta">Chọn một dòng để mở sự kiện. Mẫu yêu cầu đủ dữ liệu cho cả BTC/ETH và các cửa sổ đến +30 ngày, nên không gồm mọi cuộc họp đến ngày chốt nghiên cứu.</p><div id="fomcEventListTable" class="table-wrap"></div></details>
+</section>

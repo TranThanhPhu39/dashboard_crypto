@@ -29,7 +29,7 @@ def studio(html):
     html = re.sub(r'<!-- ORBIT EXPERIENCE GUIDE START -->.*?<!-- ORBIT EXPERIENCE GUIDE END -->', '', html, flags=re.S)
     html = re.sub(r'<div id="appFeedback"[^>]*></div>', '', html)
     html = html.replace('<span id="workspaceTitle"', '<div id="appFeedback" class="app-feedback" role="status" hidden></div><span id="workspaceTitle"',1)
-    for key, filename in [('responses','transmission.html'),('rolling','rolling.html')]:
+    for key, filename in [('responses','transmission.html'),('rolling','rolling.html'),('fomc','fomc.html')]:
         template = (ROOT/'dashboard'/filename).read_text().strip()+'\n'
         html = re.sub(r'<section\b[^>]*\bid="'+key+r'".*?</section>\s*', lambda _:template, html, count=1, flags=re.S)
     analogue = (ROOT/'dashboard/analogues.html').read_text()
@@ -80,4 +80,5 @@ def studio(html):
     html = html.replace('<script>', extra+'<script>',1)
     for tag in ['<header class="app-header"', '<nav class="workspace-nav"']:
         html = html.replace(tag, tag.replace(' ', ' data-orbit-inert="true" inert ', 1), 1)
-    return html
+    from src.dashboard_fomc import enhance as enhance_fomc
+    return enhance_fomc(html)

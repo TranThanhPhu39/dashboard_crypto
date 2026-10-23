@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "purpose": "Read-only event display and existing median-rotation bootstrap intervals; no refits",
+  "files": {
+    "data/processed/fomc_identification_20261019/analysis_panel.csv": "109be7f3878a5f48ab91660ddd221881ad63202a514ee15eb6b9e34609617eca",
+    "outputs/research/fomc_identification_20261019/event_audit.csv": "563686e493e9e47dbb6e1d1a4106118478598db46f656b229f8f5eddfe49ed89",
+    "outputs/research/evidence_20261019/generated_shock_intervals.csv": "33f8601d1662600d7323324f6a9ec7df2d8804287697150110590d74fa912d13"
+  }
+}
