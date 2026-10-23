@@ -18,6 +18,7 @@ def historical_payload(html):
 
 
 def public_status(html):
+    from src.live_dashboard_data import latest_forecasts
     latest = json.loads(re.search(r'const LATEST=(.*?);\s*const el=', html, re.S)[1])
     live = latest['live']
     auto = live.get('automation', {})
@@ -27,7 +28,8 @@ def public_status(html):
         'generated_at_utc': latest['generatedUtc'],
         'worker': {key: auto.get(key) for key in ['installed', 'provider', 'last_success_utc', 'health_status', 'latest_status', 'health_checked_at_utc', 'active_alerts']},
         'schedule': {'pipeline_minute_utc': 15, 'monitor_minute_utc': 45, 'capture_refresh_hours': 4, 'stale_after_minutes': 150},
-        'prospective': {key: live.get(key) for key in ['prediction_files', 'prediction_rows', 'label_files', 'fixed_end', 'performance', 'performance_claim']},
+        'prospective': {key: live.get(key) for key in ['prediction_files', 'prediction_rows', 'label_files', 'origin_count', 'first_origin_utc', 'last_origin_utc', 'fixed_end', 'performance', 'performance_claim']},
+        'latest_forecasts': latest_forecasts(ROOT),
         'repository': 'TranThanhPhu39/dashboard_crypto',
         'workflow_url': 'https://github.com/TranThanhPhu39/dashboard_crypto/actions/workflows/worker.yml',
     }
@@ -48,7 +50,8 @@ def capture_status(root=ROOT):
             raise ValueError('Capture integrity mismatch')
         manifest = json.loads(raw)
         sources = manifest['sources']
-        return {'status': 'verified', 'started_at_utc': manifest['capture_started_utc'], 'finished_at_utc': manifest['capture_finished_utc'], 'sources_ok': sum(r['status']=='ok' for r in sources), 'sources_total': len(sources)}
+        from src.live_dashboard_data import observations
+        return {'status': 'verified', 'started_at_utc': manifest['capture_started_utc'], 'finished_at_utc': manifest['capture_finished_utc'], 'sources_ok': sum(r['status']=='ok' for r in sources), 'sources_total': len(sources), 'observations': observations(root,sources)}
     except (ValueError, KeyError, OSError, TypeError):
         return {'status': 'unverified', 'sources_ok': None, 'sources_total': None}
 
@@ -113,6 +116,7 @@ def enhance(html):
     <div class="status-grid"><article><span>Mẫu dùng cho biểu đồ nghiên cứu</span><strong>15/10/2026</strong><p>Mốc dữ liệu lịch sử đã chốt; worker thu dữ liệu mới không tự kéo dài các mô hình và biểu đồ đã khóa.</p></article><article><span>Lần vận hành thành công gần nhất</span><strong id="statusLastRun">—</strong><p id="statusWorkerDetail"></p></article><article><span>Dự báo mới ghi trước khi biết kết quả</span><strong id="statusPredictions">—</strong><p id="statusPredictionDetail"></p></article><article><span>Thời điểm cho phép đánh giá OOS</span><strong id="statusEvaluation">—</strong><p id="statusEvaluationDetail"></p></article></div>
     <div class="capture-strip"><span>Lần nhận dữ liệu nguồn gần nhất</span><strong id="statusCaptureTime">Chưa có biên bản thu trong bản này</strong><span id="statusCaptureSources"></span></div>
     <h3>Ba việc khác nhau, ba cách kiểm tra</h3><div class="explain-grid"><div><b>Thu dữ liệu</b><p>Pipeline chạy theo lịch phút 15 mỗi giờ; bộ giám sát chạy phút 45. Capture được làm mới sau 4 giờ hoặc khi nguồn lỗi, theo quy tắc đã khóa.</p></div><div><b>Phát lại lịch sử</b><p>Dùng mô hình đã lưu để kiểm tra dự báo trên các năm 2023–2026. Đây là <button type="button" data-term="pseudo-oos">OOS lịch sử</button>; chưa phải bằng chứng dự báo tốt trong tương lai.</p></div><div><b>Theo dõi dự báo thật</b><p>Chỉ ghi dự báo khi dữ liệu đến đúng hạn và đủ điều kiện. Ngày không có dự báo được ghi rõ; không dựng bù dự báo sau khi biết kết quả.</p></div></div><details><summary>Cách đọc trạng thái và giới hạn của bản mở trên máy</summary><p>Bản HTML tải về là ảnh chụp trạng thái lúc tạo file. Nút kiểm tra chỉ đọc metadata công khai từ website; không khởi chạy worker và không huấn luyện lại mô hình. Nếu website có phiên bản mới, bạn có thể mở bản mới. Màu cảnh báo có thể xuất hiện khi trạng thái đã quá 150 phút; hãy đối chiếu lịch sử GitHub.</p></details></section><!-- ORBIT EXPERIENCE OPERATIONS END -->'''
+    ops=ops.replace('</section><!-- ORBIT EXPERIENCE OPERATIONS END -->',(ROOT/'dashboard/live_operations.html').read_text(encoding='utf-8')+'</section><!-- ORBIT EXPERIENCE OPERATIONS END -->')
     html = html.replace('<footer>', ops + '<footer>', 1)
     dialog = '''<!-- ORBIT EXPERIENCE DIALOG START --><dialog id="glossaryDialog" class="glossary-dialog" aria-labelledby="glossaryTitle"><div class="glossary-heading"><div><span class="section-kicker">ORBIT DICTIONARY</span><h2 id="glossaryTitle">Đọc hiểu trước, phân tích sau.</h2></div><button type="button" id="closeGlossary" class="icon-button" aria-label="Đóng tra cứu">✕</button></div><label class="glossary-search-label" for="glossarySearch">Nhập thuật ngữ hoặc điều bạn chưa hiểu</label><input id="glossarySearch" type="search" autocomplete="off" placeholder="Ví dụ: OOS, cú sốc, khoảng tin cậy…"><div class="glossary-layout"><div id="glossaryResults" class="glossary-results" aria-label="Thuật ngữ tìm được"></div><article id="glossaryDetail" class="glossary-detail" aria-live="polite"></article></div><p class="glossary-footnote">Giải thích ngắn cho dashboard này. Liên kết Google mở ở tab mới khi bạn chọn.</p></dialog><!-- ORBIT EXPERIENCE DIALOG END -->'''
     # The dialog must exist before the application binds its event handlers.

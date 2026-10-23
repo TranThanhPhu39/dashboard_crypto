@@ -26,15 +26,20 @@ async function evaluate(expression){const r=await call('Runtime.evaluate',{expre
   if(flag('trace')==='boot'){const trace=await call('Profiler.stop');fs.writeFileSync(path.join(folder,label+'.cpuprofile'),JSON.stringify(trace.profile));}
   await pause(500);
   const boot=await evaluate(`({ready_ms:performance.now(),navigation:performance.getEntriesByType('navigation')[0]?.toJSON(),long_tasks:window.__longTasks.slice(),dom_nodes:document.querySelectorAll('*').length})`);
-  await evaluate(`window.__renderCounts={};for(const name of ['renderResponse','renderForecast','renderHistoricalOos','renderRolling']){const original=window[name];window[name]=function(...args){window.__renderCounts[name]=(window.__renderCounts[name]||0)+1;return original.apply(this,args);};}`);
+  await evaluate(`window.__renderCounts={};for(const name of ['renderResponse','renderForecast','renderHistoricalOos','renderRolling','renderFOMC','renderVAR','renderQuantile']){const original=window[name];window[name]=function(...args){window.__renderCounts[name]=(window.__renderCounts[name]||0)+1;return original.apply(this,args);};}`);
   const results=[];
   async function measure(name,action){const result=await evaluate(`(async()=>{window.__renderCounts={};const started=performance.now();${action};const handler=performance.now()-started;await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));const paint=performance.now()-started;await new Promise(r=>setTimeout(r,470));return {name:${JSON.stringify(name)},handler_ms:handler,paint_ms:paint,render_counts:{...window.__renderCounts},long_tasks:window.__longTasks.filter(t=>t.start>=started),response_ms:document.documentElement.dataset.responseRenderMs};})()`);results.push(result);}
+  if(flag('trace')==='navigation'){await call('Profiler.enable');await call('Profiler.start');}
+  for(const [name,view] of [['fomc_first','fomc'],['advanced_first','advanced'],['transmission_return','transmission'],['fomc_warm','fomc'],['advanced_warm','advanced'],['transmission_warm','transmission']])await measure(name,`document.getElementById('tab-${view}').click()`);
+  if(flag('trace')==='navigation'){const trace=await call('Profiler.stop');fs.writeFileSync(path.join(folder,label+'.cpuprofile'),JSON.stringify(trace.profile));}
+  if(flag('trace')==='response'){await call('Profiler.enable');await call('Profiler.start');}
   await measure('asset_switch',"document.querySelector('[data-asset=eth]').click()");
   await measure('regime_switch',"document.querySelector('[data-regime=stress]').click()");
   await evaluate("window.__curveNode=document.getElementById('primaryCurve');window.__curvePath=window.__curveNode.getAttribute('d')");
   await measure('horizon_slider',"document.getElementById('horizonSlider').value='14';document.getElementById('horizonSlider').dispatchEvent(new Event('input',{bubbles:true}))");
   const horizonRetained=await evaluate("window.__curveNode===document.getElementById('primaryCurve')&&window.__curvePath===document.getElementById('primaryCurve').getAttribute('d')");
   await measure('horizon_preset',"document.querySelector('[data-horizon=\"30\"]').click()");
+  if(flag('trace')==='response'){const trace=await call('Profiler.stop');fs.writeFileSync(path.join(folder,label+'.cpuprofile'),JSON.stringify(trace.profile));}
   const historyStart=Date.now();await evaluate("showWorkspace('forecast')");
   for(let i=0;i<300;i++){if(await evaluate("Boolean(HISTORICAL.series)&&document.getElementById('historyCount').textContent!==''&&document.getElementById('historyLoading').hidden"))break;await pause(100);}
   const history=await evaluate("({decode_ms:document.documentElement.dataset.historyLoadMs,rows:document.getElementById('historyCount').textContent,ready:Boolean(HISTORICAL.series)})");history.wall_ms=Date.now()-historyStart;if(!history.ready)throw Error('Replay did not load');await pause(500);

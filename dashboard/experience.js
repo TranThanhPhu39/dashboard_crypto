@@ -132,8 +132,21 @@ function orbitSearchTerms(query){
  const terms={asset:'btc',shock:'shock',regime:'regime',horizon:'horizon',target:'target',forecastModel:'elastic',fScenario:'pit',forecastPair:'ablation',varOrder:'irf',rvSampling:'rv',eOutcome:'fomc'};
  for(const [id,key] of Object.entries(terms)){const select=$(id),label=select&&select.closest('label');if(!label||label.querySelector('[data-term]'))continue;const h=document.createElement('button');h.type='button';h.className='term-help';h.dataset.term=key;h.setAttribute('aria-label','Giải thích '+label.childNodes[0].textContent.trim());h.textContent='?';label.append(h);}
  for(const option of $('horizon').options)option.textContent=option.value+' ngày';
- const cutoff=document.querySelector('.topbar-date');if(cutoff)cutoff.title='Ngày cuối của mẫu nghiên cứu lịch sử';
+ const cutoff=document.querySelector('.topbar-date');if(cutoff)cutoff.title='Mẫu ước lượng nghiên cứu được giữ cố định. Dữ liệu đầu vào và dự báo mới cập nhật theo lịch ở Dữ liệu & OOS.';
  let status=ORBIT_STATUS;
+ let liveDataRendered=null;
+ function renderLiveData(){
+  if(root.dataset.workspace!=='operations'||liveDataRendered===status)return;
+  liveDataRendered=status;
+  const observations=status.capture?.observations||[],forecasts=status.latest_forecasts||[];
+  $('liveObservationTable').innerHTML=observations.length?table(['Biến','Giá trị','Đơn vị','Ngày quan sát','Vintage','Nhận lúc (VN)','Nguồn'],observations.map(r=>[r.label,r.value,r.unit,r.observation_date,r.vintage_date||'—',date(r.received_at_utc),r.source])):'<p>Chưa có quan sát đã xác minh trong bản này.</p>';
+  $('liveForecastTable').innerHTML=forecasts.length?table(['Tài sản','Dự báo r²','Mô hình','Origin UTC','Cấu hình','Ngày thông tin','Ghi lúc (VN)'],forecasts.map(r=>[r.asset,r.predicted_squared_return.toPrecision(7),r.model,r.origin_utc,typeof humanVariant==='function'?humanVariant(r.variant):r.variant,r.information_day,date(r.logged_at_utc)])):'<p>Chưa có dự báo đủ điều kiện được ghi; không tạo bù.</p>';
+  text('liveForecastContext',`Mẫu ước lượng biểu đồ: ${status.research_cutoff}. Đang hiển thị ${forecasts.length} dự báo rủi ro học máy mới nhất theo từng tài sản. Dữ liệu mới không tự thay LP/VAR/FOMC hoặc huấn luyện lại mô hình.`);
+  $('exportLiveForecast').disabled=!forecasts.length;
+ }
+ window.orbitRenderLiveData=renderLiveData;
+ $('exportLiveForecast').addEventListener('click',()=>window.orbitExportLiveForecast?.());
+ const shortCaptureDate=new Intl.DateTimeFormat('vi-VN',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Ho_Chi_Minh'});
  function showStatus(data,source){
   status=data;window.orbitStatus=data;const worker=data.worker||{},p=data.prospective||{},last=Date.parse(worker.last_success_utc),age=Number.isFinite(last)?Date.now()-last:Infinity,stale=age>(data.schedule?.stale_after_minutes||150)*60000;
   const enabled=worker.installed===true,health=worker.health_status==='healthy';
@@ -141,14 +154,17 @@ function orbitSearchTerms(query){
   $('statusBadge').dataset.state=enabled&&health&&!stale?'good':'warning';
   text('statusLastRun',date(worker.last_success_utc));
   text('statusWorkerDetail',`${worker.provider==='github-actions'?'GitHub Actions.':'Nơi chạy: '+(worker.provider||'chưa xác minh')+'.'} ${stale?'Thông tin đã cũ; đối chiếu lịch sử chạy.':'Thời điểm theo metadata công khai.'}`);
-  text('statusPredictions',`${p.prediction_files??0} lượt · ${p.prediction_rows??0} dự báo`);
+  text('statusPredictions',`${p.prediction_files??0} tệp · ${p.prediction_rows??0} dòng dự báo`);
   text('statusPredictionDetail',`${p.label_files??0} tệp nhãn thực tế. ${p.prediction_rows?'Đợi đủ nhãn và đến kỳ đánh giá.':'Bản này chưa ghi dự báo mới đủ điều kiện.'}`);
   text('statusEvaluation',p.fixed_end?new Date(p.fixed_end).toLocaleDateString('vi-VN',{timeZone:'UTC'})+' · UTC':'Chưa có thông tin');
   text('statusEvaluationDetail',p.performance==='PENDING_FIXED_EVALUATION_WINDOW'?'Chưa đến kỳ đánh giá cố định. Dashboard chưa xác nhận năng lực dự báo tương lai.':'Trạng thái đánh giá: '+(p.performance||'chưa có thông tin')+'.');
   const capture=data.capture||{};
+  text('latestDataBadge',capture.status==='verified'?'Thu mới: '+shortCaptureDate.format(new Date(capture.finished_at_utc)):'Thu mới: chưa xác minh');
+  if(cutoff&&capture.status==='verified')cutoff.title=`Mẫu ước lượng: ${data.research_cutoff}. Capture nhận lúc ${date(capture.finished_at_utc)} (VN), ${capture.sources_ok}/${capture.sources_total} nguồn; ngày quan sát nằm ở bảng Dữ liệu & OOS.`;
   text('statusCaptureTime',capture.status==='verified'?date(capture.finished_at_utc):'Chưa có biên bản thu trong bản này');
   text('statusCaptureSources',capture.status==='verified'?`${capture.sources_ok}/${capture.sources_total} nguồn thành công; đã đối chiếu hash biên bản thu.`:'Bản này chưa có biên bản thu dữ liệu đã xác minh.');
   text('statusMessage',`${source} · ${date(data.generated_at_utc)} giờ Việt Nam. Chỉ đọc metadata.`);
+  renderLiveData();
  }
  let checking=false;
  async function checkStatus(){

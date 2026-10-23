@@ -98,6 +98,19 @@ async function screenshot(name) {
     for(let i=0;i<60;i++){if(await evaluate("document.readyState==='complete' && Boolean(document.getElementById('liveStatus').textContent)"))break;await delay(100);}
     const dashboardDesktop=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
     const startsWithEstimator=await evaluate("!document.getElementById('responses').hidden && document.getElementById('overview').hidden && document.getElementById('pit').hidden");
+    const liveDataWorks=await evaluate("(()=>{showWorkspace('operations');const status=window.orbitStatus||ORBIT_STATUS,observations=status.capture?.observations||[],forecasts=status.latest_forecasts||[],count=id=>document.getElementById(id).querySelectorAll('tbody tr').length;return count('liveObservationTable')===observations.length&&count('liveForecastTable')===forecasts.length&&document.querySelector('.topbar-date').textContent.includes('Mẫu ước lượng')&&Boolean(document.getElementById('latestDataBadge').textContent)})()");
+    const liveDesktop=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    await screenshot('dashboard_live_desktop.png');
+    await evaluate("document.getElementById('liveObservationTable').scrollIntoView({block:'center'})");
+    await screenshot('dashboard_live_tables_desktop.png');
+    await call('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
+    const liveMobile=await evaluate('document.documentElement.scrollWidth<=innerWidth+1');
+    await evaluate('window.scrollTo(0,0)');
+    await screenshot('dashboard_live_mobile.png');
+    await evaluate("document.getElementById('liveForecastTable').scrollIntoView({block:'start'})");
+    await screenshot('dashboard_live_forecasts_mobile.png');
+    await call('Emulation.setDeviceMetricsOverride',{width:1280,height:1000,deviceScaleFactor:1,mobile:false});
+    await evaluate("showWorkspace('transmission')");
     const noWarningOnMain=await evaluate("!document.body.innerText.includes('Chưa có untouched OOS') && !document.body.innerText.includes('causal identification vô điều kiện chưa được chứng nhận')");
     const tabButtonsWork=await evaluate("Object.entries(WORKSPACE_GROUPS).every(([group,ids])=>{document.getElementById('tab-'+group).click();return ids.every(id=>!document.getElementById(id).hidden) && document.getElementById('tab-'+group).getAttribute('aria-pressed')==='true'})");
     await evaluate("document.getElementById('tab-transmission').click()");
@@ -128,6 +141,10 @@ async function screenshot(name) {
     const selectionWorks=await evaluate("document.getElementById('selectionLabel').textContent==='ETH · Căng thẳng · 30 ngày' && responseCsv().split('\\r\\n').length===31");
     const horizonReusesCurve=await evaluate("(()=>{const curve=document.getElementById('primaryCurve'),points=curve.getAttribute('d');document.querySelector('[data-horizon=\"14\"]').click();return curve===document.getElementById('primaryCurve') && points===curve.getAttribute('d') && document.getElementById('responseMetricLabel').textContent.includes('14')})()");
     await evaluate("document.querySelector('[data-horizon=\"30\"]').click()");
+    await evaluate("document.getElementById('responseDataTable').closest('details').open=true;document.getElementById('rollingDataTable').closest('details').open=true");
+    await evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+    const lazyTablesWork=await evaluate("document.getElementById('responseDataTable').querySelectorAll('tbody tr').length===30&&document.getElementById('rollingDataTable').querySelectorAll('tbody tr').length>1");
+    await evaluate("document.getElementById('responseDataTable').closest('details').open=false;document.getElementById('rollingDataTable').closest('details').open=false");
     const downloadFolder=path.join(preview,'downloads',String(Date.now()));fs.mkdirSync(downloadFolder,{recursive:true});
     await call('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:downloadFolder});
     await call('Runtime.evaluate',{expression:"document.getElementById('exportResponse').click()",userGesture:true});
@@ -148,9 +165,9 @@ async function screenshot(name) {
       automation_desktop_no_overflow:automationDesktop,automation_mobile_no_overflow:automationMobile,
       dashboard_desktop_no_overflow:dashboardDesktop,dashboard_mobile_no_overflow:dashboardMobile,starts_with_estimator:startsWithEstimator,no_academic_warning_on_main:noWarningOnMain,workspace_buttons_work:tabButtonsWork,selection_controls_work:selectionWorks,reset_button_works:resetWorks,csv_download_matches_selected_curve:csvDownloadWorks,tables:counts.length,
       historical_dates_work:historicalDatesWork,historical_csv_download_matches:historicalCsvWorks,historical_desktop_no_overflow:historicalDesktop,historical_mobile_no_overflow:historicalMobile,
-      local_links_verified:local.length,horizon_reuses_curve:horizonReusesCurve,uncaught_errors:errors.length};
+      local_links_verified:local.length,horizon_reuses_curve:horizonReusesCurve,lazy_detail_tables_verified:lazyTablesWork,live_data_tables_verified:liveDataWorks,live_desktop_no_overflow:liveDesktop,live_mobile_no_overflow:liveMobile,uncaught_errors:errors.length};
     fs.writeFileSync(path.join(out,'browser_validation.json'),JSON.stringify(result,null,2));
-    if (!desktop || !mobile || !oosDesktop || !oosMobile || !automationDesktop || !automationMobile || !dashboardDesktop || !dashboardMobile || !startsWithEstimator || !noWarningOnMain || !tabButtonsWork || !selectionWorks || !resetWorks || !csvDownloadWorks || !historicalDatesWork || !historicalCsvWorks || !historicalDesktop || !historicalMobile || !horizonReusesCurve || errors.length) throw Error(JSON.stringify(result));
+    if (!desktop || !mobile || !oosDesktop || !oosMobile || !automationDesktop || !automationMobile || !dashboardDesktop || !dashboardMobile || !startsWithEstimator || !noWarningOnMain || !tabButtonsWork || !selectionWorks || !resetWorks || !csvDownloadWorks || !historicalDatesWork || !historicalCsvWorks || !historicalDesktop || !historicalMobile || !horizonReusesCurve || !lazyTablesWork || !liveDataWorks || !liveDesktop || !liveMobile || errors.length) throw Error(JSON.stringify(result));
     console.log(JSON.stringify(result,null,2));
   } finally {
     if (socket && socket.readyState===WebSocket.OPEN) {

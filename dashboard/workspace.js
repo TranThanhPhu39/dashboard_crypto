@@ -27,8 +27,8 @@ async function loadForecastWorkspace(){
 function showWorkspace(view){
  if(!WORKSPACE_GROUPS[view])view='transmission';
  for(const [key,ids] of Object.entries(WORKSPACE_GROUPS)){
-  el('tab-'+key).setAttribute('aria-pressed',String(key===view));
-  for(const id of ids)el(id).hidden=key!==view;
+  const pressed=String(key===view);if(el('tab-'+key).getAttribute('aria-pressed')!==pressed)el('tab-'+key).setAttribute('aria-pressed',pressed);
+  for(const id of ids)if(el(id).hidden!==(key!==view))el(id).hidden=key!==view;
  }
  el('workspaceTitle').textContent=WORKSPACE_NAMES[view];
  if(typeof window!=='undefined'&&!renderedWorkspaces.has(view)){
@@ -66,15 +66,15 @@ renderResponse=function(){
  el('rollAsset').value=el('asset').value;
  if(el('shock').value!=='monetary')el('rollShock').value=el('shock').value;
  const rollingSelection=el('rollAsset').value+'|'+el('rollShock').value;
- if(rollingSelection!==lastRollingSelection){renderRolling();lastRollingSelection=rollingSelection;}
+ if(rollingSelection!==lastRollingSelection){if(typeof window!=='undefined'&&typeof window.orbitQueueRolling==='function')window.orbitQueueRolling();else renderRolling();lastRollingSelection=rollingSelection;}
 };
 for(const id of ['asset','shock','regime','horizon']){
  el(id).removeEventListener('change',renderResponseEstimate);
  el(id).addEventListener('change',renderResponse);
 }
 for(const view of Object.keys(WORKSPACE_GROUPS))el('tab-'+view).addEventListener('click',()=>{
+ if(typeof window!=='undefined'&&window.scrollY)window.scrollTo({top:0,behavior:'instant'});
  showWorkspace(view);
- if(typeof window!=='undefined')window.scrollTo({top:0,behavior:'instant'});
 });
 el('exportResponse').addEventListener('click',downloadResponseCsv);
 el('resetResponse').addEventListener('click',resetResponse);

@@ -15,6 +15,12 @@
 /* The active item follows CSS layout, without measuring the whole page. */
 .workspace-tab[aria-pressed=true]{background:var(--accent-wash);border-color:color-mix(in srgb,var(--accent) 14%,transparent)}
 #navActive{display:none}
+.app-header{backdrop-filter:none;background:var(--bg)}
+.bottom-nav{backdrop-filter:none;background:var(--sidebar)}
+.workspace-tab,.bottom-nav button,.segmented button,.segment-thumb,.horizon-presets button,.panel.bento-panel{transition:none}
+.bento-panel:hover{transform:none}
+#rolling,#analoguePanel,#joint{content-visibility:auto;contain-intrinsic-size:auto 560px}
+.topbar-date>span,.topbar-date>small{display:block;line-height:1.5}.topbar-date>small{color:var(--accent-text);font-size:10px}.live-data-section{border-top:1px solid var(--border-soft);margin-top:24px;padding-top:12px}.live-data-section h3{font-size:18px;margin-top:24px}
 /* Secondary exploration */
 .rolling-controls{margin:16px 0 18px;gap:10px}.rolling-controls label{font-size:10px}.rolling-controls select{font-size:11px;min-height:36px}#rollingChart{cursor:crosshair;touch-action:pan-y}#rollingRangeLabel{font-size:10px}#rolling .controls input{font-size:11px}#applyRollingRange{font-size:12px;background:var(--accent-wash);color:var(--accent-text);border:1px solid var(--border);border-radius:7px;padding:10px}.analogue-cards{display:grid;gap:7px;margin-top:18px}.analogue-card{display:grid;grid-template-columns:minmax(0,1fr) 78px 70px;align-items:center;gap:12px;width:100%;text-align:left;min-height:63px;border:1px solid var(--border-soft);border-radius:9px;padding:11px 12px;background:var(--surface-soft)}.analogue-card:hover,.analogue-card:focus-visible,.analogue-card[aria-pressed=true]{border-color:var(--peach);background:color-mix(in srgb,var(--peach) 4%,var(--surface))}.analogue-card strong{font-weight:500;font-size:12px;display:block}.analogue-card small{display:block;font-size:9px;color:var(--subtle);margin-top:3px}.analogue-card>span:last-child{text-align:right;font-variant-numeric:tabular-nums;color:var(--text);font-size:14px}.analogue-card svg{height:28px;width:78px}.analogue-card polyline{stroke:var(--peach);stroke-width:1.6;fill:none}.analogue-card line{stroke:var(--border)}.analogue-card circle{fill:var(--peach)}
 /* Shared data visualization in secondary workspaces */

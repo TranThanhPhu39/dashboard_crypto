@@ -56,10 +56,14 @@ function orbitStartStudio(){
  $('themeToggle').addEventListener('click',window.orbitToggleTheme);
  // The active button paints its own background; no synchronous page layout.
  $('navActive').hidden=true;
- function syncUrl(){try{const p=new URLSearchParams({asset:$('asset').value,shock:$('shock').value,regime:$('regime').value,h:$('horizon').value,compare:$('compareAssets').checked?'1':'0'});history.replaceState(null,'','#'+view+'?'+p.toString());}catch(_){}}
+ let urlFrame=null,urlTimer=null;
+ function syncUrl(){if(urlFrame!==null)cancelAnimationFrame(urlFrame);if(urlTimer!==null)clearTimeout(urlTimer);urlFrame=requestAnimationFrame(()=>{urlFrame=null;urlTimer=setTimeout(()=>{urlTimer=null;try{const p=new URLSearchParams({asset:$('asset').value,shock:$('shock').value,regime:$('regime').value,h:$('horizon').value,compare:$('compareAssets').checked?'1':'0'}),hash='#'+view+'?'+p.toString();if(location.hash!==hash)history.replaceState(null,'',hash);}catch(_){}},0);});}
  const previousWorkspace=showWorkspace;
+ let lastWorkspace=null;
  showWorkspace=function(next){
   if(!ORBIT_VIEWS.includes(next))next='transmission';
+  if(next===lastWorkspace)return;
+  lastWorkspace=next;
   const changed=view!==next;view=next;previousWorkspace(next);root.dataset.workspace=next;
   $('designBreadcrumb').textContent=WORKSPACE_NAMES[next];$('designTitle').textContent=titles[next][0];$('designDescription').textContent=titles[next][1];$('designEyebrow').textContent='MACRO × CRYPTO / '+String(ORBIT_VIEWS.indexOf(next)+1).padStart(2,'0');
   for(const key of ORBIT_VIEWS){const b=$('tab-'+key);if(key===next)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');}
@@ -68,9 +72,10 @@ function orbitStartStudio(){
   $('topExport').setAttribute('aria-label','Tải CSV · '+WORKSPACE_NAMES[next]);
   if(changed&&!reduce.matches)for(const id of WORKSPACE_GROUPS[next]){const panel=$(id);panel.classList.remove('workspace-enter');requestAnimationFrame(()=>panel.classList.add('workspace-enter'));}
   if(next==='fomc')fomcSummary();if(next==='advanced')varData();
+  if(next==='operations'&&typeof window.orbitRenderLiveData==='function')window.orbitRenderLiveData();
   syncUrl();
  };
- function go(next){showWorkspace(next);window.scrollTo({top:0,behavior:'instant'});for(const id of ['navDrawer','glossaryDialog'])if($(id).open)$(id).close();}
+ function go(next){if(window.scrollY)window.scrollTo({top:0,behavior:'instant'});showWorkspace(next);for(const id of ['navDrawer','glossaryDialog'])if($(id).open)$(id).close();}
  for(const b of document.querySelectorAll('[data-goto]'))b.addEventListener('click',()=>go(b.dataset.goto));
  $('openNavigation').addEventListener('click',()=>{if(matchMedia('(max-width:760px)').matches)$('navDrawer').showModal();else $('collapseSidebar').click();});
  $('bottomMore').addEventListener('click',()=>$('navDrawer').showModal());
@@ -94,14 +99,16 @@ function orbitStartStudio(){
   const name=$('shock').selectedOptions[0].textContent;$('mobileFilterLabel').textContent=`${asset.toUpperCase()} · ${name} · ${h} ngày`;
   $('designSampleMeta').textContent=asset.toUpperCase()+' · '+regime;syncUrl();
  }
- for(const key of ['asset','regime'])for(const b of document.querySelectorAll('[data-'+key+']'))b.addEventListener('click',()=>{$(key).value=b.dataset[key];lockedAnalogue=null;renderResponse();});
- function chooseDay(h,pin=false){$('horizon').value=String(Math.max(1,Math.min(30,h)));if(pin)pinned=true;renderResponse();}
+ for(const key of ['asset','regime'])for(const b of document.querySelectorAll('[data-'+key+']'))b.addEventListener('click',()=>{if($(key).value===b.dataset[key])return;$(key).value=b.dataset[key];lockedAnalogue=null;renderResponse();});
+ function chooseDay(h,pin=false){const value=String(Math.max(1,Math.min(30,h)));if($('horizon').value===value&&(!pin||pinned))return;$('horizon').value=value;if(pin)pinned=true;renderResponse();}
  for(const b of document.querySelectorAll('[data-horizon]'))b.addEventListener('click',()=>chooseDay(Number(b.dataset.horizon)));
  let sliderFrame=null;$('horizonSlider').addEventListener('input',()=>{const value=Number($('horizonSlider').value);$('horizonOutput').textContent=String(value);if(sliderFrame)cancelAnimationFrame(sliderFrame);sliderFrame=requestAnimationFrame(()=>{sliderFrame=null;chooseDay(value);});});
  $('compareAssets').addEventListener('change',()=>{drawResponse(false);syncUrl();});
  $('unpinResponse').addEventListener('click',()=>{pinned=false;drawResponse(false);$('pinState').textContent='NGÀY ĐANG CHỌN';$('unpinResponse').hidden=true;});
  function countPoint(value){const element=$('responsePoint');displayedPoint=value;element.dataset.finalValue=percent(value);element.textContent=percent(value);element.dataset.animating='false';}
  let responseTableKey='';
+ function responseTable(){const details=$('responseDataTable').closest('details');if(!details.open)return;const key=[$('asset').value,$('shock').value,$('regime').value].join('|');if(key===responseTableKey)return;const rows=responseRows();$('responseDataTable').innerHTML=table(['Ngày','Tài sản','Ước lượng (%)','CI thấp','CI cao','n','BH q'],rows.map(r=>[r.horizon_days,r.asset.toUpperCase(),number(r.beta_pct),number(r.lower95),number(r.upper95),number(r.nobs,0),r.qvalue_bh===null?'—':number(r.qvalue_bh)]));responseTableKey=key;}
+ $('responseDataTable').closest('details').addEventListener('toggle',responseTable);
  function responseDetail(){
   const rows=responseRows(),row=rows.find(r=>r.horizon_days===Number($('horizon').value));if(!row)return;
   const crosses=row.lower95<=0&&row.upper95>=0;
@@ -115,8 +122,7 @@ function orbitStartStudio(){
   $('designSample').textContent=number(row.nobs,0)+' quan sát';
   const lo=Math.min(0,row.lower95),hi=Math.max(0,row.upper95),pad=(hi-lo||1)*.15,min=lo-pad,max=hi+pad,x=v=>(v-min)/(max-min)*100;
   $('intervalBand').style.left=x(row.lower95)+'%';$('intervalBand').style.width=(x(row.upper95)-x(row.lower95))+'%';$('intervalPoint').style.left=x(row.beta_pct)+'%';$('intervalZero').style.left=x(0)+'%';
-  const key=[$('asset').value,$('shock').value,$('regime').value].join('|');
-  if(key!==responseTableKey){$('responseDataTable').innerHTML=table(['Ngày','Tài sản','Ước lượng (%)','CI thấp','CI cao','n','BH q'],rows.map(r=>[r.horizon_days,r.asset.toUpperCase(),number(r.beta_pct),number(r.lower95),number(r.upper95),number(r.nobs,0),r.qvalue_bh===null?'—':number(r.qvalue_bh)]));responseTableKey=key;}
+  responseTable();
  }
  function currentAnalogueRows(){return activeAnalogue?seriesFor(activeAnalogue):[];}
  let responseSceneKey='';
@@ -177,6 +183,9 @@ function orbitStartStudio(){
  $('exportResponse').addEventListener('click',()=>toast('Đã chuẩn bị CSV gồm 30 thời hạn và CI.'));
  // Rolling brushing uses the actual rolling dates, never the response-day axis.
  let rollingRows=[],rollingBounds=null;
+ let rollingTableKey='';
+ function rollingTable(){if(!$('rollingDataTable').closest('details').open)return;const key=[rollingSelection,...(rollingRange||[])].join('|');if(key===rollingTableKey)return;$('rollingDataTable').innerHTML=table(['Ngày UTC','Beta (%)','CI thấp','CI cao'],rollingRows.map(r=>[date(r.date_utc),number(r.beta_pct),number(r.beta_pct-1.96*r.se),number(r.beta_pct+1.96*r.se)]));rollingTableKey=key;}
+ $('rollingDataTable').closest('details').addEventListener('toggle',rollingTable);
  function allRolling(){return DATA.rolling.filter(r=>r.asset===$('rollAsset').value&&r.shock===$('rollShock').value).sort((a,b)=>a.date_utc.localeCompare(b.date_utc));}
  const previousRolling=renderRolling;
  renderRolling=function(){
@@ -188,8 +197,10 @@ function orbitStartStudio(){
   $('rollingChart').innerHTML=chartLegacy(rows,rows.length-1,'Ngày kết thúc cửa sổ · UTC')+'<g id="rollingHighlight"></g><rect id="rollingBrush" class="brush-region" y="35" height="235" width="0"/>';
   const first=rows[0].x,last=rows.at(-1).x;rollingBounds={first,last};
   $('rollingRangeLabel').textContent=`${date(rollingRows[0].date_utc)} — ${date(rollingRows.at(-1).date_utc)} · kéo để zoom, nhấp đúp đặt lại`+($('shock').value==='monetary'?' · Rolling daily '+$('rollShock').selectedOptions[0].textContent+', tách riêng STMT.':'');
-  $('rollingDataTable').innerHTML=table(['Ngày UTC','Beta (%)','CI thấp','CI cao'],rollingRows.map(r=>[date(r.date_utc),number(r.beta_pct),number(r.beta_pct-1.96*r.se),number(r.beta_pct+1.96*r.se)]));highlightRolling(activeAnalogue);
+  rollingTable();highlightRolling(activeAnalogue);
  };
+ let rollingFrame=null,rollingTimer=null;
+ window.orbitQueueRolling=()=>{if(rollingFrame!==null)cancelAnimationFrame(rollingFrame);if(rollingTimer!==null)clearTimeout(rollingTimer);$('rolling').setAttribute('aria-busy','true');rollingFrame=requestAnimationFrame(()=>{rollingFrame=null;rollingTimer=setTimeout(()=>{rollingTimer=null;renderRolling();$('rolling').setAttribute('aria-busy','false');},0);});};
  const chartLegacy=chartLegacyAlias;
  function highlightRolling(row){const g=$('rollingHighlight');if(!g||!rollingBounds)return;g.replaceChildren();if(!row)return;const x=d=>70+(Date.parse(d+'T00:00:00Z')-rollingBounds.first)/(rollingBounds.last-rollingBounds.first)*615,start=Math.max(70,x(row.date_utc)),end=Math.min(685,x(row.end_date_utc));if(end<70||start>685)return;g.innerHTML=`<rect x="${start}" y="35" width="${Math.max(3,end-start)}" height="235" class="selected-date"><title>Sự kiện ${row.date_utc}</title></rect>`;}
  for(const id of ['rollAsset','rollShock']){$(id).removeEventListener('change',previousRolling);$(id).addEventListener('change',renderRolling);}
@@ -208,15 +219,17 @@ function orbitStartStudio(){
  window.orbitEnhanceReplay=replayEnhance;
  for(const b of $('replayLegend').querySelectorAll('button'))b.addEventListener('click',()=>{const i=Number(b.dataset.curve);if(visibleCurves[i]&&visibleCurves.filter(Boolean).length===1){toast('Giữ ít nhất một đường để đối chiếu.');return;}visibleCurves[i]=!visibleCurves[i];b.setAttribute('aria-pressed',String(visibleCurves[i]));replayEnhance();});
  const observer=new MutationObserver(()=>replayEnhance());observer.observe($('historyPointTable'),{childList:true});
- function fomcSummary(){const rows=LATEST.fomc.filter(r=>r.asset===$('eAsset').value&&r.outcome===$('eOutcome').value);$('fomcSummary').innerHTML=rows.map(r=>`<article class="fomc-card"><span>${r.shock==='policy'?'Thành phần chính sách':'Thông tin kinh tế'} · ${r.asset}</span><strong>${r.lower_per10bps===null?(r.unbounded?'−∞':'—'):number(r.lower_per10bps)} → ${r.upper_per10bps===null?(r.unbounded?'+∞':'—'):number(r.upper_per10bps)}%</strong><p>${r.unbounded?'Miền ước lượng không bị chặn phía trên.':r.upper_per10bps<0?'Ước lượng âm trên toàn miền xoay.':'Đọc cả miền ước lượng trước khi kết luận chiều tác động.'}</p><small>Miền point estimates / +10 bps component PC1 · không phải CI</small></article>`).join('');}
+ let fomcSummaryKey='',varTableKey='';
+ function fomcSummary(){const key=$('eAsset').value+'|'+$('eOutcome').value;if(key===fomcSummaryKey)return;fomcSummaryKey=key;const rows=LATEST.fomc.filter(r=>r.asset===$('eAsset').value&&r.outcome===$('eOutcome').value);$('fomcSummary').innerHTML=rows.map(r=>`<article class="fomc-card"><span>${r.shock==='policy'?'Thành phần chính sách':'Thông tin kinh tế'} · ${r.asset}</span><strong>${r.lower_per10bps===null?(r.unbounded?'−∞':'—'):number(r.lower_per10bps)} → ${r.upper_per10bps===null?(r.unbounded?'+∞':'—'):number(r.upper_per10bps)}%</strong><p>${r.unbounded?'Miền ước lượng không bị chặn phía trên.':r.upper_per10bps<0?'Ước lượng âm trên toàn miền xoay.':'Đọc cả miền ước lượng trước khi kết luận chiều tác động.'}</p><small>Miền point estimates / +10 bps component PC1 · không phải CI</small></article>`).join('');}
  function modelHelp(){const help=$('forecastModel').closest('label').querySelector('[data-term]');if(help)help.dataset.term=$('forecastModel').value==='gradient_boosting'?'boosting':'elastic';}
  $('forecastModel').addEventListener('change',modelHelp);modelHelp();
  const oldFomc=renderFOMC;renderFOMC=function(){oldFomc();fomcSummary();};for(const id of ['eAsset','eOutcome']){$(id).removeEventListener('change',oldFomc);$(id).addEventListener('change',renderFOMC);}
- function varData(){const yieldName=$('varYield').value,shock=$('varShock').value==='yield'?yieldName+'_change_bps':$('varShock').value;const rows=DATA.var_irf.filter(r=>r.asset===$('varAsset').value&&r.yield_variable===yieldName&&r.regime===$('varRegime').value&&r.ordering===$('varOrder').value&&r.shock===shock);$('varDataTable').innerHTML=table(['Phiên','Phản ứng (%)','CI thấp','CI cao'],rows.map(r=>[r.horizon_sessions,number(r.response_pct),number(r.lower95),number(r.upper95)]));}
+ function varData(){const yieldName=$('varYield').value,shock=$('varShock').value==='yield'?yieldName+'_change_bps':$('varShock').value,key=[$('varAsset').value,yieldName,$('varRegime').value,$('varOrder').value,shock].join('|');if(key===varTableKey)return;varTableKey=key;const rows=DATA.var_irf.filter(r=>r.asset===$('varAsset').value&&r.yield_variable===yieldName&&r.regime===$('varRegime').value&&r.ordering===$('varOrder').value&&r.shock===shock);$('varDataTable').innerHTML=table(['Phiên','Phản ứng (%)','CI thấp','CI cao'],rows.map(r=>[r.horizon_sessions,number(r.response_pct),number(r.lower95),number(r.upper95)]));}
  for(const id of ['varAsset','varYield','varShock','varOrder','varRegime'])$(id).addEventListener('change',()=>{lastAdvanced='var';varData();});for(const id of ['qAsset','qRegime','qShock'])$(id).addEventListener('change',()=>lastAdvanced='quantile');
  function csvDownload(rows,name){if(!rows.length){toast('Chưa có dữ liệu phù hợp để tải.');return;}const columns=Object.keys(rows[0]),q=v=>'"'+String(v??'').replace(/"/g,'""')+'"',csv='\ufeff'+[columns,...rows.map(r=>columns.map(k=>r[k]))].map(r=>r.map(q).join(',')).join('\r\n'),url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Đã chuẩn bị '+name);}
  function exportCurrent(){if(view==='transmission'){$('exportResponse').click();return;}if(view==='forecast'){if(!HISTORICAL.series){toast('Dữ liệu phát lại đang được chuẩn bị. Hãy thử lại sau.');return;}if($('exportHistoricalOos').disabled){toast('Chọn khoảng có dữ liệu trước khi tải CSV.');return;}$('exportHistoricalOos').click();toast('Đã chuẩn bị CSV dự báo và timing.');return;}if(view==='fomc'){csvDownload(LATEST.fomc.filter(r=>r.asset===$('eAsset').value&&r.outcome===$('eOutcome').value),'fomc_rotation_ranges.csv');return;}if(view==='methods'){csvDownload(LATEST.pit,'feature_sources.csv');return;}if(view==='operations'){csvDownload([{research_cutoff:(window.orbitStatus||ORBIT_STATUS).research_cutoff,last_success_utc:(window.orbitStatus||ORBIT_STATUS).worker?.last_success_utc,performance:(window.orbitStatus||ORBIT_STATUS).prospective?.performance,prediction_rows:(window.orbitStatus||ORBIT_STATUS).prospective?.prediction_rows,fixed_end:(window.orbitStatus||ORBIT_STATUS).prospective?.fixed_end}],'operations_snapshot.csv');return;}if(lastAdvanced==='quantile')csvDownload(DATA.quantile.filter(r=>r.asset===$('qAsset').value&&r.regime===$('qRegime').value&&r.shock===$('qShock').value),'quantile_effects.csv');else{const shock=$('varShock').value==='yield'?$('varYield').value+'_change_bps':$('varShock').value;csvDownload(DATA.var_irf.filter(r=>r.asset===$('varAsset').value&&r.yield_variable===$('varYield').value&&r.regime===$('varRegime').value&&r.ordering===$('varOrder').value&&r.shock===shock),'var_irf.csv');}}
  window.orbitExportCurrent=exportCurrent;$('topExport').addEventListener('click',exportCurrent);$('printDashboard').addEventListener('click',()=>window.print());
+ window.orbitExportLiveForecast=()=>csvDownload((window.orbitStatus||ORBIT_STATUS).latest_forecasts||[],'latest_frozen_risk_forecasts.csv');
  document.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey||e.target.closest('input,select,textarea,[contenteditable=true]')||document.querySelector('dialog[open]'))return;if(/^[1-6]$/.test(e.key)){e.preventDefault();go(ORBIT_VIEWS[Number(e.key)-1]);}if(e.key==='['||e.key===']'){e.preventDefault();chooseDay(Number($('horizon').value)+(e.key===']'?1:-1));}if(e.key.toLowerCase()==='t'){e.preventDefault();window.orbitToggleTheme();}if(e.key==='?'){e.preventDefault();$('shortcutDialog').showModal();}});
  function applyRoute(){const route=orbitParseRoute(location.hash);for(const id of ['asset','shock','regime','horizon'])$(id).value=route[id];$('compareAssets').checked=route.compare;showWorkspace(route.view);renderResponse();}
  window.addEventListener('hashchange',applyRoute);
