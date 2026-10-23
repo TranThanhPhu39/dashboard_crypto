@@ -12,3 +12,8 @@ Run `py -3.11 -X utf8 tools/build_crypto_scenery.py`, then
 The generator projects coastlines to a decorative equirectangular scene and
 excludes Antarctica. The network, hubs and BTC/ETH emblems are decorative;
 they do not represent measured transactions, financial flows or research data.
+Nine decorative packets follow the same visible curves in native SVG motion,
+with staggered 3–5 second trips. Mobile shows four packets. The SVG timeline
+pauses when the document is hidden or reduced motion is enabled.
+`world-packets.svg` keeps the moving particles in a separate SVG layer from
+the static coastline.

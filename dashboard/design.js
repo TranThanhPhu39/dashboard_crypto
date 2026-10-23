@@ -30,6 +30,12 @@ function orbitResponseScene(selected,other=[],analogue=[],size={width:720,height
 function orbitStartStudio(){
  if(typeof window==='undefined'||!document.documentElement)return;
  const $=id=>document.getElementById(id),root=document.documentElement,reduce=matchMedia('(prefers-reduced-motion: reduce)');
+ // Native SVG packets follow existing map links; pause the SVG timeline offscreen.
+ const mapSvg=document.querySelector('#globalCryptoBackdrop .world-motion-layer');
+ function syncMapMotion(){const paused=document.hidden||reduce.matches;root.dataset.mapMotion=paused?'paused':'running';if(mapSvg&&typeof mapSvg.pauseAnimations==='function'){if(paused)mapSvg.pauseAnimations();else mapSvg.unpauseAnimations();}}
+ document.addEventListener('visibilitychange',syncMapMotion);
+ if(typeof reduce.addEventListener==='function')reduce.addEventListener('change',syncMapMotion);
+ syncMapMotion();
  const numberFormats=new Map(),cellFormat=new Intl.NumberFormat('vi-VN',{maximumSignificantDigits:8});
  const number=(v,d=3)=>{if(!numberFormats.has(d))numberFormats.set(d,new Intl.NumberFormat('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d}));return numberFormats.get(d).format(Number(v));};
  const signed=(v,d=3)=>(v>0?'+':'')+number(v,d),percent=v=>signed(v)+'%';

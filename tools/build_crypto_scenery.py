@@ -73,6 +73,17 @@ def build():
         mid = ((p[0]+q[0])/2, (p[1]+q[1])/2-rise)
         links.append('M'+point(p)+'Q'+point(mid)+' '+point(q))
     nodes = ''.join(f'<g transform="translate({point(p)})"><circle class="world-node-halo" r="23"/><circle class="world-node-ring" r="7"/><circle class="world-node-core" r="2.5"/></g>' for p in hubs)
+    # Reuse exact visible curves. Native SVG motion needs no per-frame JS loop.
+    routes = [0,2,6,7,14,18,30,37,41]
+    durations = [3.2,4.4,3.8,4.8,3.5,5.0,4.1,4.6,3.0]
+    motion_defs = ''.join(f'<path id="orbitPacketRoute{i}" d="{links[route]}"/>' for i,route in enumerate(routes))
+    packets = ''.join(
+        f'<g class="world-packet" data-duration="{duration:.1f}" data-route="orbitPacketRoute{i}">'
+        '<circle class="world-packet-halo" r="14"/><path class="world-packet-tail" d="M-17 0H-3"/>'
+        '<circle class="world-packet-core" r="3.2"/>'
+        f'<animateMotion dur="{duration:.1f}s" begin="{-i*.47:.2f}s" repeatCount="indefinite" rotate="auto">'
+        f'<mpath href="#orbitPacketRoute{i}"/></animateMotion></g>'
+        for i,duration in enumerate(durations))
 
     svg = '''<svg class="global-map-canvas" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" fill="none" focusable="false" aria-hidden="true">
   <!-- Natural Earth 1:110m land, public domain. See dashboard/assets/README.md. -->
@@ -101,6 +112,9 @@ def build():
 '''.replace('LAND_PATHS',''.join(land)).replace('MESH_PATH',''.join(mesh)).replace('LINK_PATH',''.join(links)).replace('NODES',nodes)
     target = ROOT/'dashboard/world-network.svg'
     target.write_text(svg, encoding='utf-8', newline='\n')
+    # Keep animated pixels in their own composited SVG, away from the coastline.
+    motion = '<svg class="global-map-canvas world-motion-layer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" fill="none" focusable="false" aria-hidden="true"><defs><radialGradient id="orbitPacketGlow"><stop stop-color="#e5fcff" stop-opacity=".9"/><stop offset=".18" stop-color="#71e8ff" stop-opacity=".5"/><stop offset="1" stop-color="#38cfff" stop-opacity="0"/></radialGradient>'+motion_defs+'</defs><g class="world-packets">'+packets+'</g></svg>\n'
+    (ROOT/'dashboard/world-packets.svg').write_text(motion, encoding='utf-8', newline='\n')
     print(f'Built offline coastline scenery: {len(land)} polygons, {len(edges)} links, {len(hubs)} hubs, {target.stat().st_size} bytes.')
 
 

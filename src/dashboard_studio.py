@@ -13,7 +13,7 @@ def studio(html):
     html = re.sub(r'<style id="orbit-aurora">.*?</style>', '', html, flags=re.S)
     html = re.sub(r'<!-- ORBIT STUDIO [A-Z_]+ START -->.*?<!-- ORBIT STUDIO [A-Z_]+ END -->', '', html, flags=re.S)
     # Offline coastline scene and reusable crypto marks; no canvas loop or timers.
-    scenery = (ROOT/'dashboard/world-network.svg').read_text(encoding='utf-8').strip()
+    scenery = ''.join((ROOT/'dashboard'/name).read_text(encoding='utf-8').strip() for name in ['world-network.svg','world-packets.svg'])
     scenery = '<!-- ORBIT STUDIO SCENERY START --><div id="globalCryptoBackdrop" class="global-crypto-backdrop" aria-hidden="true" inert>'+scenery+'</div><!-- ORBIT STUDIO SCENERY END -->'
     html = re.sub(r'(<body\b[^>]*>)', lambda match: match[1]+scenery, html, count=1)
     def button(key, label, symbol, mobile=False):

@@ -135,6 +135,13 @@ svg.global-map-canvas { position: absolute; width: max(1440px, 100vw); height: a
 .world-node-halo { fill: url(#orbitNodeGlow); }
 .world-node-ring { fill: none; stroke: var(--map-link); stroke-width: .8; opacity: .6; }
 .world-node-core { fill: #e0fcff; }
+.world-packet { pointer-events: none; }
+.world-motion-layer { contain: paint; will-change: transform; }
+.world-packet-halo { fill: url(#orbitPacketGlow); opacity: .85; }
+.world-packet-core { fill: #f0fdff; stroke: var(--map-link); stroke-width: .7; }
+.world-packet-tail { fill: none; stroke: var(--map-link); stroke-width: 2; stroke-linecap: round; opacity: .8; }
+[data-theme=light] .world-packet-core { fill: #076f9e; stroke: #e8fbff; }
+[data-theme=light] .world-packet-tail { stroke: #0875ab; }
 .world-coin { fill: var(--map-node); stroke: var(--crypto-bitcoin); stroke-width: 1.8; }
 .world-coin .coin-halo { fill: url(#orbitNodeGlow); stroke: none; opacity: .45; }
 .world-coin .coin-inner { fill: none; opacity: .35; }
@@ -327,6 +334,7 @@ dialog[open] { animation: none; }
   main { margin: 0; padding: 22px 0 8px; gap: 18px; }
   .workspace-hero { min-height: 132px; padding: 0 3px 2px; }
   :root { --glass-blur: 3px; }
+  .world-packet:nth-child(n+5) { display: none; }
   svg.global-map-canvas { width: 1080px; top: 72px; left: 52%; opacity: .6; }
   [data-theme=light] svg.global-map-canvas { opacity: .48; }
   .hero-crypto-badges { position: static; justify-content: flex-end; gap: 8px; margin: 15px 0 0; }
@@ -360,10 +368,13 @@ dialog[open] { animation: none; }
   :root[data-theme=light] { --sidebar:#e8dcf8; --surface:#fffcff; --surface-soft:#f3ebfc; --result-bg:#ebdbff; }
   .workspace-nav, .app-header, .panel, .bottom-nav, dialog { backdrop-filter: none; }
 }
+@media (prefers-reduced-motion: reduce) {
+  .world-packets { display: none; }
+}
 @media print {
   :root { --bg:#fff; --surface:#fff; --sidebar:#fff; --surface-soft:#fff; --surface-raised:#fff; --text:#111; --muted:#444; --subtle:#555; --border:#bbb; --border-soft:#ddd; --accent:#08775e; --accent-text:#08775e; --btc:#08775e; --eth:#7650b4; --ci:#08775e; --mint:#08775e; --result-bg:#fff; --result-border:#bbb; }
   body { padding: 0; }
-  body::before, .global-crypto-backdrop, .hero-crypto-badges { display: none; }
+  body::before, .global-crypto-backdrop, .hero-crypto-badges, .world-packets { display: none; }
   .workspace-nav, :root[data-nav-collapsed=true] .workspace-nav, .app-header { display: none; }
   main { margin: 0; padding: 0; }
   .panel, .result, .response-plot, .fomc-card { background: #fff; box-shadow: none; backdrop-filter: none; }
