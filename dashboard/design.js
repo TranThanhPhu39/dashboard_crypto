@@ -30,15 +30,18 @@ function orbitResponseScene(selected,other=[],analogue=[],size={width:720,height
 function orbitStartStudio(){
  if(typeof window==='undefined'||!document.documentElement)return;
  const $=id=>document.getElementById(id),root=document.documentElement,reduce=matchMedia('(prefers-reduced-motion: reduce)');
- const number=(v,d=3)=>Number(v).toLocaleString('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d});
+ const numberFormats=new Map(),cellFormat=new Intl.NumberFormat('vi-VN',{maximumSignificantDigits:8});
+ const number=(v,d=3)=>{if(!numberFormats.has(d))numberFormats.set(d,new Intl.NumberFormat('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d}));return numberFormats.get(d).format(Number(v));};
  const signed=(v,d=3)=>(v>0?'+':'')+number(v,d),percent=v=>signed(v)+'%';
- const date=s=>new Date(s+'T00:00:00Z').toLocaleDateString('vi-VN',{timeZone:'UTC'});
+ const dayFormat=new Intl.DateTimeFormat('vi-VN',{timeZone:'UTC'}),dateCache=new Map();
+ const date=s=>{if(!dateCache.has(s))dateCache.set(s,dayFormat.format(new Date(s+'T00:00:00Z')));return dateCache.get(s);};
  const titles={transmission:['Từ vĩ mô đến crypto.','Một thay đổi kinh tế. Hai tài sản. 30 ngày phản ứng.'],forecast:['Dự báo phải được kiểm chứng.','Đối chiếu với kết quả đã xảy ra, rồi mới đọc các kiểm định.'],fomc:['Tách hai loại thông tin từ Fed.','Chính sách và triển vọng kinh tế có thể tạo ra những phản ứng khác nhau.'],advanced:['Nhìn sâu hơn vào phản ứng.','Phân vị và VAR trả lời hai câu hỏi khác nhau.'],methods:['Biết nguồn. Hiểu giới hạn.','Phương pháp, thời điểm thông tin khả dụng và phạm vi kết luận.'],operations:['Dữ liệu mới đến đâu?','Theo dõi vận hành và dự báo mới theo kỳ đánh giá đã chốt.']};
  let toastTimer,view=root.dataset.workspace||'transmission',pinned=false,displayedPoint=null,animationFrame=null,liveScene=null,hoverDay=null,activeAnalogue=null,lockedAnalogue=null,rollingRange=null,rollingSelection='',brush=null,lastAdvanced='quantile';
  const chart=$('responseChart');
+ window.orbitOwnsResponseChart=true;
  for(const id of ['asset','regime','horizon','mobileWorkspace']){$(id).setAttribute('tabindex','-1');$(id).setAttribute('aria-hidden','true');}
  const scientificTable=table;
- const localCell=value=>{if(typeof value==='number')return value.toLocaleString('vi-VN',{maximumSignificantDigits:8});if(typeof value!=='string')return value;if(/^[+-]?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i.test(value))return Number(value).toLocaleString('vi-VN',{maximumSignificantDigits:8});if(value.startsWith('[')&&value.endsWith(']'))return value.replace(/[+-]?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi,n=>Number(n).toLocaleString('vi-VN',{maximumSignificantDigits:8}));return value;};
+ const localCell=value=>{if(typeof value==='number')return cellFormat.format(value);if(typeof value!=='string')return value;if(/^[+-]?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i.test(value))return cellFormat.format(Number(value));if(value.startsWith('[')&&value.endsWith(']'))return value.replace(/[+-]?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi,n=>cellFormat.format(Number(n)));return value;};
  table=function(headers,rows){return scientificTable(headers,rows.map(row=>row.map(localCell)));};
  const analogueIndex=new Map(),analogueSeries=new Map();
  for(const row of DATA.analogues){const prefix=[row.asset,row.shock,row.regime].join('|'),key=prefix+'|'+row.horizon_days,seriesKey=prefix+'|'+row.date_utc;if(!analogueIndex.has(key))analogueIndex.set(key,[]);analogueIndex.get(key).push(row);if(!analogueSeries.has(seriesKey))analogueSeries.set(seriesKey,[]);analogueSeries.get(seriesKey).push(row);}
@@ -51,7 +54,8 @@ function orbitStartStudio(){
  setTheme(savedTheme==='light'||savedTheme==='dark'?savedTheme:matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');
  window.orbitToggleTheme=()=>{setTheme(root.dataset.theme==='dark'?'light':'dark');};
  $('themeToggle').addEventListener('click',window.orbitToggleTheme);
- function navIndicator(){const b=$('tab-'+view),r=b.getBoundingClientRect(),parent=b.parentElement.getBoundingClientRect();$('navActive').style.transform=`translateY(${r.top-parent.top}px)`;$('navActive').style.height=r.height+'px';}
+ // The active button paints its own background; no synchronous page layout.
+ $('navActive').hidden=true;
  function syncUrl(){try{const p=new URLSearchParams({asset:$('asset').value,shock:$('shock').value,regime:$('regime').value,h:$('horizon').value,compare:$('compareAssets').checked?'1':'0'});history.replaceState(null,'','#'+view+'?'+p.toString());}catch(_){}}
  const previousWorkspace=showWorkspace;
  showWorkspace=function(next){
@@ -64,13 +68,13 @@ function orbitStartStudio(){
   $('topExport').setAttribute('aria-label','Tải CSV · '+WORKSPACE_NAMES[next]);
   if(changed&&!reduce.matches)for(const id of WORKSPACE_GROUPS[next]){const panel=$(id);panel.classList.remove('workspace-enter');requestAnimationFrame(()=>panel.classList.add('workspace-enter'));}
   if(next==='fomc')fomcSummary();if(next==='advanced')varData();
-  navIndicator();syncUrl();
+  syncUrl();
  };
  function go(next){showWorkspace(next);window.scrollTo({top:0,behavior:'instant'});for(const id of ['navDrawer','glossaryDialog'])if($(id).open)$(id).close();}
  for(const b of document.querySelectorAll('[data-goto]'))b.addEventListener('click',()=>go(b.dataset.goto));
  $('openNavigation').addEventListener('click',()=>{if(matchMedia('(max-width:760px)').matches)$('navDrawer').showModal();else $('collapseSidebar').click();});
  $('bottomMore').addEventListener('click',()=>$('navDrawer').showModal());
- $('collapseSidebar').addEventListener('click',()=>{const collapsed=root.dataset.navCollapsed!=='true';root.dataset.navCollapsed=String(collapsed);$('collapseSidebar').setAttribute('aria-expanded',String(!collapsed));$('collapseSidebar').setAttribute('aria-label',collapsed?'Mở rộng menu':'Thu gọn menu');try{localStorage.setItem('orbit-nav-collapsed',String(collapsed));}catch(_){}requestAnimationFrame(navIndicator);});
+ $('collapseSidebar').addEventListener('click',()=>{const collapsed=root.dataset.navCollapsed!=='true';root.dataset.navCollapsed=String(collapsed);$('collapseSidebar').setAttribute('aria-expanded',String(!collapsed));$('collapseSidebar').setAttribute('aria-label',collapsed?'Mở rộng menu':'Thu gọn menu');try{localStorage.setItem('orbit-nav-collapsed',String(collapsed));}catch(_){}});
  $('learnMethods').addEventListener('click',()=>go('methods'));
  document.querySelector('.brand').addEventListener('click',e=>{e.preventDefault();go('transmission');});
  document.querySelector('.skip-link').addEventListener('click',e=>{e.preventDefault();$('mainContent').setAttribute('tabindex','-1');$('mainContent').focus();$('mainContent').scrollIntoView({block:'start',behavior:'instant'});});
@@ -79,7 +83,7 @@ function orbitStartStudio(){
  $('openFilters').addEventListener('click',()=>{$('sheetControls').append(controls);sheet.showModal();});
  const restoreControls=()=>{$('controlHome').append(controls);};sheet.addEventListener('close',restoreControls);
  $('applyMobileFilters').addEventListener('click',()=>sheet.close());
- window.addEventListener('resize',()=>{if(sheet.open&&innerWidth>760)sheet.close();requestAnimationFrame(()=>{navIndicator();drawResponse(false);});});
+ let resizeFrame=null;window.addEventListener('resize',()=>{if(sheet.open&&innerWidth>760)sheet.close();if(resizeFrame!==null)cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>{resizeFrame=null;drawResponse(false);});});
  // Segmented controls retain native select IDs for research functions and tests.
  function syncControls(){
   const asset=$('asset').value,regime=$('regime').value,h=$('horizon').value;
@@ -96,7 +100,8 @@ function orbitStartStudio(){
  let sliderFrame=null;$('horizonSlider').addEventListener('input',()=>{const value=Number($('horizonSlider').value);$('horizonOutput').textContent=String(value);if(sliderFrame)cancelAnimationFrame(sliderFrame);sliderFrame=requestAnimationFrame(()=>{sliderFrame=null;chooseDay(value);});});
  $('compareAssets').addEventListener('change',()=>{drawResponse(false);syncUrl();});
  $('unpinResponse').addEventListener('click',()=>{pinned=false;drawResponse(false);$('pinState').textContent='NGÀY ĐANG CHỌN';$('unpinResponse').hidden=true;});
- function countPoint(value){const element=$('responsePoint'),from=displayedPoint===null?value:displayedPoint;element.dataset.finalValue=percent(value);const token=String(performance.now());element.dataset.animation=token;if(reduce.matches||from===value){displayedPoint=value;element.textContent=percent(value);element.dataset.animating='false';return;}element.dataset.animating='true';element.textContent=percent(from);const start=performance.now();function frame(now){if(element.dataset.animation!==token)return;const t=Math.min(1,(now-start)/320),e=1-(1-t)**3;displayedPoint=from+(value-from)*e;element.textContent=percent(displayedPoint);if(t<1)requestAnimationFrame(frame);else element.dataset.animating='false';}requestAnimationFrame(frame);}
+ function countPoint(value){const element=$('responsePoint');displayedPoint=value;element.dataset.finalValue=percent(value);element.textContent=percent(value);element.dataset.animating='false';}
+ let responseTableKey='';
  function responseDetail(){
   const rows=responseRows(),row=rows.find(r=>r.horizon_days===Number($('horizon').value));if(!row)return;
   const crosses=row.lower95<=0&&row.upper95>=0;
@@ -110,12 +115,25 @@ function orbitStartStudio(){
   $('designSample').textContent=number(row.nobs,0)+' quan sát';
   const lo=Math.min(0,row.lower95),hi=Math.max(0,row.upper95),pad=(hi-lo||1)*.15,min=lo-pad,max=hi+pad,x=v=>(v-min)/(max-min)*100;
   $('intervalBand').style.left=x(row.lower95)+'%';$('intervalBand').style.width=(x(row.upper95)-x(row.lower95))+'%';$('intervalPoint').style.left=x(row.beta_pct)+'%';$('intervalZero').style.left=x(0)+'%';
-  $('responseDataTable').innerHTML=table(['Ngày','Tài sản','Ước lượng (%)','CI thấp','CI cao','n','BH q'],rows.map(r=>[r.horizon_days,r.asset.toUpperCase(),number(r.beta_pct),number(r.lower95),number(r.upper95),number(r.nobs,0),r.qvalue_bh===null?'—':number(r.qvalue_bh)]));
+  const key=[$('asset').value,$('shock').value,$('regime').value].join('|');
+  if(key!==responseTableKey){$('responseDataTable').innerHTML=table(['Ngày','Tài sản','Ước lượng (%)','CI thấp','CI cao','n','BH q'],rows.map(r=>[r.horizon_days,r.asset.toUpperCase(),number(r.beta_pct),number(r.lower95),number(r.upper95),number(r.nobs,0),r.qvalue_bh===null?'—':number(r.qvalue_bh)]));responseTableKey=key;}
  }
  function currentAnalogueRows(){return activeAnalogue?seriesFor(activeAnalogue):[];}
- function drawResponse(animate=true){
+ let responseSceneKey='';
+ function drawResponse(animate=false){
+  const mobile=matchMedia('(max-width:760px)').matches,key=[$('asset').value,$('shock').value,$('regime').value,$('compareAssets').checked,activeAnalogue?.date_utc||'',mobile].join('|');
+  if(key===responseSceneKey&&liveScene&&$('primaryCurve')){
+   const h=Number($('horizon').value),i=h-1,asset=$('asset').value,point=$('responseSelectedPoint'),otherPoint=$('responseOtherPoint');
+   for(const attr of ['x1','x2'])$('responsePin').setAttribute(attr,liveScene.selected[i][0]);
+   $('responsePin').style.opacity=pinned?'1':'.45';
+   if(asset==='btc'){point.setAttribute('cx',liveScene.selected[i][0]);point.setAttribute('cy',liveScene.selected[i][1]);}else{point.setAttribute('x',liveScene.selected[i][0]-4.5);point.setAttribute('y',liveScene.selected[i][1]-4.5);}
+   if(otherPoint&&liveScene.other[i]){if(asset==='eth'){otherPoint.setAttribute('cx',liveScene.other[i][0]);otherPoint.setAttribute('cy',liveScene.other[i][1]);}else{otherPoint.setAttribute('x',liveScene.other[i][0]-3.5);otherPoint.setAttribute('y',liveScene.other[i][1]-3.5);}}
+   const row=responseRows()[i];chart.setAttribute('aria-label',`${asset.toUpperCase()}, ${$('shock').selectedOptions[0].textContent}, ngày ${h}: ${percent(row.beta_pct)}. CI ${number(row.lower95)} đến ${number(row.upper95)}%. Dùng mũi tên chọn ngày; Enter ghim.`);
+   if(hoverDay)showTooltip(hoverDay);return;
+  }
   if(animationFrame)cancelAnimationFrame(animationFrame);
-  const selected=responseRows(),asset=$('asset').value,other=$('compareAssets').checked?orbitCurveRows(asset==='btc'?'eth':'btc',$('shock').value,$('regime').value):[],actual=currentAnalogueRows(),mobile=matchMedia('(max-width:760px)').matches,next=orbitResponseScene(selected,other,actual,mobile?{width:360,height:300}:{width:720,height:330}),g=next.geometry;
+  const selected=responseRows(),asset=$('asset').value,other=$('compareAssets').checked?orbitCurveRows(asset==='btc'?'eth':'btc',$('shock').value,$('regime').value):[],actual=currentAnalogueRows(),next=orbitResponseScene(selected,other,actual,mobile?{width:360,height:300}:{width:720,height:330}),g=next.geometry;
+  responseSceneKey=key;
   chart.setAttribute('viewBox',`0 0 ${g.width} ${g.height}`);
   const otherClass=asset==='btc'?'eth':'btc';
   chart.innerHTML=`<title>Phản ứng ${asset.toUpperCase()} từ 1 đến 30 ngày</title><desc>Ước lượng lợi suất log cộng dồn, CI pointwise 95%. Mũi tên chọn ngày; Enter để ghim. Bảng dữ liệu nằm ngay dưới biểu đồ.</desc><defs><linearGradient id="responseBandGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--${asset})" stop-opacity=".18"/><stop offset="1" stop-color="var(--${asset})" stop-opacity=".025"/></linearGradient><clipPath id="responseClip"><rect x="${g.left-1}" y="${g.top}" width="${g.right-g.left+2}" height="${g.bottom-g.top+4}"/></clipPath></defs>`+
@@ -140,7 +158,7 @@ function orbitStartStudio(){
   const line=$('responseCrosshair'),x=liveScene.geometry.left+(h-1)/29*(liveScene.geometry.right-liveScene.geometry.left);line.hidden=false;line.removeAttribute('hidden');line.setAttribute('x1',x);line.setAttribute('x2',x);
   const box=chart.getBoundingClientRect(),left=Math.min(Math.max(8,x/liveScene.geometry.width*box.width-130),Math.max(8,box.width-268));$('responseTooltip').style.left=left+'px';$('responseTooltip').style.top='8px';$('responseTooltip').hidden=false;
  }
- let pointerFrame=null;chart.addEventListener('pointermove',e=>{const box=chart.getBoundingClientRect(),g=liveScene.geometry,x=(e.clientX-box.left)/box.width*g.width;if(x<g.left||x>g.right)return;const h=Math.max(1,Math.min(30,Math.round(1+(x-g.left)/(g.right-g.left)*29)));if(pointerFrame)cancelAnimationFrame(pointerFrame);pointerFrame=requestAnimationFrame(()=>showTooltip(h));});
+ let pointerFrame=null;chart.addEventListener('pointermove',e=>{const box=chart.getBoundingClientRect(),g=liveScene.geometry,x=(e.clientX-box.left)/box.width*g.width;if(x<g.left||x>g.right)return;const h=Math.max(1,Math.min(30,Math.round(1+(x-g.left)/(g.right-g.left)*29)));if(h===hoverDay)return;if(pointerFrame)cancelAnimationFrame(pointerFrame);pointerFrame=requestAnimationFrame(()=>showTooltip(h));});
  chart.addEventListener('pointerleave',()=>{if(pointerFrame)cancelAnimationFrame(pointerFrame);hoverDay=null;$('responseTooltip').hidden=true;const line=$('responseCrosshair');if(line)line.setAttribute('hidden','');});
  chart.addEventListener('click',e=>{const box=chart.getBoundingClientRect(),g=liveScene.geometry,x=(e.clientX-box.left)/box.width*g.width;if(x>=g.left&&x<=g.right){chooseDay(Math.round(1+(x-g.left)/(g.right-g.left)*29),true);toast('Đã ghim ngày '+$('horizon').value);}});
  chart.addEventListener('keydown',e=>{const h=Number($('horizon').value);if(['ArrowLeft','ArrowRight','Home','End','Enter','Escape'].includes(e.key))e.preventDefault();if(e.key==='ArrowLeft')chooseDay(h-1,true);if(e.key==='ArrowRight')chooseDay(h+1,true);if(e.key==='Home')chooseDay(1,true);if(e.key==='End')chooseDay(30,true);if(e.key==='Enter'){pinned=!pinned;responseDetail();drawResponse(false);}if(e.key==='Escape'){$('unpinResponse').click();$('responseTooltip').hidden=true;}if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key))showTooltip(Number($('horizon').value));});
@@ -204,8 +222,8 @@ function orbitStartStudio(){
  window.addEventListener('hashchange',applyRoute);
  const chartTitles=['quantileChart','varChart'];for(const id of chartTitles){$(id).setAttribute('tabindex','0');$(id).setAttribute('aria-describedby',id==='quantileChart'?'quantileTable':'varDataTable');}
  applyRoute();renderRolling();if(HISTORICAL.series)replayEnhance();
- // One restrained entrance stroke. No repeated chart animation or forced layout.
- if(!reduce.matches){const path=$('primaryCurve');if(path&&typeof path.getTotalLength==='function'){const length=path.getTotalLength();path.style.strokeDasharray=String(length);const animation=path.animate([{strokeDashoffset:length},{strokeDashoffset:0}],{duration:480,easing:'cubic-bezier(.2,.8,.2,1)'});animation.onfinish=()=>path.style.removeProperty('stroke-dasharray');}}
+ // Opacity needs no synchronous SVG geometry/layout during application boot.
+ if(!reduce.matches){const path=$('primaryCurve');if(path)path.animate([{opacity:.4},{opacity:1}],{duration:140,easing:'ease-out'});}
  root.dataset.orbitStudioReady='true';
 }
 // Retain the original generic plotter for rolling, quantile and VAR validation.

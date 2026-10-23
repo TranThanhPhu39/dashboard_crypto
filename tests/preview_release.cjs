@@ -18,7 +18,7 @@ function call(method, params = {}) {
   });
 }
 async function evaluate(expression) {
-  const result = await call('Runtime.evaluate', {expression, returnByValue:true});
+  const result = await call('Runtime.evaluate', {expression, returnByValue:true, awaitPromise:true});
   if (result.exceptionDetails) throw Error(JSON.stringify(result.exceptionDetails));
   return result.result.value;
 }
@@ -124,7 +124,10 @@ async function screenshot(name) {
     await call('Emulation.setDeviceMetricsOverride',{width:1280,height:1000,deviceScaleFactor:1,mobile:false});
     await evaluate("document.getElementById('tab-transmission').click()");
     await evaluate("document.getElementById('asset').value='eth';document.getElementById('shock').value='usd_return_pct';document.getElementById('regime').value='stress';document.getElementById('horizon').value='30';document.getElementById('horizon').dispatchEvent(new Event('change'))");
+    await evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
     const selectionWorks=await evaluate("document.getElementById('selectionLabel').textContent==='ETH · Căng thẳng · 30 ngày' && responseCsv().split('\\r\\n').length===31");
+    const horizonReusesCurve=await evaluate("(()=>{const curve=document.getElementById('primaryCurve'),points=curve.getAttribute('d');document.querySelector('[data-horizon=\"14\"]').click();return curve===document.getElementById('primaryCurve') && points===curve.getAttribute('d') && document.getElementById('responseMetricLabel').textContent.includes('14')})()");
+    await evaluate("document.querySelector('[data-horizon=\"30\"]').click()");
     const downloadFolder=path.join(preview,'downloads',String(Date.now()));fs.mkdirSync(downloadFolder,{recursive:true});
     await call('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:downloadFolder});
     await call('Runtime.evaluate',{expression:"document.getElementById('exportResponse').click()",userGesture:true});
@@ -145,9 +148,9 @@ async function screenshot(name) {
       automation_desktop_no_overflow:automationDesktop,automation_mobile_no_overflow:automationMobile,
       dashboard_desktop_no_overflow:dashboardDesktop,dashboard_mobile_no_overflow:dashboardMobile,starts_with_estimator:startsWithEstimator,no_academic_warning_on_main:noWarningOnMain,workspace_buttons_work:tabButtonsWork,selection_controls_work:selectionWorks,reset_button_works:resetWorks,csv_download_matches_selected_curve:csvDownloadWorks,tables:counts.length,
       historical_dates_work:historicalDatesWork,historical_csv_download_matches:historicalCsvWorks,historical_desktop_no_overflow:historicalDesktop,historical_mobile_no_overflow:historicalMobile,
-      local_links_verified:local.length,uncaught_errors:errors.length};
+      local_links_verified:local.length,horizon_reuses_curve:horizonReusesCurve,uncaught_errors:errors.length};
     fs.writeFileSync(path.join(out,'browser_validation.json'),JSON.stringify(result,null,2));
-    if (!desktop || !mobile || !oosDesktop || !oosMobile || !automationDesktop || !automationMobile || !dashboardDesktop || !dashboardMobile || !startsWithEstimator || !noWarningOnMain || !tabButtonsWork || !selectionWorks || !resetWorks || !csvDownloadWorks || !historicalDatesWork || !historicalCsvWorks || !historicalDesktop || !historicalMobile || errors.length) throw Error(JSON.stringify(result));
+    if (!desktop || !mobile || !oosDesktop || !oosMobile || !automationDesktop || !automationMobile || !dashboardDesktop || !dashboardMobile || !startsWithEstimator || !noWarningOnMain || !tabButtonsWork || !selectionWorks || !resetWorks || !csvDownloadWorks || !historicalDatesWork || !historicalCsvWorks || !historicalDesktop || !historicalMobile || !horizonReusesCurve || errors.length) throw Error(JSON.stringify(result));
     console.log(JSON.stringify(result,null,2));
   } finally {
     if (socket && socket.readyState===WebSocket.OPEN) {

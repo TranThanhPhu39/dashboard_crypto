@@ -22,7 +22,7 @@ assert(run("orbitSearchTerms('Khoảng tin cậy 95%').some(t=>t[0]==='ci')"));
 (async()=>{
  await assert.rejects(run('ensureHistoricalOos()'),/Chrome|Edge/);
  assert.strictEqual(run('HISTORICAL.series'),null);
- ctx.DecompressionStream=DecompressionStream;
+ ctx.DecompressionStream=DecompressionStream;ctx.fetch=fetch;
  await run('ensureHistoricalOos()');
  const original=JSON.parse(fs.readFileSync(path.join(root,'dashboard/historical_oos_data.json')));
  assert.strictEqual(JSON.stringify(run('HISTORICAL.series')),JSON.stringify(original.series));

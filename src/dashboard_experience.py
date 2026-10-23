@@ -75,6 +75,12 @@ def runtime(html):
             last += 1
         html = html[:first] + (ROOT / 'dashboard' / filename).read_text().rstrip() + '\n' + html[last:]
     # Hidden workspaces do not build SVGs, large date selectors or replay data.
+    # Once Studio owns the chart, the legacy renderer still updates its exact
+    # numbers/tables but must not overwrite the SVG immediately before Studio.
+    guard="if(typeof window==='undefined'||!window.orbitOwnsResponseChart)"
+    legacy_plot="el('responseChart').innerHTML=chart(rows.map(q=>({x:q.horizon_days,y:q.beta_pct,lo:q.lower95,hi:q.upper95})),i,'Horizon: calendar days');"
+    if guard+legacy_plot not in html:
+        html=html.replace(legacy_plot,guard+legacy_plot,1)
     html = html.replace('renderResponse();renderQuantile();renderVAR();renderForecast();renderRolling();', "renderResponse();if(typeof window==='undefined'){renderQuantile();renderVAR();renderForecast();renderRolling();}")
     return html
 

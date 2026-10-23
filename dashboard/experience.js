@@ -100,9 +100,10 @@ function orbitSearchTerms(query){
  $('glossarySearch').addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();focusCommand(commandIndex+1);}if(e.key==='ArrowUp'){e.preventDefault();focusCommand(commandIndex-1);}if(e.key==='Enter'){e.preventDefault();activateCommand(commandIndex);}});
  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openGlossary();}});
  document.addEventListener('click',e=>{const b=e.target.closest('[data-term]');if(b)openGlossary(b.dataset.term);});
+ const readingNumber=new Intl.NumberFormat('vi-VN',{minimumFractionDigits:3,maximumFractionDigits:3});
  function updateResponseReading(){
   const row=responseRows().find(r=>r.horizon_days===Number($('horizon').value));if(!row)return;
-  const n=v=>Number(v).toLocaleString('vi-VN',{minimumFractionDigits:3,maximumFractionDigits:3}),shock=$('shock').selectedOptions[0].textContent;
+  const n=v=>readingNumber.format(Number(v)),shock=$('shock').selectedOptions[0].textContent;
   text('responseReadingTitle',`${shock} → ${row.asset.toUpperCase()} ước lượng ${row.beta_pct>0?'+':''}${n(row.beta_pct)}% sau ${row.horizon_days} ngày.`);
   text('responseReadingBody',`CI 95%: ${n(row.lower95)}% đến ${n(row.upper95)}%. Kết quả ước lượng từ lịch sử.`);
  }

@@ -4,8 +4,10 @@ function ensureHistoricalOos(){
  if(historyLoadPromise)return historyLoadPromise;
  historyLoadPromise=(async()=>{
   if(typeof DecompressionStream==='undefined')throw new Error('Trình duyệt này chưa hỗ trợ dữ liệu nén. Hãy mở bằng Chrome hoặc Edge phiên bản mới.');
-  const raw=Uint8Array.from(atob(HISTORY_ARCHIVE_GZIP_B64),c=>c.charCodeAt(0));
-  const text=await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  const compressed=typeof fetch==='function'
+   ? await fetch('data:application/gzip;base64,'+HISTORY_ARCHIVE_GZIP_B64)
+   : new Response(new Blob([Uint8Array.from(atob(HISTORY_ARCHIVE_GZIP_B64),c=>c.charCodeAt(0))]));
+  const text=await new Response(compressed.body.pipeThrough(new DecompressionStream('gzip'))).text();
   const loaded=JSON.parse(text);
   if(!loaded.series||!loaded.folds||loaded.audit.data_sha256!==HISTORICAL.audit.data_sha256)throw new Error('Dữ liệu phát lại không khớp bản nghiên cứu. Hãy tải lại gói dashboard.');
   Object.assign(HISTORICAL,loaded);
@@ -17,6 +19,7 @@ const historyPairs=[['long_own','long_macro'],['common_own','common_macro'],['co
 const historyColumns={elastic_net:2,gradient_boosting:3,historical_mean:4,natural_benchmark:5};
 const historyVariantNames={long_own:'Chỉ crypto',long_macro:'Có vĩ mô',common_own:'Chỉ crypto',common_macro:'Có vĩ mô',common_usd:'Có vĩ mô & USD'};
 const historyCache=new Map();
+let historyDayOptionsKey='';
 const historyShift=(day,n)=>new Date(Date.parse(day+'T00:00:00Z')+n*86400000).toISOString().slice(0,10);
 const historyKey=(s,variant)=>[s.asset,s.scenario,variant,s.target].join('|');
 const historyLoss=(actual,predicted,target)=>target==='return'?(actual-predicted)**2:Math.log(predicted)+actual/predicted;
@@ -44,7 +47,8 @@ function historyChart(rows,curves,label){
  const W=900,H=270,L=82,R=18,T=18,B=40;
  const all=curves.flatMap(c=>c.values),minimum=Math.min(0,...all),maximum=Math.max(0,...all),pad=(maximum-minimum||1)*.08,lo=minimum-pad,hi=maximum+pad;
  const first=Date.parse(rows[0].date+'T00:00:00Z'),last=Date.parse(rows[rows.length-1].date+'T00:00:00Z');
- const x=i=>last===first?(L+W-R)/2:L+(Date.parse(rows[i].date+'T00:00:00Z')-first)/(last-first)*(W-L-R),y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
+ const positions=rows.map(r=>last===first?(L+W-R)/2:L+(Date.parse(r.date+'T00:00:00Z')-first)/(last-first)*(W-L-R));
+ const x=i=>positions[i],y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}">`;
  for(let i=0;i<5;i++){const v=lo+(hi-lo)*i/4;svg+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#dce7eb"/><text x="2" y="${y(v)+4}">${Number(v).toPrecision(3)}</text>`;}
  svg+=`<line x1="${L}" x2="${W-R}" y1="${y(0)}" y2="${y(0)}" stroke="#8ca5b3" stroke-dasharray="4 4"/>`;
@@ -77,9 +81,10 @@ function renderHistoricalOos(){
   el('historyContext').textContent=start>end?'Ngày bắt đầu phải trước hoặc bằng ngày kết thúc.':'Không có origins đủ điều kiện trong khoảng này; chọn khoảng ngày khác.';
   for(const id of ['historyCount','historyBaseLoss','historyAddedLoss','historyBenchmarkDelta'])el(id).textContent=id==='historyCount'?'0':'—';
   for(const id of ['historyPredictionChart','historyLossChart','historyPointTable','historyTimingTable','historyDay'])el(id).innerHTML='';
-  el('historyLossSummary').textContent='';el('historyModelHashes').textContent='';return;
+  historyDayOptionsKey='';el('historyLossSummary').textContent='';el('historyModelHashes').textContent='';return;
  }
- const selected=el('historyDay').value;el('historyDay').innerHTML=rows.map(r=>`<option value="${r.date}">${r.date}</option>`).join('');
+ const selected=el('historyDay').value,optionsKey=rows.map(r=>r.date).join('|');
+ if(optionsKey!==historyDayOptionsKey){el('historyDay').innerHTML=rows.map(r=>`<option value="${r.date}">${r.date}</option>`).join('');historyDayOptionsKey=optionsKey;}
  el('historyDay').value=rows.some(r=>r.date===selected)?selected:rows[rows.length-1].date;
  const mean=values=>values.reduce((a,b)=>a+b,0)/values.length,base=rows.map(r=>historyLoss(r.actual,r.base,s.target)),added=rows.map(r=>historyLoss(r.actual,r.added,s.target)),bench=rows.map(r=>historyLoss(r.actual,r.benchmark,s.target));
  const delta=added.map((v,i)=>v-base[i]);let sum=0;const cumulative=delta.map(v=>sum+=v);
