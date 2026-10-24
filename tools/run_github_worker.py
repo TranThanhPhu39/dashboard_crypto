@@ -128,7 +128,40 @@ def redact(value):
     return re.sub(r'(?i)(api_key=)[^&\s\"\']+', r'\1[redacted]', text)
 
 
-def report_operation(mode, exit_code=0, root=ROOT):
+def monitor_with_recovery(auto):
+    """Recover an overdue successful pipeline before judging hosted health."""
+    auto.refresh_scheduler_status()
+    health = auto.monitor(refresh=False)
+    state = auto.read_json(auto.OUT/'state.json', {})
+    keys = {row['key'] for row in health.get('issues', [])}
+    # A late schedule can leave a previously healthy pipeline overdue. Other
+    # faults retain their existing failure path; never clear a running worker.
+    recover = (state.get('status') == 'succeeded' and 'missed_runs' in keys and
+               all(key == 'missed_runs' or key.startswith(('receipt_risk_', 'receipt_missed_'))
+                   for key in keys))
+    if not recover:
+        return 0, None
+    record = dict(started_at_utc=auto.now_utc().isoformat(),
+        run_id=os.environ.get('GITHUB_RUN_ID'), trigger='missed_runs',
+        previous_last_success_utc=state.get('last_success_utc'),
+        previous_health_issues=sorted(keys), status='running',
+        scope='Current-time pipeline recovery; original receipt cutoffs and frozen models apply.')
+    path = auto.OUT/'monitor_recovery.json'
+    auto.atomic_json(path, record)
+    print('::notice title=Topic09 schedule recovery::Pipeline heartbeat is overdue; '
+          'running the normal locked pipeline before rechecking health.', flush=True)
+    result = auto.run_pipeline()
+    health = auto.monitor(refresh=False)
+    after = auto.read_json(auto.OUT/'state.json', {})
+    record.update(finished_at_utc=auto.now_utc().isoformat(), exit_code=result,
+        status=after.get('status'), last_success_utc=after.get('last_success_utc'),
+        remaining_health_issues=[row['key'] for row in health.get('issues', [])])
+    auto.atomic_json(path, record)
+    print(json.dumps({'schedule_recovery': record}), flush=True)
+    return result, record
+
+
+def report_operation(mode, exit_code=0, root=ROOT, recovery=None):
     """Make the actual source/health cause visible, including subprocess failures."""
     from src.automation_runtime import read_json, atomic_json, now_utc
     from src.source_health import capture_status, assess
@@ -145,7 +178,8 @@ def report_operation(mode, exit_code=0, root=ROOT):
         capture=capture, prediction_files=len(forecasts),
         prediction_rows=sum(len(read_json(p)['predictions']) for p in forecasts),
         label_files=len(list((ledger/'labels').glob('*.json'))),
-        error=redact(state.get('error', '')), performance_evaluated=False)
+        error=redact(state.get('error', '')), performance_evaluated=False,
+        schedule_recovery=recovery)
     atomic_json(folder/'operation_status.json', record)
     print(json.dumps(record, ensure_ascii=False), flush=True)
     if record['status'] != 'succeeded':
@@ -172,6 +206,10 @@ def report_operation(mode, exit_code=0, root=ROOT):
                 f"Labels: {record['label_files']}. No performance scoring.\n\n")
             for row in capture['failures']:
                 stream.write(f"- {row['source']}: `{row['code']}`, HTTP {row['http_status']}, {row['raw_bytes']} archived bytes.\n")
+            if recovery:
+                stream.write(f"\nSchedule recovery: prior success `{recovery['previous_last_success_utc']}`; "
+                    f"normal pipeline exit `{recovery['exit_code']}`; "
+                    f"remaining health issues: `{','.join(recovery['remaining_health_issues']) or 'none'}`.\n")
             if record['error']:
                 stream.write('\n'+record['error']+'\n')
     return record
@@ -234,11 +272,10 @@ def main():
         report = report_operation(args.stage, result)
         if result or auto.read_json(auto.OUT/'state.json')['status'] != 'finished_schedule':
             raise SystemExit(result or int(report['status'] == 'failed'))
-    auto.refresh_scheduler_status()
-    health = auto.monitor(refresh=False)
+    result, recovery = monitor_with_recovery(auto)
     command('run_release.py', 'build')
     command('run_release.py', 'validate')
-    report = report_operation(args.stage)
+    report = report_operation(args.stage, result, recovery=recovery)
     if report['status'] == 'failed':
         raise SystemExit(1)
 

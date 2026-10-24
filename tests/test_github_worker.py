@@ -217,5 +217,93 @@ class DurableWorkerTests(unittest.TestCase):
             auto.assert_writer_allowed(folder)
 
 
+class MonitorRecoveryTests(unittest.TestCase):
+    """Regress the 24 Oct hosted monitor failures after delayed schedule runs."""
+    def setUp(self):
+        from contextlib import ExitStack, redirect_stdout
+        from datetime import datetime, timezone
+        from io import StringIO
+        from src import automation_runtime as auto
+        from tools.run_github_worker import monitor_with_recovery
+        self.auto = auto
+        self.recover = monitor_with_recovery
+        self.now = datetime(2026, 10, 24, 14, 9, 18, tzinfo=timezone.utc)
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.out = Path(temporary.name)
+        self.stack = ExitStack()
+        self.addCleanup(self.stack.close)
+        self.output = StringIO()
+        self.stack.enter_context(redirect_stdout(self.output))
+        for name, value in [('OUT', self.out), ('now_utc', lambda: self.now)]:
+            self.stack.enter_context(patch.object(auto, name, value))
+        self.stack.enter_context(patch.object(auto, 'refresh_scheduler_status'))
+        self.monitor = self.stack.enter_context(patch.object(auto, 'monitor'))
+        self.pipeline = self.stack.enter_context(patch.object(auto, 'run_pipeline'))
+        auto.atomic_json(self.out/'state.json', dict(status='succeeded',
+            last_success_utc='2026-10-24T11:07:21.766774+00:00'))
+        self.missed = dict(issues=[dict(key='missed_runs')])
+
+    def test_overdue_healthy_pipeline_runs_once_then_rechecks_real_state(self):
+        self.monitor.side_effect = [self.missed, dict(issues=[])]
+        def run():
+            self.auto.atomic_json(self.out/'state.json', dict(status='succeeded',
+                last_success_utc=self.now.isoformat()))
+            return 0
+        self.pipeline.side_effect = run
+        result, recovery = self.recover(self.auto)
+        self.assertEqual(result, 0)
+        self.pipeline.assert_called_once_with()
+        self.assertEqual(recovery['previous_last_success_utc'], '2026-10-24T11:07:21.766774+00:00')
+        self.assertEqual(recovery['last_success_utc'], self.now.isoformat())
+        self.assertEqual(recovery['remaining_health_issues'], [])
+        self.assertEqual(self.auto.read_json(self.out/'monitor_recovery.json'), recovery)
+
+    def test_fresh_pipeline_monitor_remains_read_only(self):
+        self.monitor.return_value = dict(issues=[])
+        before = (self.out/'state.json').read_bytes()
+        self.assertEqual(self.recover(self.auto), (0, None))
+        self.pipeline.assert_not_called()
+        self.assertEqual((self.out/'state.json').read_bytes(), before)
+        self.assertFalse((self.out/'monitor_recovery.json').exists())
+
+    def test_running_failed_or_finished_pipeline_is_not_reset(self):
+        self.monitor.return_value = self.missed
+        for status in ['running', 'failed', 'finished_schedule', 'deferred_source_maintenance']:
+            self.auto.atomic_json(self.out/'state.json', dict(status=status))
+            self.assertEqual(self.recover(self.auto), (0, None))
+        self.pipeline.assert_not_called()
+
+    def test_scheduler_fault_stays_blocking_without_recovery(self):
+        self.monitor.return_value = dict(issues=[dict(key='missed_runs'), dict(key='scheduler_unavailable')])
+        self.assertEqual(self.recover(self.auto), (0, None))
+        self.pipeline.assert_not_called()
+
+    def test_failed_recovery_preserves_nonzero_exit_and_health(self):
+        self.monitor.side_effect = [self.missed, dict(issues=[dict(key='pipeline_failed'), dict(key='missed_runs')])]
+        def run():
+            self.auto.atomic_json(self.out/'state.json', dict(status='failed', error='source unavailable'))
+            return 1
+        self.pipeline.side_effect = run
+        result, recovery = self.recover(self.auto)
+        self.assertEqual(result, 1)
+        self.assertEqual(recovery['status'], 'failed')
+        self.assertIn('pipeline_failed', recovery['remaining_health_issues'])
+        self.pipeline.assert_called_once_with()
+
+    def test_recovery_does_not_clear_receipt_or_persistent_staleness_alerts(self):
+        from src.source_health import assess
+        warning = 'receipt_missed_2026-10-25'
+        self.monitor.side_effect = [dict(issues=[dict(key='missed_runs'), dict(key=warning)]), self.missed]
+        self.pipeline.return_value = 0
+        result, recovery = self.recover(self.auto)
+        self.assertEqual(result, 0)
+        self.assertIn(warning, recovery['previous_health_issues'])
+        self.assertEqual(recovery['remaining_health_issues'], ['missed_runs'])
+        outcome = assess(self.auto.read_json(self.out/'state.json'), self.missed,
+                         dict(maintenance_only=False), result)
+        self.assertEqual(outcome['status'], 'failed')
+
+
 if __name__ == '__main__':
     unittest.main()
