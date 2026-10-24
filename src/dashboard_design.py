@@ -89,7 +89,8 @@ def redesign(html):
     if 'class="result-footnote"' not in html:
         html = html.replace('<p id="responseInference" class="muted"></p></aside>', '<p id="responseInference" class="muted"></p><div class="result-footnote">' + icon('check') + '<span>Ước lượng lịch sử<br>Đọc cùng khoảng tin cậy</span></div></aside>', 1)
     html = re.sub(r'<footer>.*?</footer>', '<footer><span>orbit<span class="footer-dot">.</span> <span class="footer-separator">/</span> Macro × Crypto Research</span><span>Snapshot đến 15.10.2026 · UTC</span></footer>', html, count=1, flags=re.S)
-    css = (ROOT / 'dashboard/design.css').read_text(encoding='utf-8')
+    from src.dashboard_fonts import embedded_font_css
+    css = embedded_font_css() + (ROOT / 'dashboard/design.css').read_text(encoding='utf-8')
     js = (ROOT / 'dashboard/design.js').read_text(encoding='utf-8')
     html = html.replace('</head>', '<style id="orbit-theme">' + css + '</style></head>', 1)
     # Keep one script so the existing validation exercises the same program.
